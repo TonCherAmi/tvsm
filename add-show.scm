@@ -1,8 +1,3 @@
-;(use-modules (watch config)
-;             (ice-9 optargs)
-;             (ice-9 rdelim)
-;             (srfi srfi-1))
-
 (define-module (watch add-show)
   #:export     (add-show)
   #:use-module (ice-9 rdelim)
