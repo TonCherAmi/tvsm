@@ -1,7 +1,6 @@
 (define-module (watch add-show)
   #:export     (add-show)
   #:use-module (ice-9 rdelim)
-  #:use-module (srfi  srfi-1)
   #:use-module ((watch config)
                 #:prefix config:))
 
@@ -12,15 +11,15 @@
            (cond
              ((and (assoc show-name show-list)
                     config:ask-on-existing-show-overwrite?
-                   (ask-whether-to-overwrite show-name))
-              (cons new-show (delete-show show-name show-list)))
+                   (ask-whether-to-overwrite-show show-name))
+              (cons new-show (assoc-remove! show-list show-name)))
 ; ----------------------------------------------------------------------------------
              ((and (assoc show-name show-list)
                    (not config:ask-on-existing-show-overwrite?))
               (cons new-show (assoc-remove! show-list show-name)))
 ; ----------------------------------------------------------------------------------
              ((not (assoc show-name show-list))
-              (cons new-show (show-list)))
+              (cons new-show show-list))
 ; ----------------------------------------------------------------------------------
              (else (throw 'show-already-exists-exception)))))
     (write-show-list show-list)))
@@ -37,11 +36,12 @@
       (write show-list))))
 
 (define (ask-whether-to-overwrite-show show-name)
-  (let loop ((ask-message (format #f "A show with name ~a already exists,
-                                      would you like to overwrite it? (y/n): " show-name)))
+  (let loop ((ask-message (format #f 
+                                  "A show with name '~a' already exists, overwrite? (y/n): " 
+                                  show-name)))
     (display ask-message)
     (let ((answer (read-line)))
       (cond
-        ((string-ci=? answer "y" "yes") #t)
-        ((string-ci=? answer "n" "no")  #f)
+        ((or (string-ci=? answer "y") (string-ci=? answer "yes")) #t)
+        ((or (string-ci=? answer "n") (string-ci=? answer "no"))  #f)
         (else (loop "Please answer (y/n): "))))))
