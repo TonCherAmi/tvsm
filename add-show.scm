@@ -11,12 +11,7 @@
          (show-list 
            (cond
              ((and (find-show show-name show-list)
-                    config:ask-on-existing-show-overwrite?
-                   (ask-whether-to-overwrite-show show-name))
-              (cons new-show (remove-show show-name show-list)))
-; ----------------------------------------------------------------------------------
-             ((and (find-show show-name show-list)
-                   (not config:ask-on-existing-show-overwrite?))
+                   (ask-user-overwrite show-name))
               (cons new-show (remove-show show-name show-list)))
 ; ----------------------------------------------------------------------------------
              ((not (find-show show-name show-list))
@@ -25,9 +20,9 @@
              (else (throw 'show-already-exists-exception)))))
     (write-show-list show-list)))
 
-(define (ask-whether-to-overwrite-show show-name)
+(define (ask-user-overwrite show-name)
   (let loop ((ask-message (format #f 
-                                  "A show with name '~a' already exists, overwrite? (y/n): " 
+                                  "A show called '~a' already exists, overwrite? (y/n): " 
                                   show-name)))
     (display ask-message)
     (let ((answer (read-line)))
