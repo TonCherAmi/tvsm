@@ -1,9 +1,12 @@
-(define-module  (watch util)
+(define-module  (watch show-utils)
   #:export      (read-show-list
                  write-show-list
                  remove-show
                  create-show
-                 find-show)
+                 find-show
+                 get-show-name
+                 get-show-path
+                 get-show-current-episode)
   #:use-module ((watch config)
                   #:prefix config:))
 
@@ -30,3 +33,12 @@
 
 (define (find-show show-name show-list)
   (assoc show-name show-list))
+
+(define (get-show-name show)
+  (car show))
+
+(define (get-show-path show)
+  (cadr show))
+
+(define (get-show-current-episode show)
+  (caddr show))
