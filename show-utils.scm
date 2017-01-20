@@ -1,6 +1,6 @@
 (define-module  (watch show-utils)
-  #:export      (read-show-list
-                 write-show-list
+  #:export      (read-show-list-db
+                 write-show-list-db
                  remove-show
                  create-show
                  find-show
@@ -10,14 +10,14 @@
   #:use-module ((watch config)
                   #:prefix config:))
 
-(define (read-show-list)
+(define (read-show-list-db)
   (if (access? config:show-database-path R_OK)
     (with-input-from-file 
       config:show-database-path
       read)
     (list)))
 
-(define (write-show-list show-list)
+(define (write-show-list-db show-list)
   (if (access? config:resources-directory W_OK)
     (with-output-to-file
       config:show-database-path
