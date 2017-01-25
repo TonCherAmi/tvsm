@@ -101,13 +101,13 @@
              #t
              format-string
             (get-show-name show)
-            (get-show-current-episode show)
+            (1+ (get-show-current-episode show))
             (get-show-path show))
           (values
              #t
              format-string
             (get-show-name show)
-            (get-show-current-episode show)))))
+            (1+ (get-show-current-episode show))))))
      format))
 
 ;; ------------------------------------------------------ ;;

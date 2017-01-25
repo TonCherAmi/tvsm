@@ -19,9 +19,9 @@
 ;;                             episode from which the show will           ;; 
 ;;                             begin to play, cannot be less than 1       ;;
 ;; ---------------------------------------------------------------------- ;;
-(define* (add-show-db show-name show-path #:optional (starting-episode 1))
-  (if (> 1 starting-episode)
-    ;; Throw an exception if starting episode number is less than 1.
+(define* (add-show-db show-name show-path #:optional (starting-episode 0))
+  (if (> 0 starting-episode)
+    ;; Throw an exception if starting episode number is less than 0.
     (throw 'invalid-starting-episode-exception)
     (let* ((new-show  (create-show show-name show-path starting-episode))
            (show-list (read-show-list-db))
