@@ -1,0 +1,38 @@
+(define-module  (watch play-show)
+  #:export      (play-show-db)
+  #:use-module  (ice-9 ftw)
+  #:use-module  (watch show-utils)
+  #:use-module ((watch config)
+                  #:prefix config:))
+
+(define (play-show-db show-name)
+  (let* ((show-list (read-show-list-db))
+         (show (find show-name show-list)))
+    (if (not show) 
+      (throw 'show-not-found-exception)
+      (let ((episode-path-list (get-episode-path-list show)))
+        (if (episode-out-of-bounds? current-episode episode-path-list)
+          (throw 'episode-out-of-bounds-exception)
+          (let ((return-value (play-episode (list-ref episode-path-list current-episode))))
+            (if (not (zero? return-value))
+              (throw 'external-command-fail-exception))))))))
+
+(define (play-episode episode-path)
+  (system (string-append config:media-player-command episode-path)))
+
+(define (episode-out-of-bounds? episode-number episode-list)
+  (and (<= (length episode-list) episode-number)
+       (> 0 episode-number)))
+
+(define (get-episode-path-list show)
+  (let ((dir-file-list (scandir (get-show-path show))))
+    (if (not dir-file-list)
+      '()
+      (filter episode? dir-file-list))))
+
+(define (episode? filename)
+  (let loop ((format-list config:episode-format-list))
+    (cond 
+      ((null? format-list) #f)
+      ((string-suffix-ci? (car format-list) filename) #t)
+      (else (loop (cdr format-list))))))
