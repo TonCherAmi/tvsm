@@ -1,4 +1,4 @@
-(define-module (watch print-show-list)
+(define-module (watch list-shows)
   #:export     (print-show-list-db)
   #:use-module (watch show-utils))
 
