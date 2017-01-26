@@ -7,10 +7,10 @@
 
 (define (play-show-db show-name)
   (let* ((show-list (read-show-list-db))
-         (show (find show-name show-list)))
+         (show (find-show show-name show-list)))
     (if (not show) 
       (throw 'show-not-found-exception)
-      (let ((episode-path-list (get-episode-path-list show)))
+      (let ((episode-path-list (read-episode-path-list show)))
         (if (episode-out-of-bounds? current-episode episode-path-list)
           (throw 'episode-out-of-bounds-exception)
           (let ((return-value (play-episode (list-ref episode-path-list current-episode))))
@@ -24,8 +24,8 @@
   (and (<= (length episode-list) episode-number)
        (> 0 episode-number)))
 
-(define (get-episode-path-list show)
-  (let ((dir-file-list (scandir (get-show-path show))))
+(define (read-episode-path-list show)
+  (let ((dir-file-list (scandir (show-path show))))
     (if (not dir-file-list)
       '()
       (filter episode? dir-file-list))))
