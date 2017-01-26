@@ -7,7 +7,7 @@
                  print-show
                  show-name
                  show-path
-                 current-episode)
+                 show-current-episode)
   #:use-module ((watch config)
                   #:prefix config:))
 
@@ -95,20 +95,20 @@
 (define* (print-show show #:optional (verbose #f))
   (call-with-values 
     (lambda () 
-      (let ((format-string (string-append "name: ~a, current-episode: ~a" 
+      (let ((format-string (string-append "name: ~a, show-current-episode: ~a" 
                                           (if verbose ", path: ~a~%" "~%"))))
         (if verbose
           (values 
              #t
              format-string
             (show-name show)
-            (1+ (current-episode show))
+            (1+ (show-current-episode show))
             (show-path show))
           (values
              #t
              format-string
             (show-name show)
-            (1+ (current-episode show))))))
+            (1+ (show-current-episode show))))))
      format))
 
 ;; ------------------------------------------------------ ;;
@@ -139,5 +139,5 @@
 ;; #:return: an integer representing current episode of   ;;
 ;;           the show                                     ;;
 ;; ------------------------------------------------------ ;;
-(define (current-episode show)
+(define (show-current-episode show)
   (caddr show))

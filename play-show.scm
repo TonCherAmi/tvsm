@@ -11,9 +11,9 @@
     (if (not show) 
       (throw 'show-not-found-exception)
       (let ((episode-path-list (read-episode-path-list show)))
-        (if (episode-out-of-bounds? current-episode episode-path-list)
+        (if (episode-out-of-bounds? show-current-episode episode-path-list)
           (throw 'episode-out-of-bounds-exception)
-          (let ((return-value (play-episode (list-ref episode-path-list current-episode))))
+          (let ((return-value (play-episode (list-ref episode-path-list show-current-episode))))
             (if (not (zero? return-value))
               (throw 'external-command-fail-exception))))))))
 
