@@ -2,12 +2,12 @@
   #:export      (read-show-list-db
                  write-show-list-db
                  remove-show
-                 create-show
+                 make-show
                  find-show
                  print-show
-                 get-show-name
-                 get-show-path
-                 get-show-current-episode)
+                 show-name
+                 show-path
+                 current-episode)
   #:use-module ((watch config)
                   #:prefix config:))
 
@@ -69,7 +69,7 @@
 ;;                                                        ;;
 ;; #:return: a newly created show                         ;;
 ;; ------------------------------------------------------ ;;
-(define (create-show show-name show-path starting-episode)
+(define (make-show show-name show-path starting-episode)
   (list show-name show-path starting-episode))
 
 ;; ------------------------------------------------------ ;;
@@ -100,34 +100,34 @@
           (values 
              #t
              format-string
-            (get-show-name show)
-            (1+ (get-show-current-episode show))
-            (get-show-path show))
+            (show-name show)
+            (1+ (current-episode show))
+            (show-path show))
           (values
              #t
              format-string
-            (get-show-name show)
-            (1+ (get-show-current-episode show))))))
+            (show-name show)
+            (1+ (current-episode show))))))
      format))
 
 ;; ------------------------------------------------------ ;;
-;; Get show name of show.                                 ;;
+;; Get name of show.                                      ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show - a show                                 ;;
 ;;                                                        ;;
 ;; #:return: a string representing the name of the show   ;;
 ;; ------------------------------------------------------ ;;
-(define (get-show-name show)
+(define (show-name show)
   (car show))
 
 ;; ------------------------------------------------------ ;;
-;; Get show path of show.                                 ;;
+;; Get path of show.                                      ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show - a show                                 ;;
 ;;                                                        ;;
 ;; #:return: a string representing the path to the show   ;;
 ;; ------------------------------------------------------ ;;
-(define (get-show-path show)
+(define (show-path show)
   (cadr show))
 
 ;; ------------------------------------------------------ ;;
@@ -138,5 +138,5 @@
 ;; #:return: an integer representing current episode of   ;;
 ;;           the show                                     ;;
 ;; ------------------------------------------------------ ;;
-(define (get-show-current-episode show)
+(define (current-episode show)
   (caddr show))
