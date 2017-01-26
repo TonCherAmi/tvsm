@@ -35,7 +35,8 @@
       config:show-database-path
       (lambda ()
         (write show-list)))
-    (throw 'insufficient-permissions-exception)))
+    (throw 'insufficient-permissions-exception
+           "Insufficient permissions. Can't write to database.")))
 
 ;; ------------------------------------------------------ ;;
 ;; Remove show named show-name from show-list. Original   ;;
