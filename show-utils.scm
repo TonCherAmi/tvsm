@@ -7,7 +7,10 @@
                  print-show
                  show-name
                  show-path
-                 show-current-episode)
+                 show-current-episode
+                 show-episode-list
+                 show-current-episode-out-of-bounds?)
+  #:use-module  (ice-9 ftw)
   #:use-module ((watch config)
                   #:prefix config:))
 
@@ -130,9 +133,7 @@
 ;; ------------------------------------------------------ ;;
 (define (show-path show)
   (cadr show))
-
-;; ------------------------------------------------------ ;;
-;; Get current episode of show.                           ;;
+;; ------------------------------------------------------ ;; ;; Get current episode of show.                           ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show - a show                                 ;;
 ;;                                                        ;;
@@ -141,3 +142,45 @@
 ;; ------------------------------------------------------ ;;
 (define (show-current-episode show)
   (caddr show))
+
+;; ------------------------------------------------------ ;;
+;; Get a list of episodes of show.                        ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show - a show                                 ;; 
+;;                                                        ;;
+;; #:return: a list of strings representing filepaths to  ;;
+;;           episodes of show.                            ;;
+;;           (essentially contents of directory located   ;;
+;;           at (show-path show) filtered by their        ;; 
+;;           extension)                                   ;;
+;; ------------------------------------------------------ ;;
+(define (show-episode-list show)
+  (let ((episode-list 
+          (scandir (if (eq? 'symlink (stat:type (lstat (show-path show)))) 
+                     (readlink (show-path show))
+                     (show-path show))
+                   (lambda (filepath)
+                     (let loop ((format-list config:episode-format-list))
+                       (cond 
+                         ((null? format-list) #f)
+                         ((string-suffix-ci? (car format-list) filepath))
+                         (else (loop (cdr format-list)))))))))
+    (if (not episode-list)
+      (throw 'directory-not-readable-exception
+             "Can't read show directory contents.")
+      episode-list)))
+
+;; ------------------------------------------------------ ;;
+;; Check whether current episode index of show is out     ;;
+;; of bounds.                                             ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show - a show                                 ;;
+;;                                                        ;;
+;; #:return: #t - if current episode index < 0 or         ;;
+;;                index >= length of episode list         ;;
+;;           #f - otherwise                               ;;
+;; ------------------------------------------------------ ;;
+(define (show-current-episode-out-of-bounds? show)
+  (let ((episode-list (show-episode-list show)))
+    (and (<= (length episode-list)) (show-current-episode show)
+         (> 0 (show-current-episode show)))))
