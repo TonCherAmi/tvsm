@@ -182,5 +182,5 @@
 ;; ------------------------------------------------------ ;;
 (define (show-current-episode-out-of-bounds? show)
   (let ((episode-list (show-episode-list show)))
-    (and (<= (length episode-list)) (show-current-episode show)
-         (> 0 (show-current-episode show)))))
+    (or (<= (length episode-list)) (show-current-episode show)
+        (> 0 (show-current-episode show)))))
