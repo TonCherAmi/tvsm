@@ -9,7 +9,8 @@
   (let* ((show-list (read-show-list-db))
          (show (find-show show-name show-list)))
     (if (not show) 
-      (throw 'show-not-found-exception)
+      (throw 'show-not-found-exception
+             (format #f "A show called '~a' is not found." show-name)
       (let ((episode-path-list (read-episode-path-list show)))
         (if (episode-out-of-bounds? show-current-episode episode-path-list)
           (throw 'episode-out-of-bounds-exception)
