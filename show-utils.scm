@@ -9,6 +9,7 @@
                  show-path
                  show-current-episode
                  show-episode-list
+                 show-over?
                  show-current-episode-out-of-bounds?)
   #:use-module  (ice-9 ftw)
   #:use-module ((watch config)
@@ -156,6 +157,8 @@
 ;; ------------------------------------------------------ ;;
 (define (show-episode-list show)
   (let ((episode-list 
+          ;; If show-path is a symlink read it and pass to result to scandir
+          ;; it is necessary because scandir does not work with symlinks.
           (scandir (if (eq? 'symlink (stat:type (lstat (show-path show)))) 
                      (readlink (show-path show))
                      (show-path show))
@@ -169,6 +172,18 @@
       (throw 'directory-not-readable-exception
              "Can't read show directory contents.")
       episode-list)))
+
+;; ------------------------------------------------------ ;;
+;; Check whether show is over (final episode had been     ;;
+;; played)                                                ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show - a show                                 ;;
+;;                                                        ;;
+;; #:return: #t if show is over                           ;;
+;;           #f otherwise                                 ;;
+;; ------------------------------------------------------ ;;
+(define (show-over? show)
+  (eq? 'over (show-current-episode show)))
 
 ;; ------------------------------------------------------ ;;
 ;; Check whether current episode index of show is out     ;;
