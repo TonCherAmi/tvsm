@@ -19,20 +19,3 @@
 
 (define (play-episode episode-path)
   (system (string-append config:media-player-command episode-path)))
-
-(define (episode-out-of-bounds? episode-number episode-list)
-  (and (<= (length episode-list) episode-number)
-       (> 0 episode-number)))
-
-(define (read-episode-path-list show)
-  (let ((dir-file-list (scandir (show-path show))))
-    (if (not dir-file-list)
-      '()
-      (filter episode? dir-file-list))))
-
-(define (episode? filename)
-  (let loop ((format-list config:episode-format-list))
-    (cond 
-      ((null? format-list) #f)
-      ((string-suffix-ci? (car format-list) filename) #t)
-      (else (loop (cdr format-list))))))
