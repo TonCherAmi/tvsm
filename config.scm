@@ -2,7 +2,8 @@
   #:export     (home-directory
                 resources-directory
                 show-database-path
-                media-player-command))
+                media-player-command
+                episode-format-list))
 
 (define home-directory (format #f "~a/" (getenv "HOME")))
 
