@@ -8,6 +8,8 @@
                  show-name
                  show-path
                  show-current-episode
+                 show-current-episode+1
+                 show-current-episode-1
                  show-episode-list
                  show-over?
                  show-current-episode-out-of-bounds?)
@@ -134,7 +136,9 @@
 ;; ------------------------------------------------------ ;;
 (define (show-path show)
   (cadr show))
-;; ------------------------------------------------------ ;; ;; Get current episode of show.                           ;;
+
+;; ------------------------------------------------------ ;;
+;; Get current episode of show.                           ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show - a show                                 ;;
 ;;                                                        ;;
@@ -143,6 +147,28 @@
 ;; ------------------------------------------------------ ;;
 (define (show-current-episode show)
   (caddr show))
+
+;; ------------------------------------------------------ ;;
+;; Return show with incremented current-episode index.    ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show - a show                                 ;;
+;;                                                        ;;
+;; #:return: the same show but with its current-episode   ;;
+;;           index incremented                            ;;
+;; ------------------------------------------------------ ;;
+(define (show-current-episode+1 show)
+  (make-show (show-name show) (show-path show) (1+ (show-current-episode show))))
+
+;; ------------------------------------------------------ ;;
+;; Return show with decremented current-episode index.    ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show - a show                                 ;;
+;;                                                        ;;
+;; #:return: the same show but with its current-episode   ;;
+;;           index decremented                            ;;
+;; ------------------------------------------------------ ;;
+(define (show-current-episode-1 show)
+  (make-show (show-name show) (show-path show) (1- (show-current-episode show))))
 
 ;; ------------------------------------------------------ ;;
 ;; Get a list of episodes of show.                        ;;
