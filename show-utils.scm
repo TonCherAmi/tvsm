@@ -8,8 +8,8 @@
                  show-name
                  show-path
                  show-current-episode
-                 show-current-episode+1
-                 show-current-episode-1
+                 show-current-episode-inc
+                 show-current-episode-dec
                  show-episode-list
                  show-over?
                  show-current-episode-out-of-bounds?)
@@ -154,10 +154,21 @@
 ;; #:param: show - a show                                 ;;
 ;;                                                        ;;
 ;; #:return: the same show but with its current-episode   ;;
-;;           index incremented                            ;;
+;;           index:                                       ;;
+;;           IF show is already over then index remains   ;;
+;;              'over                                     ;;
+;;           IF show has already reached the final        ;;
+;;              episode index becomes 'over               ;;
+;;           OTHERWISE it is just incremented             ;;
 ;; ------------------------------------------------------ ;;
-(define (show-current-episode+1 show)
-  (make-show (show-name show) (show-path show) (1+ (show-current-episode show))))
+(define (show-current-episode-inc show)
+  (make-show (show-name show)
+             (show-path show) 
+             (let ((current-episode (show-current-episode show)))
+               (cond 
+                 ((show-over? show) 'over)
+                 ((= (1+ current-episode) (length (show-episode-list show))) 'over)
+                 (else (1+ current-episode))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Return show with decremented current-episode index.    ;;
@@ -165,10 +176,20 @@
 ;; #:param: show - a show                                 ;;
 ;;                                                        ;;
 ;; #:return: the same show but with its current-episode   ;;
-;;           index decremented                            ;;
+;;           index:                                       ;;
+;;           IF show is already over set it to index of   ;;
+;;              the last episode of show                  ;;
+;;           IF it is zero then it remains zero           ;;
+;;           OTHERWISE it is just decremented             ;;
 ;; ------------------------------------------------------ ;;
-(define (show-current-episode-1 show)
-  (make-show (show-name show) (show-path show) (1- (show-current-episode show))))
+(define (show-current-episode-dec show)
+  (make-show (show-name show)
+             (show-path show)
+             (let ((current-episode (show-current-episode show)))
+               (cond 
+                 ((show-over? show) (1- (length (show-episode-list show))))
+                 ((zero? current-episode) 0)
+                 (else (1- current-episode))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Get a list of episodes of show.                        ;;
