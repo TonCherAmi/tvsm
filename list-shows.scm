@@ -11,5 +11,5 @@
   (let ((show-list (read-show-list-db)))
     (if verbose (format #t "total: ~a~%" (length show-list)))
     (for-each 
-      (lambda (s) (print-show s verbose)) 
+      (lambda (s) (print-show s verbose))
        show-list)))
