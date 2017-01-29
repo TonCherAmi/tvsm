@@ -199,7 +199,7 @@
 ;; #:return: a list of strings representing filepaths to  ;;
 ;;           episodes of show.                            ;;
 ;;           (essentially contents of directory located   ;;
-;;           at (show-path show) filtered by their        ;; 
+;;           at (show:path show) filtered by their        ;; 
 ;;           extension)                                   ;;
 ;; ------------------------------------------------------ ;;
 (define (show:episode-list show)
@@ -238,8 +238,8 @@
 ;; ------------------------------------------------------ ;;
 ;; #:param: show - a show                                 ;;
 ;;                                                        ;;
-;; #:return: #t - if current episode index < 0 or         ;;
-;;                index >= length of episode list         ;;
+;; #:return: #t - IF current episode index < 0            ;;
+;;                OR index >= length of episode list      ;;
 ;;           #f - otherwise                               ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-out-of-bounds? show)
