@@ -20,7 +20,7 @@
   (let* ((show-list (read-show-list-db))
          (show (let ((show-db (find-show show-name show-list)))
                  (cond 
-                   ;; If show is not found in the db throw an exception.
+                   ;; If show called show-name is not found in the db throw an exception.
                    ((not show-db)
                     (throw 'show-not-found-exception
                            (format #f "A show called '~a' is not found." show-name)))
@@ -35,9 +35,7 @@
       ((show:current-episode-out-of-bounds? show) 
        (throw 'episode-out-of-bounds-exception "Episode index is out of bounds."))
       (else 
-        (let* ((episode-list (show:episode-list show))
-               (current-episode-path 
-                 (format #f "~a/~a" (show:path show) (list-ref episode-list (show:current-episode show)))))
+        (let ((current-episode-path (show:current-episode-path show))) 
           (cond
             ((not (zero? (play-episode current-episode-path)))
              (throw 'external-command-fail-exception "Media player command failed."))
@@ -45,6 +43,19 @@
              (let* ((updated-show (show:current-episode-inc show))
                     (updated-show-list (cons updated-show (remove-show show-name show-list))))
               (write-show-list-db updated-show-list)))))))))
+
+;; ------------------------------------------------------------ ;;
+;; Get full path to show's current-episode.                     ;;
+;; ------------------------------------------------------------ ;;
+;; #:param: show - a show                                       ;;
+;;                                                              ;;
+;; #:return: a string representing a full path to the episode   ;;
+;;           of show pointed to by current-episode index.       ;;
+;; ------------------------------------------------------------ ;;
+(define (show:current-episode-path show)
+  (let ((format-string (if (string-suffix? "/" (show:path show)) "~a~a" "~a/~a")))
+    (format #f format-string (show:path show)
+                             (list-ref (show:episode-list show) (show:current-episode show)))))
 
 ;; ------------------------------------------------------------ ;;
 ;; Play an episode using user-defined media player command.     ;;
