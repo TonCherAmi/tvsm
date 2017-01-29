@@ -49,7 +49,7 @@
 ;; list remains unmodified.                               ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show-name - a string representing the name of ;;
-;;                      the show that is being removed    ;;
+;;          the show that is being removed                ;;
 ;; #:param: show-list - a show-list                       ;;
 ;;                                                        ;; 
 ;; #:return: show-list without the show named show-name   ;;
@@ -66,13 +66,12 @@
 ;;  - Third one is this show's current episode.           ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show-name - a string representing the name of ;;
-;;                      the new show                      ;;
+;;          the new show                                  ;;
 ;; #:param: show-path - a string representing the path to ;;
-;;                      the new show                      ;;
+;;          the new show                                  ;;
 ;; #:param: starting-episode - an integer representing    ;; 
-;;                             the number of the episode  ;;
-;;                             from which the new show    ;;
-;;                             will begin to play         ;;
+;;          the number of the episode from which the new  ;;
+;;          will begin to play                            ;;
 ;;                                                        ;;
 ;; #:return: a newly created show                         ;;
 ;; ------------------------------------------------------ ;;
@@ -83,7 +82,7 @@
 ;; Find show named show-name in show-list.                ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show-name - a string representing the name of ;;
-;;                      the show that we're looking for   ;;
+;;          the show that we're looking for               ;;
 ;; #:param: show-list - a show list to search             ;;
 ;;                                                        ;;
 ;; #:return: in case the show was found - the show itself ;;
@@ -192,11 +191,11 @@
                  (else (1- current-episode))))))
 
 ;; ------------------------------------------------------ ;;
-;; Get a list of episodes of show.                        ;;
+;; Get a list of filenames of episodes of show.           ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show - a show                                 ;; 
 ;;                                                        ;;
-;; #:return: a list of strings representing filepaths to  ;;
+;; #:return: a list of strings representing filenames of  ;;
 ;;           episodes of show.                            ;;
 ;;           (essentially contents of directory located   ;;
 ;;           at (show:path show) filtered by their        ;; 
