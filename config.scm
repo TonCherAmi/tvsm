@@ -15,4 +15,4 @@
 
 (define media-player-command "mpv")
 
-(define episode-format-list '("mkv" "avi" "mp4" "mpeg" "mpv" "mov" "qt" "m4v" "svi" "ogv" "flv" "webm" "vob" "wmv"))
+(define episode-format-list '(".mkv" ".avi" ".mp4" ".mpeg" ".mpv" ".mov" ".qt" ".m4v" ".svi" ".ogv" ".flv" ".webm" ".vob" ".wmv"))
