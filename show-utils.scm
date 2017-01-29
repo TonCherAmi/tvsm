@@ -5,14 +5,14 @@
                  make-show
                  find-show
                  print-show
-                 show-name
-                 show-path
-                 show-current-episode
-                 show-current-episode-inc
-                 show-current-episode-dec
-                 show-episode-list
+                 show:name
+                 show:path
+                 show:current-episode
+                 show:current-episode-inc
+                 show:current-episode-dec
+                 show:episode-list
                  show-over?
-                 show-current-episode-out-of-bounds?)
+                 show:current-episode-out-of-bounds?)
   #:use-module  (ice-9 ftw)
   #:use-module ((watch config)
                   #:prefix config:))
@@ -107,14 +107,14 @@
           (values 
              #t
              format-string
-            (show-name show)
+            (show:name show)
             (1+ (show-current-episode show))
-            (show-path show))
+            (show:path show))
           (values
              #t
              format-string
-            (show-name show)
-            (1+ (show-current-episode show))))))
+            (show:name show)
+            (1+ (show:current-episode show))))))
      format))
 
 ;; ------------------------------------------------------ ;;
@@ -124,7 +124,7 @@
 ;;                                                        ;;
 ;; #:return: a string representing the name of the show   ;;
 ;; ------------------------------------------------------ ;;
-(define (show-name show)
+(define (show:name show)
   (car show))
 
 ;; ------------------------------------------------------ ;;
@@ -134,7 +134,7 @@
 ;;                                                        ;;
 ;; #:return: a string representing the path to the show   ;;
 ;; ------------------------------------------------------ ;;
-(define (show-path show)
+(define (show:path show)
   (cadr show))
 
 ;; ------------------------------------------------------ ;;
@@ -145,7 +145,7 @@
 ;; #:return: an integer representing current episode of   ;;
 ;;           the show                                     ;;
 ;; ------------------------------------------------------ ;;
-(define (show-current-episode show)
+(define (show:current-episode show)
   (caddr show))
 
 ;; ------------------------------------------------------ ;;
@@ -161,10 +161,10 @@
 ;;              episode index becomes 'over               ;;
 ;;           OTHERWISE it is just incremented             ;;
 ;; ------------------------------------------------------ ;;
-(define (show-current-episode-inc show)
-  (make-show (show-name show)
-             (show-path show) 
-             (let ((current-episode (show-current-episode show)))
+(define (show:current-episode-inc show)
+  (make-show (show:name show)
+             (show:path show) 
+             (let ((current-episode (show:current-episode show)))
                (cond 
                  ((show-over? show) 'over)
                  ((= (1+ current-episode) (length (show-episode-list show))) 'over)
@@ -182,12 +182,12 @@
 ;;           IF it is zero then it remains zero           ;;
 ;;           OTHERWISE it is just decremented             ;;
 ;; ------------------------------------------------------ ;;
-(define (show-current-episode-dec show)
-  (make-show (show-name show)
-             (show-path show)
-             (let ((current-episode (show-current-episode show)))
+(define (show:current-episode-dec show)
+  (make-show (show:name show)
+             (show:path show)
+             (let ((current-episode (show:current-episode show)))
                (cond 
-                 ((show-over? show) (1- (length (show-episode-list show))))
+                 ((show-over? show) (1- (length (show:episode-list show))))
                  ((zero? current-episode) 0)
                  (else (1- current-episode))))))
 
@@ -202,13 +202,13 @@
 ;;           at (show-path show) filtered by their        ;; 
 ;;           extension)                                   ;;
 ;; ------------------------------------------------------ ;;
-(define (show-episode-list show)
+(define (show:episode-list show)
   (let ((episode-list 
           ;; If show-path is a symlink read it and pass to result to scandir
           ;; it is necessary because scandir does not work with symlinks.
-          (scandir (if (eq? 'symlink (stat:type (lstat (show-path show)))) 
-                     (readlink (show-path show))
-                     (show-path show))
+          (scandir (if (eq? 'symlink (stat:type (lstat (show:path show)))) 
+                     (readlink (show:path show))
+                     (show:path show))
                    (lambda (filepath)
                      (let loop ((format-list config:episode-format-list))
                        (cond 
@@ -230,7 +230,7 @@
 ;;           #f otherwise                                 ;;
 ;; ------------------------------------------------------ ;;
 (define (show-over? show)
-  (eq? 'over (show-current-episode show)))
+  (eq? 'over (show:current-episode show)))
 
 ;; ------------------------------------------------------ ;;
 ;; Check whether current episode index of show is out     ;;
@@ -242,7 +242,7 @@
 ;;                index >= length of episode list         ;;
 ;;           #f - otherwise                               ;;
 ;; ------------------------------------------------------ ;;
-(define (show-current-episode-out-of-bounds? show)
-  (let ((episode-list (show-episode-list show)))
-    (or (<= (length episode-list) (show-current-episode show))
-        (> 0 (show-current-episode show)))))
+(define (show:current-episode-out-of-bounds? show)
+  (let ((episode-list (show:episode-list show)))
+    (or (<= (length episode-list) (show:current-episode show))
+        (> 0 (show:current-episode show)))))
