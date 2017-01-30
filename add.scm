@@ -1,4 +1,4 @@
-(define-module  (watch add-show)
+(define-module  (watch add)
   #:export      (add-show-db)
   #:use-module  (ice-9 rdelim)
   #:use-module  (watch show-utils))

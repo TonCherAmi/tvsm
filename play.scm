@@ -1,4 +1,4 @@
-(define-module  (watch play-show)
+(define-module  (watch play)
   #:export      (play-show-db)
   #:use-module  (ice-9 ftw)
   #:use-module  (watch show-utils)
