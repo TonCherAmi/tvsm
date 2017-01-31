@@ -22,22 +22,22 @@
     (if (show:current-episode-out-of-bounds? new-show)
         ;; Throw an exception if starting episode index is out of bounds.
         (throw 'episode-out-of-bounds-exception 
-               "Starting episode number is out of bounds.")
-        (let* ((show-list (read-show-list-db))
-               (show-list
-                 (cond
-                   ;; If show with such a name already exists we ask user
-                   ;; whether they would like to overwrite it, if the answer 
-                   ;; is positive we overwrite it, otherwise we throw an
-                   ;; exception.
-                   ((and (find-show show-name show-list)
-                         (ask-user-overwrite show-name))
-                    (cons new-show (remove-show show-name show-list)))
-                   ((not (find-show show-name show-list))
-                    (cons new-show show-list))
-                   (else (throw 'show-already-exists-exception
-                                "Cannot add the show.")))))
-               (write-show-list-db show-list)))))
+               (format #f "cannot add '~a': Starting episode index is out of bounds" show-name))
+        (let ((new-show-list 
+                (let ((show-list-db (read-show-list-db)))
+                  (cond
+                    ((not (find-show show-name show-list-db))
+                     (cons new-show show-list-db))
+                    ;; If show with such a name already exists we ask user
+                    ;; whether they would like to overwrite it, if the answer 
+                    ;; is positive we overwrite it, otherwise we throw an
+                    ;; exception.
+                    ((ask-user-overwrite show-name)
+                     (cons new-show (remove-show show-name show-list-db)))
+                    (else
+                      (throw 'show-already-exists-exception
+                             (format #f "cannot add '~a': Show already exists" show-name)))))))
+               (write-show-list-db new-show-list)))))
 
 ;; -------------------------------------------------------------------- ;;
 ;; Ask the user whether they'd like to overwrite already existing show. ;;
