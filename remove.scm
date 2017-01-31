@@ -3,7 +3,7 @@
   #:use-module (watch show-utils))
 
 ;; ---------------------------------------------------- ;;
-;; Remove show called show-name from the database.      ;;
+;; Remove show called show-name from the show database. ;;
 ;; ---------------------------------------------------- ;;
 ;; #:param: show-name - name of the show to remove      ;;
 ;; ---------------------------------------------------- ;;
