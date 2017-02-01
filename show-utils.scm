@@ -166,7 +166,7 @@
              (let ((current-episode (show:current-episode show)))
                (cond 
                  ((show-over? show) 'over)
-                 ((= (1+ current-episode) (length (show-episode-list show))) 'over)
+                 ((= (1+ current-episode) (length (show:episode-list show))) 'over)
                  (else (1+ current-episode))))))
 
 ;; ------------------------------------------------------ ;;
