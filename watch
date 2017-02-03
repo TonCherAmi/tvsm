@@ -1,0 +1,5 @@
+#!/usr/bin/guile -s
+
+ vim: filetype=scheme
+
+!#
