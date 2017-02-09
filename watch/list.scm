@@ -1,4 +1,4 @@
-(define-module (watch print)
+(define-module (watch list)
   #:export     (print-show-list-db)
   #:use-module (watch show-utils))
 
@@ -7,7 +7,7 @@
 ;; ----------------------------------------------------------- ;;
 ;; #:param: verbose - make output more detailed                ;;
 ;; ----------------------------------------------------------- ;;
-(define* (print-show-list-db #:optional (verbose #f))
+(define* (list-shows-db #:optional (verbose #f))
   (let ((show-list (read-show-list-db)))
     (if verbose (format #t "total: ~a~%" (length show-list)))
     (for-each 
