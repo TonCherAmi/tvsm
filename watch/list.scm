@@ -1,5 +1,5 @@
 (define-module (watch list)
-  #:export     (print-show-list-db)
+  #:export     (list-shows-db)
   #:use-module (watch show-utils))
 
 ;; ----------------------------------------------------------- ;;
