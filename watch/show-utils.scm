@@ -100,8 +100,8 @@
 (define* (print-show show #:optional (verbose #f))
   (call-with-values 
     (lambda () 
-      (let ((format-string (string-append "name: ~a, show-current-episode: ~a" 
-                                          (if verbose ", path: ~a~%" "~%"))))
+      (let ((format-string (string-append "~a\t~a" 
+                                          (if verbose "\t~a~%" "~%"))))
         (if verbose
           (values 
              #t
