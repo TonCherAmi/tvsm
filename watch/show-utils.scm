@@ -107,13 +107,17 @@
              #t
              format-string
             (show:name show)
-            (1+ (show-current-episode show))
+            (if (number? (show:current-episode show))
+                  (1+ (show:current-episode show))
+                  (show:current-episode show))
             (show:path show))
           (values
              #t
              format-string
             (show:name show)
-            (1+ (show:current-episode show))))))
+            (if (number? (show:current-episode show))
+                  (1+ (show:current-episode show))
+                  (show:current-episode show))
      format))
 
 ;; ------------------------------------------------------ ;;
