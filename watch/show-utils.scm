@@ -117,7 +117,7 @@
             (show:name show)
             (if (number? (show:current-episode show))
                   (1+ (show:current-episode show))
-                  (show:current-episode show))
+                  (show:current-episode show))))))
      format))
 
 ;; ------------------------------------------------------ ;;
@@ -189,9 +189,7 @@
   (make-show (show:name show)
              (show:path show)
              (let ((current-episode (show:current-episode show)))
-               (cond 
-                 ((show-over? show) (1- (length (show:episode-list show))))
-                 ((zero? current-episode) 0)
+               (cond ((show-over? show) (1- (length (show:episode-list show)))) ((zero? current-episode) 0)
                  (else (1- current-episode))))))
 
 ;; ------------------------------------------------------ ;;
