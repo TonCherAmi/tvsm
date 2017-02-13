@@ -24,7 +24,7 @@
                    ((not show-db)
                     (throw 'show-not-found-exception
                            (format #f "A show called '~a' is not found." show-name)))
-                   ;; If custom-episode-index was passed then make a show that has it as its 
+                   ;; If custom-episode-index was passed make a show that has it as its 
                    ;; current-episode index.
                    (custom-episode-index 
                     (make-show (show:name show-db) (show:path show-db) custom-episode-index))
