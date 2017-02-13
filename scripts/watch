@@ -75,7 +75,7 @@ Try 'watch play --help' for more information."))
                      (play-show-db (car show-name)
                                    #:custom-episode-index (string->number episode-set)))
                    (else 
-                     (play-show-db show-name)))))
+                     (play-show-db (car show-name))))))
               ((list)
                (let* ((list-option-spec '((help (single-char #\h) (value #f))
                                           (long (single-char #\l) (value #f))))
