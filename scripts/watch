@@ -21,9 +21,12 @@
         (if help-wanted 
           (display-help)))
       (let* ((stripped-args (option-ref general-options '() '()))
-             (command (string->symbol (car stripped-args))))
+             ;; In case no arguments whatsoever were passed, 'command' will just slip 
+             ;; through the 'case' and general help will be printed.
+             (command (unless (null? stripped-args) (string->symbol (car stripped-args)))))
         (catch 
           #t
+          ;; thunk
           (lambda ()
             (case command
               ((add) 
@@ -54,23 +57,23 @@ Try 'watch add --help' for more information."))
                       (episode      (option-ref play-options 'episode #f))
                       (episode-set  (option-ref play-options 'episode-set #f))
                       ;; Here we get a list that should consist of one element
-                      ;; which is the show-name.
+                      ;; which is the show name.
                       (show-name    (option-ref play-options '() '())))
                  (cond 
                    (help-wanted
                      (display-help 'play))
                    ;; If the list is empty then the required argument is missing.
-                   ((null? (show-name)) 
+                   ((null? show-name) 
                     (throw 'insufficient-args-exception
                            "missing show name
 Try 'watch play --help' for more information."))
                    (episode 
-                     (play-show-db show-name 
+                     (play-show-db (car show-name)
                                    #:increment? #f 
                                    #:custom-episode-index (string->number episode)))
                    (episode-set
-                       (play-show-db show-name
-                                     #:custom-episode-index (string->number episode-set)))
+                     (play-show-db (car show-name)
+                                   #:custom-episode-index (string->number episode-set)))
                    (else 
                      (play-show-db show-name)))))
               ((list)
@@ -82,6 +85,7 @@ Try 'watch play --help' for more information."))
                  (if help-wanted 
                    (display-help 'list)
                    (list-shows-db long-format-wanted))))))
+          ;; handler
           (lambda (key message)
             (die message)))))))
 
