@@ -1,0 +1,134 @@
+#!/usr/bin/guile --no-auto-compile 
+!#
+
+(use-modules (watch add)
+             (watch play)
+             (watch list)
+             (watch remove)
+             (watch set)
+             (ice-9 getopt-long))
+
+(define (main args)
+  (let* ((general-option-spec '((version (single-char #\v) (value #f))
+                                (help    (single-char #\h) (value #f))))
+         (general-options (getopt-long args general-option-spec #:stop-at-first-non-option #t))
+         (version-wanted  (option-ref general-options 'version #f))
+         (help-wanted     (option-ref general-options 'help #f)))
+    (if (or version-wanted help-wanted)
+      (begin
+        (if version-wanted
+          (display-version))
+        (if help-wanted 
+          (display-help)))
+      (let* ((stripped-args (option-ref general-options '() '()))
+             (command (string->symbol (car stripped-args))))
+        (catch 
+          #t
+          (lambda ()
+            (case command
+              ((add) 
+               (let* ((add-option-spec '((help             (single-char #\h) (value #f))
+                                         (name             (single-char #\n) (value #t))
+                                         (path             (single-char #\p) (value #t))
+                                         (starting-episode (single-char #\s) (value #t) (predicate string->number))))
+                      (add-options      (getopt-long stripped-args add-option-spec))
+                      (help-wanted      (option-ref add-options 'help #f))
+                      (name             (option-ref add-options 'name #f))
+                      (path             (option-ref add-options 'path #f))
+                      (starting-episode (option-ref add-options 'starting-episode "1")))
+                 (cond 
+                   (help-wanted 
+                     (display-help 'add))
+                   ((not (and name path))
+                    (die "insufficient arguments\nTry 'watch add --help' for more information."))
+                   (else 
+                     (add-show-db name path (1- (string->number starting-episode)))))))
+              ((play)
+               (let* ((play-option-spec '((help        (single-char #\h) (value #f))
+                                          (episode     (single-char #\e) (value #t) (predicate string->number))
+                                          (episode-set (single-char #\E) (value #t) (predicate string->number))))
+                      (play-options (getopt-long stripped-args play-option-spec))
+                      (help-wanted  (option-ref play-options 'help #f))
+                      (episode      (option-ref play-options 'episode #f))
+                      (episode-set  (option-ref play-options 'episode-set #f))
+                      (show-name    (if (null? (option-ref play-options '() '()))
+                                      (die "missing name\nTry 'watch play --help' for more information.")
+                                      (car (option-ref play-options '() '())))))
+                 (cond 
+                   (help-wanted
+                     (display-help 'play))
+                   (episode 
+                     (play-show-db show-name 
+                                   #:increment? #f 
+                                   #:custom-episode-index (string->number episode)))
+                   (episode-set
+                       (play-show-db show-name
+                                     #:custom-episode-index (string->number episode-set)))
+                   (else 
+                     (play-show-db show-name)))))))
+          (lambda (key message)
+            (die message)))))))
+
+(define (die message)
+  (format #t "watch: ~a~%" message)
+  (exit 1))
+
+(define* (display-help #:optional command)
+  (case command
+    ((add) 
+     (display "\
+Usage: watch add <required-options> [<options>]
+required-options: 
+    -n, --name <name>:                  show name, a unique identifier.
+    -p, --path <path>:                  path to the directory that contains 
+                                        episodes of the new show.
+options:
+    -s, --starting-episode <integer>:   number of the episode the new show will
+                                        start playing from, default value: 1."))
+    ((play)
+     (display "\
+Usage: watch play [<options>] <show> 
+options:
+    -e, --episode <integer>:            number of the episode to play instead of 
+                                        current episode.
+    -E, --episode-set <integer>:        like --episode, but show will continue 
+                                        to play from specified episode in 
+                                        the future."))
+    ((list)
+     (display "\
+Usage: watch list [<options>]
+options:
+    -l, --long:                         use a long listing format."))
+    ((remove)
+     (display "\
+Usage: watch remove [<options>] [<name>...]
+options:
+    -o, --over:                         remove all shows whose current episode == over."))
+    ((set)
+     (display "\
+Usage: watch set [<options>] <name>
+options:
+    -n, --name <name>:                  set a new name.
+    -p, --path <path>:                  set a new path.
+    -e, --current-episode <integer>:    set current episode.
+    -r, --reset:                        set current episode == 1.
+    -o, --over:                         set current episode == over."))
+    (else 
+      (display "\
+Usage: watch [--version] [--help] <command> [<options>]
+available commands:
+    add:        add a show.
+    play:       play a show.
+    list:       list existing shows.
+    remove:     remove shows.
+    set:        modify a show.
+    
+See 'watch <command> --help' to read more about a specific command.")))
+  (newline))
+
+(define (display-version)
+  (display "watch version 0.1 alpha") (newline))
+
+(main (command-line))
+
+;; vim: filetype=scheme
