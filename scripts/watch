@@ -70,10 +70,10 @@ Try 'watch play --help' for more information."))
                    (episode 
                      (play-show-db (car show-name)
                                    #:increment? #f 
-                                   #:custom-episode-index (string->number episode)))
+                                   #:custom-episode-index (1- (string->number episode))))
                    (episode-set
                      (play-show-db (car show-name)
-                                   #:custom-episode-index (string->number episode-set)))
+                                   #:custom-episode-index (1- (string->number episode-set))))
                    (else 
                      (play-show-db (car show-name))))))
               ((list)
