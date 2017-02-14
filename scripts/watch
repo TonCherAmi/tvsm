@@ -51,11 +51,11 @@ Try 'watch add --help' for more information."))
               ((play)
                (let* ((play-option-spec '((help        (single-char #\h) (value #f))
                                           (episode     (single-char #\e) (value #t))
-                                          (episode-set (single-char #\E) (value #t))))
+                                          (set         (single-char #\s) (value #f))))
                       (play-options (getopt-long stripped-args play-option-spec))
                       (help-wanted  (option-ref play-options 'help #f))
                       (episode      (option-ref play-options 'episode #f))
-                      (episode-set  (option-ref play-options 'episode-set #f))
+                      (set-wanted   (option-ref play-options 'set #f))
                       ;; Here we get a list that should consist of one element
                       ;; which is the show name.
                       (show-name    (option-ref play-options '() '())))
@@ -69,11 +69,8 @@ Try 'watch add --help' for more information."))
 Try 'watch play --help' for more information."))
                    (episode 
                      (play-show-db (car show-name)
-                                   #:increment? #f 
+                                   #:increment? set-wanted 
                                    #:custom-episode-index (1- (string->number episode))))
-                   (episode-set
-                     (play-show-db (car show-name)
-                                   #:custom-episode-index (1- (string->number episode-set))))
                    (else 
                      (play-show-db (car show-name))))))
               ((list)
@@ -84,7 +81,29 @@ Try 'watch play --help' for more information."))
                       (long-format-wanted (option-ref  list-options 'long #f)))
                  (if help-wanted 
                    (display-help 'list)
-                   (list-shows-db long-format-wanted))))))
+                   (list-shows-db long-format-wanted))))
+              ((remove)
+               (let* ((remove-option-spec '((help (single-char #\h) (value #f))
+                                            (over (single-char #\o) (value #f))))
+                      (remove-options (getopt-long stripped-args remove-option-spec))
+                      (help-wanted    (option-ref remove-options 'help #f))
+                      (over-wanted    (option-ref remove-options 'over #f))
+                      ;; Here we get a list that should consist of one element
+                      ;; which is the show name.
+                      (show-name      (option-ref remove-options '() '())))
+                 (cond 
+                   (help-wanted 
+                     (display-help 'remove))
+                   (over-wanted
+                     (remove-over-db))
+                   ;; If neither '--over' nor a show name were passed
+                   ;; signal an error.
+                   ((null? show-name)
+                    (throw 'insufficient-args-exception
+                           "insufficient arguments
+Try 'watch remove --help' for more information."))
+                   (else 
+                     (remove-show-db (car show-name))))))))
           ;; handler
           (lambda (key message)
             (die message)))))))
@@ -111,9 +130,9 @@ Usage: watch play [<options>] <show>
 options:
     -e, --episode <integer>:            number of the episode to play instead of 
                                         current episode.
-    -E, --episode-set <integer>:        like --episode, but show will continue 
-                                        to play from specified episode in 
-                                        the future."))
+    -s, --set:                          if specified together with '--episode' show
+                                        will continue to play from that specified episode
+                                        in the future."))
     ((list)
      (display "\
 Usage: watch list [<options>]
