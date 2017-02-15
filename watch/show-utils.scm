@@ -218,7 +218,7 @@
                          (else (loop (cdr format-list)))))))))
     (if (not episode-list)
       (throw 'directory-not-readable-exception
-             "Can't read show directory contents.")
+             (format #f "cannot stat '~a': No such directory" (show:path show)))
       episode-list)))
 
 ;; ------------------------------------------------------ ;;
