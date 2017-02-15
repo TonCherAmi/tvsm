@@ -117,6 +117,7 @@ Try 'watch remove --help' for more information."))
     ((add) 
      (display "\
 Usage: watch add <required-options> [<options>]
+
 required-options: 
     -n, --name <name>:                  show name, a unique identifier.
     -p, --path <path>:                  path to the directory that contains 
@@ -127,6 +128,7 @@ options:
     ((play)
      (display "\
 Usage: watch play [<options>] <show> 
+
 options:
     -e, --episode <integer>:            number of the episode to play instead of 
                                         current episode.
@@ -136,16 +138,19 @@ options:
     ((list)
      (display "\
 Usage: watch list [<options>]
+
 options:
     -l, --long:                         use a long listing format."))
     ((remove)
      (display "\
 Usage: watch remove [<options>] [<name>...]
+
 options:
     -o, --over:                         remove all shows whose current episode == over."))
     ((set)
      (display "\
 Usage: watch set [<options>] <name>
+
 options:
     -n, --name <name>:                  set a new name.
     -p, --path <path>:                  set a new path.
@@ -155,6 +160,7 @@ options:
     (else 
       (display "\
 Usage: watch [--version] [--help] <command> [<options>]
+
 available commands:
     add:        add a show.
     play:       play a show.
