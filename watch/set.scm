@@ -26,7 +26,17 @@
                        (make-show new-show-name 
                                   (show:path show-db)
                                   (show:current-episode show-db))))))
-            (cons new-show (remove-show old-show-name show-list-db)))))
+            ;; If show called 'new-show-name' already exists in the db
+            (if (find-show new-show-name show-list-db)
+              ;; We ask the user whether they'd like to overwrite already existing show
+              (if (ask-user-overwrite new-show-name)
+                ;; If the answer is positive we obviously overwrite it
+                (cons new-show (remove-show new-show-name (remove-show old-show-name show-list-db)))
+                ;; If the answer is negative we cannot proceed and therefore an exception is thrown
+                (throw 'show-already-exists-exception
+                       (format #f "cannot rename '~a' to '~a': Show already exists"
+                               old-show-name new-show-name)))
+              (cons new-show (remove-show old-show-name show-list-db))))))
     (write-show-list-db new-show-list)))
 
 ;; ------------------------------------------------------ ;;
