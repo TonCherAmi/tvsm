@@ -23,7 +23,7 @@
                    ;; If show called show-name is not found in the db throw an exception.
                    ((not show-db)
                     (throw 'show-not-found-exception
-                           (format #f "cannot play '~a': Show not found" show-name)))
+                           (format #f "cannot play '~a': No such show" show-name)))
                    ;; If custom-episode-index was passed make a show that has it as its 
                    ;; current-episode index.
                    (custom-episode-index 
