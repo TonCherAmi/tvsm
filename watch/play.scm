@@ -23,7 +23,7 @@
                    ;; If show called show-name is not found in the db throw an exception.
                    ((not show-db)
                     (throw 'show-not-found-exception
-                           (format #f "A show called '~a' is not found." show-name)))
+                           (format #f "cannot play '~a': Show not found" show-name)))
                    ;; If custom-episode-index was passed make a show that has it as its 
                    ;; current-episode index.
                    (custom-episode-index 
@@ -31,14 +31,17 @@
                    (else show-db)))))
     (cond 
       ((show-over? show) 
-       (throw 'show-is-over-exception "The show is over."))
+       (throw 'show-is-over-exception
+              (format #f "cannot play '~a': Show is over" show-name)))
       ((show:current-episode-out-of-bounds? show) 
-       (throw 'episode-out-of-bounds-exception "Episode index is out of bounds."))
+       (throw 'episode-out-of-bounds-exception 
+              (format #f "cannot play '~a': Episode index is out of bounds" show-name)))
       (else 
         (let ((current-episode-path (show:current-episode-path show))) 
           (cond
             ((not (zero? (play-episode current-episode-path)))
-             (throw 'external-command-fail-exception "Media player command failed."))
+             (throw 'external-command-fail-exception 
+                    (format #f "cannot play '~a': Media player command failed")))
             (increment?
              (let* ((updated-show (show:current-episode-inc show))
                     (updated-show-list (cons updated-show (remove-show show-name show-list))))
