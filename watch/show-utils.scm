@@ -101,8 +101,8 @@
 (define* (print-show show #:optional (verbose #f))
   (call-with-values 
     (lambda () 
-      (let ((format-string (string-append "~a\t~a" 
-                                          (if verbose "\t~a~%" "~%"))))
+      (let ((format-string (string-append "~a\t" 
+                                          (if verbose "~a\t~a~%" ""))))
         (if verbose
           (values 
              #t
@@ -115,10 +115,7 @@
           (values
              #t
              format-string
-            (show:name show)
-            (if (number? (show:current-episode show))
-                  (1+ (show:current-episode show))
-                  (show:current-episode show))))))
+            (show:name show)))))
      format))
 
 ;; ------------------------------------------------------ ;;
