@@ -89,7 +89,7 @@ Try 'watch play --help' for more information."))
                       (help-wanted    (option-ref remove-options 'help #f))
                       (over-wanted    (option-ref remove-options 'over #f))
                       ;; Here we get a list that should consist of one element
-                      ;; which is the show name.
+                      ;; which is the show name passed as an argument.
                       (show-name      (option-ref remove-options '() '())))
                  (cond 
                    (help-wanted 
@@ -103,7 +103,40 @@ Try 'watch play --help' for more information."))
                            "insufficient arguments
 Try 'watch remove --help' for more information."))
                    (else 
-                     (remove-show-db (car show-name))))))))
+                     (remove-show-db (car show-name))))))
+              ((set)
+               (let* ((set-option-spec '((help            (single-char #\h) (value #f))
+                                         (name            (single-char #\n) (value #t))
+                                         (path            (single-char #\p) (value #t))
+                                         (current-episode (single-char #\e) (value #t))
+                                         (over            (single-char #\o) (value #f))))
+                      (set-options         (getopt-long stripped-args set-option-spec))
+                      (help-wanted         (option-ref set-options 'help #f))
+                      (new-name            (option-ref set-options 'name #f))
+                      (new-path            (option-ref set-options 'path #f))
+                      (new-current-episode (option-ref set-options 'current-episode #f))
+                      (over-wanted         (option-ref set-options 'over #f))
+                      ;; Here we get a list that should consist of one element
+                      ;; which is the show name passed as an argument.
+                      (show-name           (option-ref set-options '() '())))
+                 (cond
+                   (help-wanted
+                     (display-help 'set))
+                   ;; This checks for the case where no show name was passed as an argument.
+                   ((null? show-name)
+                    (throw 'insufficient-args-exception
+                           "insufficient arguments
+Try 'watch set --help' for more information."))
+                   (new-name
+                     (set-show-name-db (car show-name) new-name))
+                   (new-path
+                     (set-show-path-db (car show-name) new-path))
+                   (new-current-episode
+                     (set-show-current-episode-db (car show-name) (string->number new-current-episode)))
+                   (over-wanted
+                     (set-show-current-episdoe-db (car show-name) 'over)))))
+              (else
+                (display-help))))
           ;; handler
           (lambda (key message)
             (die message)))))))
@@ -111,7 +144,6 @@ Try 'watch remove --help' for more information."))
 (define (die message)
   (format #t "watch: ~a~%" message)
   (exit 1))
-
 (define* (display-help #:optional command)
   (case command
     ((add) 
@@ -130,23 +162,23 @@ options:
 Usage: watch play [<options>] <show> 
 
 options:
-    -e, --episode <integer>:            number of the episode to play instead of 
-                                        current episode.
-    -s, --set:                          if specified together with '--episode' show
-                                        will continue to play from that specified episode
-                                        in the future."))
+    -e, --episode <integer>:    number of the episode to play instead of 
+                                current episode.
+    -s, --set:                  if specified together with '--episode' show
+                                will continue to play from that specified episode
+                                in the future."))
     ((list)
      (display "\
 Usage: watch list [<options>]
 
 options:
-    -l, --long:                         use a long listing format."))
+    -l, --long:     use a long listing format."))
     ((remove)
      (display "\
 Usage: watch remove [<options>] [<name>...]
 
 options:
-    -o, --over:                         remove all shows whose current episode == over."))
+    -o, --over:     remove all shows whose current episode == over."))
     ((set)
      (display "\
 Usage: watch set [<options>] <name>
@@ -155,8 +187,7 @@ options:
     -n, --name <name>:                  set a new name.
     -p, --path <path>:                  set a new path.
     -e, --current-episode <integer>:    set current episode.
-    -r, --reset:                        set current episode == 1.
-    -o, --over:                         set current episode == over."))
+    -o, --over:                         set current episode = over."))
     (else 
       (display "\
 Usage: watch [--version] [--help] <command> [<options>]
@@ -168,7 +199,7 @@ available commands:
     remove:     remove shows.
     set:        modify a show.
     
-See 'watch <command> --help' to read more about a specific command.")))
+See 'watch <command> --help' to learn more about a specific command.")))
   (newline))
 
 (define (display-version)
