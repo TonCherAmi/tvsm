@@ -4,7 +4,6 @@
                  remove-show
                  make-show
                  find-show
-                 print-show
                  show:name
                  show:path
                  show:current-episode
@@ -92,31 +91,6 @@
 (define (find-show show-name show-list)
   (assoc show-name show-list))
 
-;; ------------------------------------------------------ ;;
-;; Print show contents to (current-output-port)           ;;
-;; ------------------------------------------------------ ;;
-;; #:param: show - a show to print                        ;;
-;; #:param: verbose - make output more detailed           ;;
-;; ------------------------------------------------------ ;;
-(define* (print-show show #:optional (verbose #f))
-  (call-with-values 
-    (lambda () 
-      (let ((format-string (string-append "~a\t" 
-                                          (if verbose "~a\t~a~%" ""))))
-        (if verbose
-          (values 
-             #t
-             format-string
-            (show:name show)
-            (if (number? (show:current-episode show))
-                  (1+ (show:current-episode show))
-                  (show:current-episode show))
-            (show:path show))
-          (values
-             #t
-             format-string
-            (show:name show)))))
-     format))
 
 ;; ------------------------------------------------------ ;;
 ;; Get name of show.                                      ;;
