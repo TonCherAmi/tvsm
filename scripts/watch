@@ -132,7 +132,7 @@ Try 'watch set --help' for more information."))
                    (new-path
                      (set-show-path-db (car show-name) new-path))
                    (new-current-episode
-                     (set-show-current-episode-db (car show-name) (string->number new-current-episode)))
+                     (set-show-current-episode-db (car show-name) (1- (string->number new-current-episode))))
                    (over-wanted
                      (set-show-current-episdoe-db (car show-name) 'over)))))
               (else
