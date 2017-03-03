@@ -15,4 +15,40 @@
 # You should have received a copy of the GNU General Public License
 # along with watch. If not, see <http://www.gnu.org/licenses/>.
 
+PROGNAME := watch
 
+PREFIX := /usr
+
+GUILEINC := $(shell guile -c "(display (%site-dir))")
+GUILELIB := $(shell guile -c "(display (%site-ccache-dir))")
+
+GUILEC := guild compile
+
+SRC := $(wildcard ${PROGNAME}/*.scm)
+OBJ := ${SRC:.scm=.go}
+
+OBJ: ${SRC}
+	$(foreach object, ${OBJ}, ${GUILEC} -o ${object} ${object:.go=.scm};)	
+
+all: ${OBJ}
+
+install:
+	@mkdir -p ${GUILEINC}/${PROGNAME}
+	@echo installing source files in ${GUILEINC}/${PROGNAME}
+	@cp -p ${SRC} ${GUILEINC}/${PROGNAME}
+	
+	@mkdir -p ${GUILELIB}/${PROGNAME}
+	@echo installing object files in ${GUILELIB}/${PROGNAME}
+	@cp -p ${OBJ} ${GUILELIB}/${PROGNAME}
+	
+	@mkdir -p ${DESTDIR}${PREFIX}/bin
+	@echo installing executable script in ${DESTDIR}${PREFIX}/bin
+	@cp -p scripts/${PROGNAME} ${DESTDIR}${PREFIX}/bin
+
+uninstall:
+	@rm -rf ${GUILEINC}/${PROGNAME} 
+	@rm -rf ${GUILELIB}/${PROGNAME} 
+	@rm -f ${DESTDIR}${PREFIX}/bin/${PROGNAME}
+
+clean:
+	@rm ${OBJ}
