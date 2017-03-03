@@ -235,8 +235,10 @@
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-out-of-bounds? show)
   (let ((episode-list (show:episode-list show)))
-    (or (<= (length episode-list) (show:current-episode show))
-        (> 0 (show:current-episode show)))))
+    (if (eq? 'over (show:current-episode show))
+      #f
+      (or (<= (length episode-list) (show:current-episode show))
+          (> 0 (show:current-episode show))))))
 
 ;; -------------------------------------------------------------------- ;;
 ;; Ask the user whether they'd like to overwrite already existing show. ;;
