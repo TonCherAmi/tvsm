@@ -26,11 +26,31 @@
 ;; #:param: verbose - make output more detailed                ;;
 ;; ----------------------------------------------------------- ;;
 (define* (list-shows-db #:optional (verbose #f))
-  (let ((show-list (read-show-list-db)))
-    (if verbose (format #t "total: ~a~%" (length show-list)))
-    (for-each 
-      (lambda (s) (print-show s verbose))
-       show-list)))
+  (let ((show-list-db (read-show-list-db)))
+    (if verbose 
+      (begin
+        (format #t "total: ~a~%" (length show-list-db))
+        (let loop ((show-list show-list-db))
+          (unless (null? show-list)
+            (print-show (car show-list) #t) (newline)
+            (loop (cdr show-list)))))
+      (unless (null? show-list-db)
+        (let* ((columns 
+                 (string->number (getenv "COLUMNS")))
+               (max-name-length
+                 ;; Get length of the longest show name in the show-list-db.
+                 (apply max (map (lambda (x) (string-length (show:name x))) show-list-db)))
+               (shows-per-line (quotient columns (1+ max-name-length))))
+          (let loop ((count shows-per-line)
+                     (show-list show-list-db))
+            (unless (null? show-list)
+              (cond
+                ((zero? count) 
+                 (newline)
+                 (loop shows-per-line show-list))
+                (else 
+                  (print-show (car show-list)) (display "\t")
+                  (loop (1- count) (cdr show-list)))))))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print show contents to (current-output-port)           ;;
@@ -41,8 +61,8 @@
 (define* (print-show show #:optional (verbose #f))
   (call-with-values 
     (lambda () 
-      (let ((format-string (string-append "~a\t" 
-                                          (if verbose "~a\t~a~%" ""))))
+      (let ((format-string (string-append "~a" 
+                                          (if verbose "\t~a\t~a" ""))))
         (if verbose
           (values 
              #t
