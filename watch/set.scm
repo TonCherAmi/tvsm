@@ -34,28 +34,31 @@
 ;;          name that the show will bear                  ;;
 ;; ------------------------------------------------------ ;;
 (define (set-show-name-db old-show-name new-show-name)
-  (let ((new-show-list
-          (let* ((show-list-db (read-show-list-db))
-                 (new-show
-                   (let ((show-db (find-show old-show-name show-list-db)))
-                     (if (not show-db)
-                       (throw 'show-not-found-exception
-                              (format #f "cannot rename '~a': No such show" old-show-name))
-                       (make-show new-show-name 
-                                  (show:path show-db)
-                                  (show:current-episode show-db))))))
-            ;; If show called 'new-show-name' already exists in the db
-            (if (find-show new-show-name show-list-db)
-              ;; We ask the user whether they'd like to overwrite already existing show
-              (if (ask-user-overwrite new-show-name)
-                ;; If the answer is positive we obviously overwrite it
-                (cons new-show (remove-show new-show-name (remove-show old-show-name show-list-db)))
-                ;; If the answer is negative we cannot proceed and therefore an exception is thrown
-                (throw 'show-already-exists-exception
-                       (format #f "cannot rename '~a' to '~a': Show already exists"
-                               old-show-name new-show-name)))
-              (cons new-show (remove-show old-show-name show-list-db))))))
-    (write-show-list-db new-show-list)))
+  (call-with-show-list
+    #:overwrite
+      #t
+    #:proc
+      (lambda (show-list)
+        (let* ((show-db 
+                 (find-show old-show-name show-list))
+               (show
+                 (if (not show-db)
+                   (throw 'show-not-found-exception
+                          (format #f "cannot rename '~a': No such show" old-show-name))
+                   (make-show new-show-name 
+                              (show:path show-db)
+                              (show:current-episode show-db)))))
+          ;; If show called 'new-show-name' already exists in the db
+          (if (find-show new-show-name show-list)
+            ;; We ask the user whether they'd like to overwrite already existing show
+            (if (ask-user-overwrite new-show-name)
+              ;; If the answer is positive we overwrite it
+              (cons show (remove-show new-show-name (remove-show old-show-name show-list)))
+              ;; If the answer is negative we cannot proceed and therefore an exception is thrown
+              (throw 'show-already-exists-exception
+                     (format #f "cannot rename '~a' to '~a': Show already exists"
+                             old-show-name new-show-name)))
+            (cons show (remove-show old-show-name show-list)))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Set a new path for a show.                             ;;
@@ -66,21 +69,24 @@
 ;;          path to the show directory                    ;;
 ;; ------------------------------------------------------ ;;
 (define (set-show-path-db show-name new-show-path)
-  (let ((new-show-list
-          (let* ((show-list-db (read-show-list-db))
-                 (new-show
-                   (let ((show-db (find-show show-name show-list-db)))
-                     (if (not show-db)
-                       (throw 'show-not-found-exception
-                              (format #f "cannot set path for '~a': No such show" show-name))
-                       (make-show (show:name show-db)
-                                  new-show-path
-                                  (show:current-episode show-db))))))
-            (if (show:current-episode-out-of-bounds? new-show)
-              (throw 'episode-out-of-bounds-exception
-                     (format #f "cannot set path for '~a': Episode out of bounds" show-name))
-              (cons new-show (remove-show show-name show-list-db))))))
-    (write-show-list-db new-show-list)))
+  (call-with-show-list
+    #:overwrite
+      #t
+    #:proc
+      (lambda (show-list)
+        (let* ((show-db 
+                 (find-show show-name show-list))
+               (show 
+                 (if (not show-db)
+                   (throw 'show-not-found-exception
+                          (format #f "cannot set path for '~a': No such show" show-name))
+                   (make-show (show:name show-db)
+                              new-show-path
+                              (show:current-episode show-db)))))
+          (if (show:current-episode-out-of-bounds? new-show)
+            (throw 'episode-out-of-bounds-exception
+                   (format #f "cannot set path for '~a': Episode out of bounds" show-name))
+            (cons new-show (remove-show show-name show-list)))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Set current episode of show called show-name in the db ;;
@@ -91,21 +97,24 @@
 ;;          index that will be set                        ;;
 ;; ------------------------------------------------------ ;;
 (define (set-show-current-episode-db show-name new-index)
-  (let ((new-show-list
-          (let* ((show-list-db (read-show-list-db))
-                 (new-show 
-                   (let ((show-db (find-show show-name show-list-db)))
-                     (if (not show-db)
-                       (throw 'show-not-found-exception
-                              (format #f "cannot set current episode for '~a': No such show" show-name))
-                       (make-show (show:name show-db)
-                                  (show:path show-db)
-                                  new-index)))))
-            (if (show:current-episode-out-of-bounds? new-show)
-              (throw 'episode-out-of-bounds-exception
-                     (format #f "cannot set current episode for '~a': Episode out of bounds" show-name))
-              (cons new-show (remove-show show-name show-list-db))))))
-    (write-show-list-db new-show-list)))
+  (call-with-show-list
+    #:overwrite
+      #t
+    #:proc
+      (lambda (show-list)
+        (let* ((show-db 
+                 (find-show show-name show-list))
+               (show
+                 (if (not show-db)
+                   (throw 'show-not-found-exception
+                          (format #f "cannot set current episode for '~a': No such show" show-name))
+                   (make-show (show:name show-db)
+                              (show:path show-db)
+                              new-index))))
+          (if (show:current-episode-out-of-bounds? new-show)
+            (throw 'episode-out-of-bounds-exception
+                   (format #f "cannot set current episode for '~a': Episode out of bounds" show-name))
+            (cons show (remove-show show-name show-list)))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Jump to next episode of show called show-name.         ;;
@@ -118,16 +127,19 @@
 ;;          the show whose index is being incremented     ;;
 ;; ------------------------------------------------------ ;;
 (define (jump-to-next-episode-db show-name)
-  (let ((new-show-list
-          (let* ((show-list-db (read-show-list-db))
-                 (new-show
-                   (let ((show-db (find-show show-name show-list-db)))
-                     (if (not show-db)
-                       (throw 'show-not-found-exception
-                              (format #f "cannot jump to next episode of '~a': No Such show" show-name))
-                       (show:current-episode-inc show-db)))))
-            (cons new-show (remove-show show-name show-list-db)))))
-    (write-show-list-db new-show-list)))
+  (call-with-show-list
+    #:overwrite 
+      #t
+    #:proc
+      (lambda (show-list)
+        (let* ((show-db 
+                 (find-show show-name show-list))
+               (show 
+                 (if (not show-db)
+                   (throw 'show-not-found-exception
+                          (format #f "cannot move to next episode of '~a': No Such show" show-name))
+                   (show:current-episode-inc show-db))))
+          (cons show (remove-show show-name show-list))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Jump to previous episode of show called show-name.     ;;
@@ -140,13 +152,16 @@
 ;;          the show whose index is being decremented     ;;
 ;; ------------------------------------------------------ ;;
 (define (jump-to-previous-episode-db show-name)
-  (let ((new-show-list
-          (let* ((show-list-db (read-show-list-db))
-                 (new-show
-                   (let ((show-db (find-show show-name show-list-db)))
-                     (if (not show-db)
-                       (throw 'show-not-found-exception
-                              (format #f "cannot jump to previous episode of '~a': No Such show" show-name))
-                       (show:current-episode-dec show-db)))))
-            (cons new-show (remove-show show-name show-list-db)))))
-    (write-show-list-db new-show-list)))
+  (call-with-show-list
+    #:overwrite 
+      #t
+    #:proc
+      (lambda (show-list)
+        (let* ((show-db 
+                 (find-show show-name show-list))
+               (show 
+                 (if (not show-db)
+                   (throw 'show-not-found-exception
+                          (format #f "cannot move to previous episode of '~a': No Such show" show-name))
+                   (show:current-episode-dec show-db))))
+          (cons show (remove-show show-name show-list))))))
