@@ -31,6 +31,7 @@
                  show:current-episode-out-of-bounds?
                  ask-user-overwrite)
   #:use-module  (ice-9 ftw)
+  #:use-module  (ice-9 rdelim)
   #:use-module ((watch config)
                   #:prefix config:))
 
