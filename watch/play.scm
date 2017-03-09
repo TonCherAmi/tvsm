@@ -35,8 +35,13 @@
 ;;          shows's current-epsidoe index. #f by default                    ;; 
 ;; ------------------------------------------------------------------------ ;;
 (define* (play-show-db show-name #:key (increment? #t) (custom-episode-index #f))
-  (let* ((show-list (read-show-list-db))
-         (show (let ((show-db (find-show show-name show-list)))
+  (call-with-show-list 
+    #:overwrite
+      #t
+    #:proc
+      (lambda (show-list)
+        (let* ((show-db (find-show show-name show-list))
+               (show 
                  (cond 
                    ;; If show called show-name is not found in the db throw an exception.
                    ((not show-db)
@@ -45,25 +50,27 @@
                    ;; If custom-episode-index was passed make a show that has it as its 
                    ;; current-episode index.
                    (custom-episode-index 
-                    (make-show (show:name show-db) (show:path show-db) custom-episode-index))
-                   (else show-db)))))
-    (cond 
-      ((show-over? show) 
-       (throw 'show-is-over-exception
-              (format #f "cannot play '~a': Show is over" show-name)))
-      ((show:current-episode-out-of-bounds? show) 
-       (throw 'episode-out-of-bounds-exception 
-              (format #f "cannot play '~a': Episode index is out of bounds" show-name)))
-      (else 
-        (let ((current-episode-path (show:current-episode-path show))) 
-          (cond
-            ((not (zero? (play-episode current-episode-path)))
-             (throw 'external-command-fail-exception 
-                    (format #f "cannot play '~a': Media player command failed")))
-            (increment?
-             (let* ((updated-show (show:current-episode-inc show))
-                    (updated-show-list (cons updated-show (remove-show show-name show-list))))
-              (write-show-list-db updated-show-list)))))))))
+                     (make-show (show:name show-db) (show:path show-db) custom-episode-index))
+                   (else show-db))))
+          (cond 
+            ((show-over? show) 
+             (throw 'show-is-over-exception
+                    (format #f "cannot play '~a': Show is over" show-name)))
+            ;; Very unlikely but who knows.
+            ((show:current-episode-out-of-bounds? show) 
+             (throw 'episode-out-of-bounds-exception 
+                    (format #f "cannot play '~a': Episode index is out of bounds" show-name)))
+            (else 
+              (let ((current-episode-path (show:current-episode-path show))) 
+                (cond
+                  ;; Shell will return 0 on successful command execution.
+                  ((not (zero? (play-episode current-episode-path)))
+                   (throw 'external-command-fail-exception 
+                          (format #f "cannot play '~a': Media player command failed")))
+                  (increment?
+                    (let ((updated-show (show:current-episode-inc show)))
+                      (cons updated-show (remove-show show-name show-list))))
+                  (else show-list)))))))))
 
 ;; ------------------------------------------------------------ ;;
 ;; Get full path to show's current-episode.                     ;;

@@ -26,31 +26,35 @@
 ;; #:param: verbose - make output more detailed                ;;
 ;; ----------------------------------------------------------- ;;
 (define* (list-shows-db #:optional (verbose #f))
-  (let ((show-list-db (read-show-list-db)))
-    (if verbose 
-      (begin
-        (format #t "total: ~a~%" (length show-list-db))
-        (let loop ((show-list show-list-db))
+  (call-with-show-list
+    #:overwrite 
+      #f
+    #:proc
+      (lambda (show-list)
+        (if verbose 
+          (begin
+            (format #t "total: ~a~%" (length show-list))
+            (let loop ((show-list show-list))
+              (unless (null? show-list)
+                (print-show (car show-list) 20 #t) (newline)
+                (loop (cdr show-list)))))
           (unless (null? show-list)
-            (print-show (car show-list) #t) (newline)
-            (loop (cdr show-list)))))
-      (unless (null? show-list-db)
-        (let* ((columns 
-                 (string->number (getenv "COLUMNS")))
-               (max-name-length
-                 ;; Get length of the longest show name in the show-list-db.
-                 (apply max (map (lambda (x) (string-length (show:name x))) show-list-db)))
-               (shows-per-line (quotient columns (1+ max-name-length))))
-          (let loop ((count shows-per-line)
-                     (show-list show-list-db))
-            (unless (null? show-list)
-              (cond
-                ((zero? count) 
-                 (newline)
-                 (loop shows-per-line show-list))
-                (else 
-                  (print-show (car show-list)) (display "\t")
-                  (loop (1- count) (cdr show-list)))))))))))
+            (let* ((columns 
+                     79)
+                   (max-name-length
+                     ;; Get length of the longest show name in the show-list.
+                     (apply max (map (lambda (x) (string-length (show:name x))) show-list)))
+                   (shows-per-line (quotient columns (1+ max-name-length))))
+              (let loop ((count shows-per-line)
+                         (show-list show-list))
+                (unless (null? show-list)
+                  (cond
+                    ((zero? count) 
+                     (newline)
+                     (loop shows-per-line show-list))
+                    (else 
+                      (print-show (car show-list) max-name-length)
+                      (loop (1- count) (cdr show-list))))))))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print show contents to (current-output-port)           ;;
@@ -58,11 +62,11 @@
 ;; #:param: show - a show to print                        ;;
 ;; #:param: verbose - make output more detailed           ;;
 ;; ------------------------------------------------------ ;;
-(define* (print-show show #:optional (verbose #f))
+(define* (print-show show minwidth #:optional (verbose #f))
   (call-with-values 
     (lambda () 
-      (let ((format-string (string-append "~a" 
-                                          (if verbose "\t~a\t~a" ""))))
+      (let ((format-string (string-append "~" (number->string minwidth) "a " 
+                                          (if verbose " ~a  ~a" ""))))
         (if verbose
           (values 
              #t

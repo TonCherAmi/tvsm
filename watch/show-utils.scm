@@ -17,8 +17,7 @@
 ;; along with watch. If not, see <http://www.gnu.org/licenses/>.
 
 (define-module  (watch show-utils)
-  #:export      (read-show-list-db
-                 write-show-list-db
+  #:export      (call-with-show-list
                  remove-show
                  make-show
                  find-show
@@ -34,6 +33,22 @@
   #:use-module  (ice-9 ftw)
   #:use-module ((watch config)
                   #:prefix config:))
+
+;; ------------------------------------------------------- ;;
+;; Read show-list database and call '(proc show-list)'     ;;
+;; with the read show-list.
+;; ------------------------------------------------------- ;;
+;; #:param: proc - a procedure that takes a show-list as   ;;
+;;          its only argument. Must return a show-list if  ;;
+;;          'overwrite' is #t                              ;;
+;; #:param: overwrite - if #t show-list database will be   ;;
+;;          overwritten with the result of 'proc'          ;;
+;; ------------------------------------------------------- ;;
+(define* (call-with-show-list #:key proc overwrite)
+  (let* ((show-list-db  (read-show-list-db))
+         (new-show-list (proc show-list-db)))
+    (when (and overwrite new-show-list)
+      (write-show-list-db new-show-list))))
 
 ;; ------------------------------------------------------ ;;
 ;; Read show-list database.                               ;;
