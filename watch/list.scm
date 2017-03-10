@@ -16,9 +16,11 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with watch. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (watch list)
-  #:export     (list-shows-db)
-  #:use-module (watch show))
+(define-module  (watch list)
+  #:export      (list-shows-db)
+  #:use-module  (watch show)
+  #:use-module ((watch config)
+                  #:prefix config:))
 
 ;; ----------------------------------------------------------- ;;
 ;; Print contents of show-list database in a neat manner.      ;;
@@ -55,6 +57,32 @@
                     (else 
                       (print-show (car show-list) max-name-length)
                       (loop (1- count) (cdr show-list))))))))))))
+
+(define (list-shows-short show-list)
+  (let* ((lines
+           (1+ (quotient (+ (apply + (map (lambda (x) (string-length (show:name x))) show-list))
+                            (* 2 (length show-list)))
+                         config:columns)))
+         (names-per-line
+           (/ (length show-list) lines))
+         (name-list 
+           (let loop ((names '(()))
+                      (shows show-list)
+                      (count names-per-line)
+             (cond 
+               ((null? shows) 
+                names)
+               ((zero? count)
+                (loop (cons '() names)
+                      names
+                      names-per-line))
+               (else
+                 (loop (cons (cons (show:name (car shows)) (car names))
+                             (cdr names))
+                       (cdr names)
+                       (1- count))))))))
+    ))
+  
 
 ;; ------------------------------------------------------ ;;
 ;; Print show contents to (current-output-port)           ;;
