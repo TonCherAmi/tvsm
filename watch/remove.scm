@@ -19,7 +19,7 @@
 (define-module (watch remove)
   #:export     (remove-show-db
                 remove-over-db)
-  #:use-module (watch show-utils))
+  #:use-module (watch show))
 
 ;; ---------------------------------------------------- ;;
 ;; Remove show called show-name from the show database. ;;

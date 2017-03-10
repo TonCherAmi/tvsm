@@ -16,7 +16,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with watch. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module  (watch show-utils)
+(define-module  (watch show)
   #:export      (call-with-show-list
                  remove-show
                  make-show

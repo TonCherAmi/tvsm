@@ -22,7 +22,7 @@
                 set-show-current-episode-db
                 jump-to-next-episode-db
                 jump-to-previous-episode-db)
-  #:use-module (watch show-utils))
+  #:use-module (watch show))
 
 
 ;; ------------------------------------------------------ ;;

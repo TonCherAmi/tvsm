@@ -19,7 +19,7 @@
 (define-module  (watch play)
   #:export      (play-show-db)
   #:use-module  (ice-9 ftw)
-  #:use-module  (watch show-utils)
+  #:use-module  (watch show)
   #:use-module ((watch config)
                   #:prefix config:))
 

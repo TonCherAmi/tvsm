@@ -18,7 +18,7 @@
 
 (define-module (watch list)
   #:export     (list-shows-db)
-  #:use-module (watch show-utils))
+  #:use-module (watch show))
 
 ;; ----------------------------------------------------------- ;;
 ;; Print contents of show-list database in a neat manner.      ;;

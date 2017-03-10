@@ -18,7 +18,7 @@
 
 (define-module  (watch add)
   #:export      (add-show-db)
-  #:use-module  (watch show-utils))
+  #:use-module  (watch show))
 
 ;; ---------------------------------------------------------------------- ;;
 ;; Add show to the show database.                                         ;;
