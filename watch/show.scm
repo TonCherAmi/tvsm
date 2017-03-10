@@ -231,7 +231,7 @@
 ;; -------------------------------------------------------------------- ;;
 ;; Ask the user whether they'd like to overwrite already existing show. ;;
 ;; -------------------------------------------------------------------- ;;
-;; #:param: show-name - a string representing the name of the show  ;;
+;; #:param: show-name - a string representing the name of the show      ;;
 ;; -------------------------------------------------------------------- ;;
 (define (ask-user-overwrite show-name)
   (let loop ((ask-message (format #f 
