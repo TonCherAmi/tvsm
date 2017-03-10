@@ -18,9 +18,7 @@
 
 (define-module  (watch show)
   #:export      (call-with-show-list
-                 remove-show
                  make-show
-                 find-show
                  show:name
                  show:path
                  show:current-episode
@@ -29,6 +27,8 @@
                  show:episode-list
                  show-over?
                  show:current-episode-out-of-bounds?
+                 remove-show
+                 find-show
                  ask-user-overwrite)
   #:use-module  (ice-9 ftw)
   #:use-module  (ice-9 rdelim)
@@ -52,46 +52,6 @@
       (write-show-list-db new-show-list))))
 
 ;; ------------------------------------------------------ ;;
-;; Read show-list database.                               ;;
-;; ------------------------------------------------------ ;;
-;; #:return: show list (list is empty if the database is  ;;
-;;           empty)                                       ;;
-;; ------------------------------------------------------ ;;
-(define (read-show-list-db)
-  (if (access? config:show-database-path R_OK)
-    (with-input-from-file 
-      config:show-database-path
-      read)
-    (list)))
-
-;; ------------------------------------------------------ ;;
-;; Write show-list database.                              ;;
-;; ------------------------------------------------------ ;;
-;; #:param: show-list - a show list                       ;; 
-;; ------------------------------------------------------ ;;
-(define (write-show-list-db show-list)
-  (if (access? config:resources-directory W_OK)
-    (with-output-to-file
-      config:show-database-path
-      (lambda ()
-        (write show-list)))
-    (throw 'insufficient-permissions-exception
-           "Insufficient permissions. Can't write to database.")))
-
-;; ------------------------------------------------------ ;;
-;; Remove show named show-name from show-list. Original   ;;
-;; list remains unmodified.                               ;;
-;; ------------------------------------------------------ ;;
-;; #:param: show-name - a string representing the name of ;;
-;;          the show that is being removed                ;;
-;; #:param: show-list - a show-list                       ;;
-;;                                                        ;; 
-;; #:return: show-list without the show named show-name   ;;
-;; ------------------------------------------------------ ;;
-(define (remove-show show-name show-list)
-  (assoc-remove! show-list show-name))
-
-;; ------------------------------------------------------ ;;
 ;; Create a show named show-name, located at show-path    ;;
 ;; that will start playing from starting-episode.         ;;
 ;; A show is a list of three elements:                    ;; 
@@ -111,20 +71,6 @@
 ;; ------------------------------------------------------ ;;
 (define (make-show show-name show-path starting-episode)
   (list show-name show-path starting-episode))
-
-;; ------------------------------------------------------ ;;
-;; Find show named show-name in show-list.                ;;
-;; ------------------------------------------------------ ;;
-;; #:param: show-name - a string representing the name of ;;
-;;          the show that we're looking for               ;;
-;; #:param: show-list - a show list to search             ;;
-;;                                                        ;;
-;; #:return: in case the show was found - the show itself ;;
-;;           otherwise - #f                               ;;
-;; ------------------------------------------------------ ;;
-(define (find-show show-name show-list)
-  (assoc show-name show-list))
-
 
 ;; ------------------------------------------------------ ;;
 ;; Get name of show.                                      ;;
@@ -256,6 +202,32 @@
       (or (<= (length episode-list) (show:current-episode show))
           (> 0 (show:current-episode show))))))
 
+;; ------------------------------------------------------ ;;
+;; Remove show named show-name from show-list. Original   ;;
+;; list remains unmodified.                               ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show-name - a string representing the name of ;;
+;;          the show that is being removed                ;;
+;; #:param: show-list - a show-list                       ;;
+;;                                                        ;; 
+;; #:return: show-list without the show named show-name   ;;
+;; ------------------------------------------------------ ;;
+(define (remove-show show-name show-list)
+  (assoc-remove! show-list show-name))
+
+;; ------------------------------------------------------ ;;
+;; Find show named show-name in show-list.                ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show-name - a string representing the name of ;;
+;;          the show that we're looking for               ;;
+;; #:param: show-list - a show list to search             ;;
+;;                                                        ;;
+;; #:return: in case the show was found - the show itself ;;
+;;           otherwise - #f                               ;;
+;; ------------------------------------------------------ ;;
+(define (find-show show-name show-list)
+  (assoc show-name show-list))
+
 ;; -------------------------------------------------------------------- ;;
 ;; Ask the user whether they'd like to overwrite already existing show. ;;
 ;; -------------------------------------------------------------------- ;;
@@ -274,3 +246,31 @@
         ;; If the answer is neither 'yes' or 'y' nor 'no' or 'n'
         ;; loop until the requested answer is received.
         (else (loop "Please answer (y/n): "))))))
+
+;; ------------------------------------------------------ ;;
+;; Read show-list database.                               ;;
+;; ------------------------------------------------------ ;;
+;; #:return: show list (list is empty if the database is  ;;
+;;           empty)                                       ;;
+;; ------------------------------------------------------ ;;
+(define (read-show-list-db)
+  (if (access? config:show-database-path R_OK)
+    (with-input-from-file 
+      config:show-database-path
+      read)
+    (list)))
+
+;; ------------------------------------------------------ ;;
+;; Write show-list database.                              ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show-list - a show list                       ;; 
+;; ------------------------------------------------------ ;;
+(define (write-show-list-db show-list)
+  (if (access? config:resources-directory W_OK)
+    (with-output-to-file
+      config:show-database-path
+      (lambda ()
+        (write show-list)))
+    (throw 'insufficient-permissions-exception
+           "Insufficient permissions. Can't write to database.")))
+
