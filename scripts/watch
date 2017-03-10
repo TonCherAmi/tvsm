@@ -25,6 +25,11 @@
              (watch set)
              (ice-9 getopt-long))
 
+;; ------------------------------------------------------ ;;
+;; Main procedure.                                        ;;
+;; ------------------------------------------------------ ;;
+;; #:param: args - command line arguments.                ;;
+;; ------------------------------------------------------ ;;
 (define (main args)
   (let* ((general-option-spec '((version (single-char #\v) (value #f))
                                 (help    (single-char #\h) (value #f))))
@@ -158,9 +163,24 @@ Try 'watch set --help' for more information."))
           (lambda (key message)
             (die message)))))))
 
+;; ------------------------------------------------------ ;;
+;; Print a message and exit with a non-zero return value. ;;
+;; ------------------------------------------------------ ;;
+;; #:param: message - a string representing an error      ;;
+;;          message                                       ;;
+;; ------------------------------------------------------ ;;
 (define (die message)
   (format #t "watch: ~a~%" message)
   (exit 1))
+
+;; ------------------------------------------------------ ;;
+;; Print a help message.                                  ;;
+;; ------------------------------------------------------ ;;
+;; #:param: command - a symbol representing a sub-command ;;
+;;          whose help message is to be printed.          ;;
+;;          If not specified or not matching any existing ;;
+;;          sub-command general help message is printed.  ;;
+;; ------------------------------------------------------ ;;
 (define* (display-help #:optional command)
   (case command
     ((add) 
@@ -219,9 +239,13 @@ available commands:
 See 'watch <command> --help' to learn more about a specific command.")))
   (newline))
 
+;; ------------------------------------------------------ ;;
+;; Print current application version.                     ;;
+;; ------------------------------------------------------ ;;
 (define (display-version)
   (display "watch version 0.1 alpha") (newline))
 
+;; --------------- ;;
 (main (command-line))
 
 ;; vim: filetype=scheme
