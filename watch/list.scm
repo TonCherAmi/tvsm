@@ -18,94 +18,62 @@
 
 (define-module  (watch list)
   #:export      (list-shows-db)
+  #:use-module  (ice-9 popen)
   #:use-module  (watch show)
+  #:use-module  (watch util)
   #:use-module ((watch config)
                   #:prefix config:))
 
 ;; ----------------------------------------------------------- ;;
 ;; Print contents of show-list database in a neat manner.      ;;
 ;; ----------------------------------------------------------- ;;
-;; #:param: verbose - make output more detailed                ;;
+;; #:param: long-format - make output more detailed            ;;
 ;; ----------------------------------------------------------- ;;
-(define* (list-shows-db #:optional (verbose #f))
+(define* (list-shows-db #:optional long-format)
   (call-with-show-list
-    #:overwrite 
+    #:overwrite
       #f
     #:proc
-      (lambda (show-list)
-        (if verbose 
-          (begin
-            (format #t "total: ~a~%" (length show-list))
-            (let loop ((show-list show-list))
-              (unless (null? show-list)
-                (print-show (car show-list) 20 #t) (newline)
-                (loop (cdr show-list)))))
-          (unless (null? show-list)
-            (let* ((columns 
-                     79)
-                   (max-name-length
-                     ;; Get length of the longest show name in the show-list.
-                     (apply max (map (lambda (x) (string-length (show:name x))) show-list)))
-                   (shows-per-line (quotient columns (1+ max-name-length))))
-              (let loop ((count shows-per-line)
-                         (show-list show-list))
-                (unless (null? show-list)
-                  (cond
-                    ((zero? count) 
-                     (newline)
-                     (loop shows-per-line show-list))
-                    (else 
-                      (print-show (car show-list) max-name-length)
-                      (loop (1- count) (cdr show-list))))))))))))
+      (if long-format 
+        list-shows-long
+        list-shows-short)))
 
+;; ------------------------------------------------------ ;;
+;; Print show-list in long format.                        ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show-list - show-list to print                ;;
+;; ------------------------------------------------------ ;;
+(define (list-shows-long show-list)
+  (format #t "total ~a~%" (length show-list))
+  (let loop ((lst show-list))
+    (unless (null? lst)
+      (format #t 
+              "~a ~4@a ~a~%" 
+              '<date> 
+              (show:current-episode (car lst)) 
+              (show:name (car lst)))
+      (loop (cdr lst)))))
+
+;; ------------------------------------------------------ ;;
+;; Print show-list in short format (names only).          ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show-list - show-list to print                ;;
+;; ------------------------------------------------------ ;;
 (define (list-shows-short show-list)
-  (let* ((lines
-           (1+ (quotient (+ (apply + (map (lambda (x) (string-length (show:name x))) show-list))
-                            (* 2 (length show-list)))
-                         config:columns)))
-         (names-per-line
-           (/ (length show-list) lines))
-         (name-list 
-           (let loop ((names '(()))
-                      (shows show-list)
-                      (count names-per-line)
+  (let* ((port
+           (open-output-pipe "column -t"))
+         (output-string 
+           (let loop ((lst show-list)
+                      (count config:columns))
              (cond 
-               ((null? shows) 
-                names)
-               ((zero? count)
-                (loop (cons '() names)
-                      names
-                      names-per-line))
+               ((null? lst)
+                "")
+               ((>= 0 (- count (+ 2 (string-length (show:name (car lst))))))
+                (++ "\n" (loop lst config:columns)))
                (else
-                 (loop (cons (cons (show:name (car shows)) (car names))
-                             (cdr names))
-                       (cdr names)
-                       (1- count))))))))
-    ))
-  
-
-;; ------------------------------------------------------ ;;
-;; Print show contents to (current-output-port)           ;;
-;; ------------------------------------------------------ ;;
-;; #:param: show - a show to print                        ;;
-;; #:param: verbose - make output more detailed           ;;
-;; ------------------------------------------------------ ;;
-(define* (print-show show minwidth #:optional (verbose #f))
-  (call-with-values 
-    (lambda () 
-      (let ((format-string (string-append "~" (number->string minwidth) "a " 
-                                          (if verbose " ~a  ~a" ""))))
-        (if verbose
-          (values 
-             #t
-             format-string
-            (show:name show)
-            (if (number? (show:current-episode show))
-                  (1+ (show:current-episode show))
-                  (show:current-episode show))
-            (show:path show))
-          (values
-             #t
-             format-string
-            (show:name show)))))
-     format))
+                (++ (show:name (car lst))
+                    "  " 
+                     (loop (cdr lst) (- count (string-length (show:name (car lst)))))))))))
+    (display output-string port)
+    (newline port)
+    (close-pipe port)))
