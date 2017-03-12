@@ -21,7 +21,8 @@
                 resources-directory
                 show-database-path
                 media-player-command
-                episode-format-list))
+                episode-format-list
+                columns))
 
 (define home-directory (format #f "~a/" (getenv "HOME")))
 
