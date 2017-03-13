@@ -73,7 +73,7 @@
                (else
                 (++ (show:name (car lst))
                     "  " 
-                     (loop (cdr lst) (- count (string-length (show:name (car lst)))))))))))
+                    (loop (cdr lst) (- count (string-length (show:name (car lst)))))))))))
     (display output-string port)
     (newline port)
     (close-pipe port)))
