@@ -22,7 +22,8 @@
                 show-database-path
                 media-player-command
                 episode-format-list
-                columns))
+                columns)
+  #:use-module (watch util))
 
 (define home-directory (format #f "~a/" (getenv "HOME")))
 
@@ -37,3 +38,22 @@
 (define episode-format-list '(".mkv" ".avi" ".mp4" ".mpeg" ".mpv" ".mov" ".qt" ".m4v" ".svi" ".ogv" ".flv" ".webm" ".vob" ".wmv"))
 
 (define columns 79)
+
+(define config-path (++ (getenv "HOME") "/" ".config/watch/config"))
+
+(define config-list (with-input-from-file config-path read))
+
+(define (config property)
+  (assoc property config-list))
+
+(define (read-config)
+  (let loop ((cfg-lst (read)))
+    (cond
+      ((null? cfg-lst)
+       '())
+      ((string? (cadr cfg-lst))
+       (cons (cons (caar cfg-lst) (expand-var (cadr cfg-lst)))
+             (loop (cdr cfg-lst))))
+      (else
+       (cons (car cfg-lst)
+             (loop (cdr cfg-lst)))))))
