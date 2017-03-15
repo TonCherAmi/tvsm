@@ -13,48 +13,48 @@
 ;; MERCHENTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ;; GNU Lesser General Public License for more details.
 ;;
-;; You should have received a copy of the GNU General Public License
+;; You should have received a copy of the GNU Lesser General Public License
 ;; along with watch. If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (watch config)
-  #:export     (home-directory
-                resources-directory
-                show-database-path
-                media-player-command
-                episode-format-list
-                columns)
+  #:export     (config)
   #:use-module (watch util))
 
 (define (config property)
-  (assoc property config-list))
+  (let ((cfg-pair (assoc property config-list)))
+    (if cfg-pair
+      (cdr cfg-pair)
+      #f)))
 
-(define path-list (list "../config"
-                        (++ (getenv "HOME") "/" ".config/watch/config")))
-
-(define config-list (let loop ((paths path-list))
-                      (cond
-                        ((null? paths)
-                         (throw 'config-not-found-exception
-                                "cannot continue: Configuration file not found"))
-                        ((access? (car paths) R_OK)
-                         (with-input-from-file (car paths) read-config))
-                        (else
-                         (loop (cdr paths))))))
+(define (path-list) 
+  (list "config"
+        (++ (getenv "HOME") "/" ".config/watch/config")))
 
 (define (read-config)
   (let loop ((cfg-lst (read)))
     (cond
       ((null? cfg-lst)
        '())
-      ((string? (cadar cfg-lst))
-       (cons (cons (caar cfg-lst) (expand-varables (cadar cfg-lst)))
+      ((string? (cdar cfg-lst))
+       (cons (cons (caar cfg-lst) (expand-variables (cdar cfg-lst)))
              (loop (cdr cfg-lst))))
       (else
        (cons (car cfg-lst)
              (loop (cdr cfg-lst)))))))
 
-(define (expand-varables str)
+(define (expand-variables str)
   (call-with-input-pipe 
     (++ "echo " str) 
     (lambda (port) 
-      (read port))))
+      (symbol->string (read port)))))
+
+(define config-list
+  (let loop ((paths (path-list)))
+    (cond
+      ((null? paths)
+       (throw 'config-not-found-exception
+              "cannot continue: Configuration file not found"))
+      ((access? (car paths) R_OK)
+       (with-input-from-file (car paths) read-config))
+      (else
+        (loop (cdr paths))))))
