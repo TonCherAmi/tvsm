@@ -17,12 +17,24 @@
 ;; along with watch. If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (watch util)
-  #:export     (++))
+  #:use-module (ice-9 popen)
+  #:export     (++
+                call-with-input-pipe
+                call-with-output-pipe))
 
 ;; ------------------------------------------------------ ;;
 ;; Shorthand for 'string-append'.                         ;;
 ;; ------------------------------------------------------ ;;
-(define-syntax ++
-  (syntax-rules ()
-    ((++ str ...)
-     (string-append str ...))))
+(define ++ string-append)
+
+(define (call-with-input-pipe command proc)
+  (let* ((port (open-input-pipe command))
+         (ret  (proc port)))
+    (close-pipe port)
+    ret))
+
+(define (call-with-output-pipe command proc)
+  (let* ((port (open-output-pipe command))
+         (ret  (proc port)))
+    (close-pipe port)
+    ret))

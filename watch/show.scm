@@ -16,24 +16,23 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with watch. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module  (watch show)
-  #:export      (call-with-show-list
-                 make-show
-                 show:name
-                 show:path
-                 show:current-episode
-                 show:current-episode-inc
-                 show:current-episode-dec
-                 show:episode-list
-                 show-over?
-                 show:current-episode-out-of-bounds?
-                 remove-show
-                 find-show
-                 ask-user-overwrite)
-  #:use-module  (ice-9 ftw)
-  #:use-module  (ice-9 rdelim)
-  #:use-module ((watch config)
-                  #:prefix config:))
+(define-module (watch show)
+  #:export     (call-with-show-list
+                make-show
+                show:name
+                show:path
+                show:current-episode
+                show:current-episode-inc
+                show:current-episode-dec
+                show:episode-list
+                show-over?
+                show:current-episode-out-of-bounds?
+                remove-show
+                find-show
+                ask-user-overwrite)
+  #:use-module (ice-9 ftw)
+  #:use-module (ice-9 rdelim)
+  #:use-module (watch config))
 
 ;; ------------------------------------------------------- ;;
 ;; Read show-list database and call '(proc show-list)'     ;;
@@ -163,7 +162,7 @@
                      (readlink (show:path show))
                      (show:path show))
                    (lambda (filepath)
-                     (let loop ((format-list config:episode-format-list))
+                     (let loop ((format-list (config 'media-format-list)))
                        (cond 
                          ((null? format-list) #f)
                          ((string-suffix-ci? (car format-list) filepath))
@@ -254,9 +253,9 @@
 ;;           empty)                                       ;;
 ;; ------------------------------------------------------ ;;
 (define (read-show-list-db)
-  (if (access? config:show-database-path R_OK)
+  (if (access? (config 'show-db-path) R_OK)
     (with-input-from-file 
-      config:show-database-path
+      (config 'show-db-path)
       read)
     (list)))
 
@@ -266,11 +265,15 @@
 ;; #:param: show-list - a show list                       ;; 
 ;; ------------------------------------------------------ ;;
 (define (write-show-list-db show-list)
-  (if (access? config:resources-directory W_OK)
-    (with-output-to-file
-      config:show-database-path
-      (lambda ()
-        (write show-list)))
-    (throw 'insufficient-permissions-exception
-           "Insufficient permissions. Can't write to database.")))
+  (let* ((db-path (config 'show-db-path))
+         (db-dir-path (substring db-path
+                                 0
+                                 (string-index-right db-path #\/))))
+    (if (access? db-dir-path W_OK)
+      (with-output-to-file
+        db-path
+        (lambda ()
+          (write show-list)))
+      (throw 'insufficient-permissions-exception
+             "Insufficient permissions. Can't write to database."))))
 

@@ -16,13 +16,12 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with watch. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module  (watch list)
-  #:export      (list-shows-db)
-  #:use-module  (ice-9 popen)
-  #:use-module  (watch show)
-  #:use-module  (watch util)
-  #:use-module ((watch config)
-                  #:prefix config:))
+(define-module (watch list)
+  #:export     (list-shows-db)
+  #:use-module (ice-9 popen)
+  #:use-module (watch show)
+  #:use-module (watch util)
+  #:use-module (watch config))
 
 ;; ----------------------------------------------------------- ;;
 ;; Print contents of show-list database in a neat manner.      ;;
@@ -64,12 +63,12 @@
            (open-output-pipe "column -t"))
          (output-string 
            (let loop ((lst show-list)
-                      (count config:columns))
+                      (count (config 'columns)))
              (cond 
                ((null? lst)
                 "")
                ((>= 0 (- count (+ 2 (string-length (show:name (car lst))))))
-                (++ "\n" (loop lst config:columns)))
+                (++ "\n" (loop lst (config 'columns))))
                (else
                 (++ (show:name (car lst))
                     "  " 

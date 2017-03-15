@@ -25,35 +25,36 @@
                 columns)
   #:use-module (watch util))
 
-(define home-directory (format #f "~a/" (getenv "HOME")))
-
-;(define resources-directory (string-append home-directory ".local/share/watch"))
-; Development ONLY!
-(define resources-directory (string-append home-directory "code/scheme-projects/watch"))
-
-(define show-database-path (format #f "~a/~a" resources-directory "shows"))
-
-(define media-player-command "mpv")
-
-(define episode-format-list '(".mkv" ".avi" ".mp4" ".mpeg" ".mpv" ".mov" ".qt" ".m4v" ".svi" ".ogv" ".flv" ".webm" ".vob" ".wmv"))
-
-(define columns 79)
-
-(define config-path (++ (getenv "HOME") "/" ".config/watch/config"))
-
-(define config-list (with-input-from-file config-path read))
-
 (define (config property)
   (assoc property config-list))
+
+(define path-list (list "../config"
+                        (++ (getenv "HOME") "/" ".config/watch/config")))
+
+(define config-list (let loop ((paths path-list))
+                      (cond
+                        ((null? paths)
+                         (throw 'config-not-found-exception
+                                "cannot continue: Configuration file not found"))
+                        ((access? (car paths) R_OK)
+                         (with-input-from-file (car paths) read-config))
+                        (else
+                         (loop (cdr paths))))))
 
 (define (read-config)
   (let loop ((cfg-lst (read)))
     (cond
       ((null? cfg-lst)
        '())
-      ((string? (cadr cfg-lst))
-       (cons (cons (caar cfg-lst) (expand-var (cadr cfg-lst)))
+      ((string? (cadar cfg-lst))
+       (cons (cons (caar cfg-lst) (expand-varables (cadar cfg-lst)))
              (loop (cdr cfg-lst))))
       (else
        (cons (car cfg-lst)
              (loop (cdr cfg-lst)))))))
+
+(define (expand-varables str)
+  (call-with-input-pipe 
+    (++ "echo " str) 
+    (lambda (port) 
+      (read port))))

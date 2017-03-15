@@ -16,12 +16,11 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with watch. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module  (watch play)
-  #:export      (play-show-db)
-  #:use-module  (ice-9 ftw)
-  #:use-module  (watch show)
-  #:use-module ((watch config)
-                  #:prefix config:))
+(define-module (watch play)
+  #:export     (play-show-db)
+  #:use-module (ice-9 ftw)
+  #:use-module (watch show)
+  #:use-module (watch config))
 
 ;; ------------------------------------------------------------------------ ;;
 ;; Play an episode of show called show-name.                                ;;
@@ -97,4 +96,4 @@
 (define (play-episode episode-path)
   ;; This doesn't work for paths with double quotes in them
   ;; but who would put a double quote in a filename anyway?
-  (system (format #f "~a \"~a\"" config:media-player-command episode-path)))
+  (system (format #f "~a \"~a\"" (config 'media-player-command) episode-path)))
