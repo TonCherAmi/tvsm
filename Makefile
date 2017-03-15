@@ -19,6 +19,9 @@ PROGNAME := watch
 
 PREFIX := /usr
 
+CONFIG         := config
+CONFIG_DESTDIR := ${DESTDIR}${PREFIX}/share/doc/${PROGNAME}
+
 GUILEINC := $(shell guile -c "(display (%site-dir))")
 GUILELIB := $(shell guile -c "(display (%site-ccache-dir))")
 
@@ -45,10 +48,14 @@ install:
 	@echo installing executable script in ${DESTDIR}${PREFIX}/bin
 	@cp -p scripts/${PROGNAME} ${DESTDIR}${PREFIX}/bin
 
+	@mkdir -p ${CONFIG_DESTDIR}
+	@cp -p ${CONFIG} ${CONFIG_DESTDIR}/${CONFIG}
+
 uninstall:
 	@rm -rf ${GUILEINC}/${PROGNAME} 
 	@rm -rf ${GUILELIB}/${PROGNAME} 
-	@rm -f ${DESTDIR}${PREFIX}/bin/${PROGNAME}
+	@rm -f  ${DESTDIR}${PREFIX}/bin/${PROGNAME}
+	@rm -rf ${CONFIG_DESTDIR}
 
 clean:
 	@rm ${OBJ}
