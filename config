@@ -1,15 +1,15 @@
 ;; watch default config file
 
- ;; path to the show database
-((show-db-path         . "$HOME/.local/share/watch/shows")
  ;; media player command
- (media-player-command . "media-player-command-not-set")
+((media-player-command . "media-player-command-not-set")
  ;; list of media formats used to distinguish media files
  ;; in show directories
- (media-format-list    . ".mkv" ".mpv" ".avi" ".mp4" ".mpeg" 
-                         ".mov" ".m4v" ".svi" ".ogv" ".webm"
-                         ".vob" ".flv" ".wmv" ".qt")
+ (media-format-list    . (".mkv" ".mpv" ".avi" ".mp4" ".mpeg" 
+                          ".mov" ".m4v" ".svi" ".ogv" ".webm"
+                          ".vob" ".flv" ".wmv" ".qt"))
  ;; terminal width used to restrain output
- (columns              . 79))
+ (columns              . 79)
+ ;; path to the show database
+ (show-db-path         . "$HOME/.local/share/watch/shows"))
 
 ;; vim: filetype=scheme
