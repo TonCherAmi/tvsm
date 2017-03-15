@@ -13,7 +13,7 @@
 ;; MERCHENTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ;; GNU Lesser General Public License for more details.
 ;;
-;; You should have received a copy of the GNU General Public License
+;; You should have received a copy of the GNU Lesser General Public License
 ;; along with watch. If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (watch show)
@@ -32,6 +32,7 @@
                 ask-user-overwrite)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 rdelim)
+  #:use-module (watch db)
   #:use-module (watch config))
 
 ;; ------------------------------------------------------- ;;
@@ -245,35 +246,3 @@
         ;; If the answer is neither 'yes' or 'y' nor 'no' or 'n'
         ;; loop until the requested answer is received.
         (else (loop "Please answer (y/n): "))))))
-
-;; ------------------------------------------------------ ;;
-;; Read show-list database.                               ;;
-;; ------------------------------------------------------ ;;
-;; #:return: show list (list is empty if the database is  ;;
-;;           empty)                                       ;;
-;; ------------------------------------------------------ ;;
-(define (read-show-list-db)
-  (if (access? (config 'show-db-path) R_OK)
-    (with-input-from-file 
-      (config 'show-db-path)
-      read)
-    (list)))
-
-;; ------------------------------------------------------ ;;
-;; Write show-list database.                              ;;
-;; ------------------------------------------------------ ;;
-;; #:param: show-list - a show list                       ;; 
-;; ------------------------------------------------------ ;;
-(define (write-show-list-db show-list)
-  (let* ((db-path (config 'show-db-path))
-         (db-dir-path (substring db-path
-                                 0
-                                 (string-index-right db-path #\/))))
-    (if (access? db-dir-path W_OK)
-      (with-output-to-file
-        db-path
-        (lambda ()
-          (write show-list)))
-      (throw 'insufficient-permissions-exception
-             "Insufficient permissions. Can't write to database."))))
-
