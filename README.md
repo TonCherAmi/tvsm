@@ -1,6 +1,6 @@
 ## Introduction
 
-	`watch` is a lightweight tool that helps you manage your TV shows. 
+`watch` is a lightweight tool that helps you manage your TV shows. 
 It is written in GNU Guile.
 
 ## Why would you want to use it?
