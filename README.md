@@ -11,7 +11,9 @@ for you.
 Now on the other hand if you are like me, if you live in the terminal and store your
 TV shows/anime series/etc. on your hard drive, there is a chance that you are quite tired of
 typing stuff like: 
-```mpv <super-long-path-to-a-directory-containing-a-tv-show>/<name-of-an-episode>```
+```
+mpv <super-long-path-to-a-directory-containing-a-tv-show>/<name-of-an-episode>
+```
 every time you want to watch a show or, perhaps, you may have trouble remembering what episode
 you've watched last after a particularly busy workweek, `watch` automates that for you.
 
