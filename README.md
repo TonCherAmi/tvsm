@@ -5,11 +5,11 @@ It is written in GNU Guile.
 
 ## Why would you want to use it?
 
-	First of all, if when you hear the words 'TV show manager' a question like: 
+First of all, if when you hear the words 'TV show manager' a question like: 
 "Doesn't Netflix already does that for me?" arises in your head then this is most likely not 
 for you.
 
-	Now on the other hand if you are like me, if you live in the terminal and store your
+Now on the other hand if you are like me, if you live in the terminal and store your
 TV shows/anime series/etc. on your hard drive, there is a chance that you are quite tired of
 typing stuff like: 
 `mpv <super-long-path-to-a-directory-containing-a-tv-show>/<name-of-an-episode>`
