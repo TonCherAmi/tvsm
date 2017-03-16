@@ -1,12 +1,4 @@
- __      __            __           __         
-/\ \  __/\ \          /\ \__       /\ \        
-\ \ \/\ \ \ \     __  \ \ ,_\   ___\ \ \___    
- \ \ \ \ \ \ \  /'__`\ \ \ \/  /'___\ \  _ `\  
-  \ \ \_/ \_\ \/\ \L\.\_\ \ \_/\ \__/\ \ \ \ \ 
-   \ `\___x___/\ \__/.\_\\ \__\ \____\\ \_\ \_\
-    '\/__//__/  \/__/\/_/ \/__/\/____/ \/_/\/_/
-
-# Introduction
+## Introduction
 
 	`watch` is a lightweight tool that helps you manage your TV shows. 
 It is written in GNU Guile.
