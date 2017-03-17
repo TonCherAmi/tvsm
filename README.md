@@ -19,7 +19,29 @@ you've watched last after a particularly busy workweek, `watch` automates that f
 
 ## Installation
 
-/TODO/
+### Dependencies
+
+GNU Guile 2.x
+
+### Getting the source
+
+Run `$ git clone https://github.com/TonCherAmi/watch` in a location you'd like to store the 
+code in.
+
+### Compiling and Installing
+
+To compile and then install run:
+
+`$ make`
+`# make install`
+
+### Necessary configuration
+
+Open the `config` file with your favorite text editor and set `media-player-command`
+to your preferred media player e.g. "mpv" or "vlc". 
+Then copy the `config` file to `$HOME/.config/watch/config`.
+
+You can find default `config` file at `/usr/share/doc/watch/config`.
 
 ## Usage
 
