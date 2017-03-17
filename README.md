@@ -25,21 +25,13 @@ GNU Guile 2.x
 
 ### Getting the source
 
-Run 
-
-`git clone https://github.com/TonCherAmi/watch` 
-
-in a location you'd like to store the code in.
+Run `git clone https://github.com/TonCherAmi/watch` in a location you'd like to store the code in.
 
 ### Compiling and Installing
 
-To compile run:
+To compile run: `make`
 
-`make`
-
-To install run as **root**:
-
-`make install`
+To install run as **root**: `make install`
 
 ### Necessary configuration
 
