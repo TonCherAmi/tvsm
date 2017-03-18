@@ -17,29 +17,45 @@ mpv <super-long-path-to-a-directory-containing-a-tv-show>/<name-of-an-episode>
 every time you want to watch a show or, perhaps, you may have trouble remembering what episode
 you've watched last after a particularly busy workweek, `watch` automates that for you.
 
-## Installation
-
-### Dependencies
+## Dependencies
 
 GNU Guile 2.x
 
-### Getting the source
+## Installation
 
-Run `git clone https://github.com/TonCherAmi/watch` in a location you'd like to store the code in.
+1. Clone the repository.
 
-### Compiling and Installing
+  * `git clone https://github.com/TonCherAmi/watch` 
 
-To compile run: `make`
+2. Change working directory to `watch`.
 
-To install run as **root**: `make install`
+  * `cd watch`
 
-### Necessary configuration
+3. Compile the source using the Makefile.
 
-Open the `config` file with your favorite text editor and set `media-player-command`
-to your preferred media player e.g. "mpv" or "vlc". 
-Then copy the `config` file to `$HOME/.config/watch/config`.
+  * `make`
 
-You can find default `config` file at `/usr/share/doc/watch/config`.
+4. Install watch using the Makefile.
+
+  * `make install`
+  * **NOTE:** it might be necessary to run this as root.
+
+## Necessary configuration
+
+After installation you will need to set up the configuration file.
+
+1. Open the `config` file with a text editor of your choice.
+
+  * e.g. `vi config`
+
+2. Set `media-player-command` to a media player of your choice.
+
+  * e.g. `(media-player-command . "mpv")`
+
+3. Copy the configuration file to the required location.
+
+  * `mkdir -p ~/.config/watch`
+  * `cp config ~/.config/watch`
 
 ## Usage
 
