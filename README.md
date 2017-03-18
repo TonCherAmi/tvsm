@@ -24,13 +24,9 @@ GNU Guile 2.x
 ## Installation
 
 1. Clone the repository.
-
   * `git clone https://github.com/TonCherAmi/watch` 
-
 2. Change working directory to `watch`.
-
   * `cd watch`
-
 3. Compile the source using the Makefile.
 
   * `make`
