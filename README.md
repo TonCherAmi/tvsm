@@ -24,34 +24,31 @@ GNU Guile 2.x
 ## Installation
 
 1. Clone the repository.
-  * `git clone https://github.com/TonCherAmi/watch` 
+    * `git clone https://github.com/TonCherAmi/watch` 
+  
 2. Change working directory to `watch`.
-  * `cd watch`
+    * `cd watch`
+  
 3. Compile the source using the Makefile.
-
-  * `make`
-
+    * `make`
+  
 4. Install watch using the Makefile.
-
-  * `make install`
-  * **NOTE:** it might be necessary to run this as root.
+    * `make install`
+    * **NOTE:** it might be necessary to run this as root.
 
 ## Necessary configuration
 
 After installation you will need to set up the configuration file.
 
 1. Open the `config` file with a text editor of your choice.
-
-  * e.g. `vi config`
+    * e.g. `vi config`
 
 2. Set `media-player-command` to a media player of your choice.
-
-  * e.g. `(media-player-command . "mpv")`
+    * e.g. `(media-player-command . "mpv")`
 
 3. Copy the configuration file to the required location.
-
-  * `mkdir -p ~/.config/watch`
-  * `cp config ~/.config/watch`
+    * `mkdir -p ~/.config/watch`
+    * `cp config ~/.config/watch`
 
 ## Usage
 
