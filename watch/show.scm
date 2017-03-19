@@ -22,6 +22,8 @@
                 show:name
                 show:path
                 show:current-episode
+                show:episode-offset
+                show:date
                 show:current-episode-inc
                 show:current-episode-dec
                 show:episode-list
@@ -32,6 +34,7 @@
                 ask-user-overwrite)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 rdelim)
+  #:use-module (srfi srfi-19)
   #:use-module (watch db)
   #:use-module (watch config))
 
@@ -52,25 +55,35 @@
       (write-show-list-db new-show-list))))
 
 ;; ------------------------------------------------------ ;;
-;; Create a show named show-name, located at show-path    ;;
-;; that will start playing from starting-episode.         ;;
-;; A show is a list of three elements:                    ;; 
-;;  - First one is this show's name.                      ;;
-;;  - Second one is this show's path.                     ;;
-;;  - Third one is this show's current episode.           ;;
+;; #:TODO !                                               ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show-name - a string representing the name of ;;
-;;          the new show                                  ;;
-;; #:param: show-path - a string representing the path to ;;
-;;          the new show                                  ;;
-;; #:param: starting-episode - an integer representing    ;; 
-;;          the number of the episode from which the new  ;;
-;;          will begin to play                            ;;
+;; #:param: name - a string representing the name of      ;;
+;;          a show                                        ;;
+;; #:param: path - a string representing the path to      ;;
+;;          a show                                        ;;
+;; #:param: current-episode - an integer representing     ;; 
+;;          the number of the current episode a show      ;;
+;; #:param: episode-offset - an integer representing      ;;
+;;          episode number offset                         ;;
+;;          ---                                           ;;
+;;          most shows would have episode-offset equal    ;;
+;;          to 1 since their first episode is numbered    ;;
+;;          as 'E01'                                      ;;
+;;          but for example in case of Star Trek TOS S01  ;;
+;;          which has a pilot episode numbered 'E00'      ;;
+;;          episode-offset should be equal to 0           ;;
+;;          ---                                           ;;
+;; #:param: date - a string representing the date of      ;;
+;;          show's creation                               ;;
 ;;                                                        ;;
 ;; #:return: a newly created show                         ;;
 ;; ------------------------------------------------------ ;;
-(define (make-show show-name show-path starting-episode)
-  (list show-name show-path starting-episode))
+(define* (make-show #:key name 
+                          path 
+                          current-episode 
+                         (episode-offset (config 'episode-offset))
+                         (date (date->string (current-date) "~b ~e ~y")))
+  (list name path episode episode-offset date))
 
 ;; ------------------------------------------------------ ;;
 ;; Get name of show.                                      ;;
@@ -80,7 +93,7 @@
 ;; #:return: a string representing the name of the show   ;;
 ;; ------------------------------------------------------ ;;
 (define (show:name show)
-  (car show))
+  (list-ref show 0))
 
 ;; ------------------------------------------------------ ;;
 ;; Get path of show.                                      ;;
@@ -90,7 +103,7 @@
 ;; #:return: a string representing the path to the show   ;;
 ;; ------------------------------------------------------ ;;
 (define (show:path show)
-  (cadr show))
+  (list-ref show 1))
 
 ;; ------------------------------------------------------ ;;
 ;; Get current episode of show.                           ;;
@@ -101,7 +114,29 @@
 ;;           the show                                     ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode show)
-  (caddr show))
+  (list-ref show 2))
+
+;; ------------------------------------------------------ ;;
+;; Get episode offset of show.                            ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show - a show                                 ;;
+;;                                                        ;; 
+;; #:return: an integer representing episode number       ;;
+;;           offset                                       ;;
+;; ------------------------------------------------------ ;;
+(define (show:episode-offset show)
+  (list-ref show 3))
+
+;; ------------------------------------------------------ ;;
+;; Get date of show's creation.                           ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show - a show                                 ;;
+;;                                                        ;;
+;; #:return: a string representing date of show's         ;;
+;;           creation                                     ;;
+;; ------------------------------------------------------ ;;
+(define (show:date show)
+  (list-ref show 4))
 
 ;; ------------------------------------------------------ ;;
 ;; Return show with incremented current-episode index.    ;;
@@ -117,13 +152,19 @@
 ;;           OTHERWISE it is just incremented             ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-inc show)
-  (make-show (show:name show)
-             (show:path show) 
-             (let ((current-episode (show:current-episode show)))
-               (cond 
-                 ((show-over? show) 'over)
-                 ((= (1+ current-episode) (length (show:episode-list show))) 'over)
-                 (else (1+ current-episode))))))
+  (make-show #:name
+               (show:name show)
+             #:path
+               (show:path show) 
+             #:current-episode
+               (let ((current-episode (show:current-episode show)))
+                 (cond 
+                   ((show-over? show) 
+                    'over)
+                   ((= (1+ current-episode) (length (show:episode-list show)))
+                    'over)
+                   (else 
+                    (1+ current-episode))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Return show with decremented current-episode index.    ;;
@@ -138,11 +179,19 @@
 ;;           OTHERWISE it is just decremented             ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-dec show)
-  (make-show (show:name show)
-             (show:path show)
-             (let ((current-episode (show:current-episode show)))
-               (cond ((show-over? show) (1- (length (show:episode-list show)))) ((zero? current-episode) 0)
-                 (else (1- current-episode))))))
+  (make-show #:name 
+               (show:name show)
+             #:path 
+               (show:path show)
+             #:current-episode
+               (let ((current-episode (show:current-episode show)))
+                 (cond 
+                   ((show-over? show) 
+                    (1- (length (show:episode-list show)))) 
+                   ((zero? current-episode) 
+                    0)
+                   (else 
+                    (1- current-episode))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Get a list of filenames of episodes of show.           ;;
@@ -162,12 +211,17 @@
           (scandir (if (eq? 'symlink (stat:type (lstat (show:path show)))) 
                      (readlink (show:path show))
                      (show:path show))
+                   ;; This predicate checks whether filepath's suffix is
+                   ;; present in the 'media-format-list'.
                    (lambda (filepath)
                      (let loop ((format-list (config 'media-format-list)))
                        (cond 
-                         ((null? format-list) #f)
-                         ((string-suffix-ci? (car format-list) filepath))
-                         (else (loop (cdr format-list)))))))))
+                         ((null? format-list) 
+                          #f)
+                         ((string-suffix-ci? (car format-list) filepath)
+                          #t)
+                         (else 
+                          (loop (cdr format-list)))))))))
     (if (not episode-list)
       (throw 'directory-not-readable-exception
              (format #f "cannot stat '~a': No such directory" (show:path show)))
@@ -196,11 +250,10 @@
 ;;           #f - otherwise                               ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-out-of-bounds? show)
-  (let ((episode-list (show:episode-list show)))
-    (if (eq? 'over (show:current-episode show))
-      #f
-      (or (<= (length episode-list) (show:current-episode show))
-          (> 0 (show:current-episode show))))))
+  (and (not (show-over? show))
+       (let ((episode-list (show:episode-list show)))
+         (or (<= (length episode-list) (show:current-episode show))
+             (> 0 (show:current-episode show))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Remove show named show-name from show-list. Original   ;;
@@ -240,9 +293,13 @@
     (display ask-message)
     (let ((answer (read-line)))
       (cond
-        ((eof-object? answer) #f)
-        ((or (string-ci=? answer "y") (string-ci=? answer "yes")) #t)
-        ((or (string-ci=? answer "n") (string-ci=? answer "no"))  #f)
+        ((eof-object? answer) 
+         #f)
+        ((or (string-ci=? answer "y") (string-ci=? answer "yes"))
+         #t)
+        ((or (string-ci=? answer "n") (string-ci=? answer "no")) 
+         #f)
         ;; If the answer is neither 'yes' or 'y' nor 'no' or 'n'
         ;; loop until the requested answer is received.
-        (else (loop "Please answer (y/n): "))))))
+        (else 
+         (loop "Please answer (y/n): "))))))
