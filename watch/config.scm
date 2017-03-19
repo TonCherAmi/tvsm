@@ -20,6 +20,8 @@
   #:export     (config)
   #:use-module (watch util))
 
+;; TODO - comments
+
 (define (config property)
   (let ((cfg-pair (assoc property config-list)))
     (if cfg-pair
