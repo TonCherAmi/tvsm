@@ -35,7 +35,9 @@
 ;;          episode from which the show will begin to play                ;; 
 ;; ---------------------------------------------------------------------- ;;
 (define* (add-show-db show-name show-path #:optional (starting-episode 0))
-  (let ((new-show (make-show show-name show-path starting-episode)))
+  (let ((new-show (make-show #:name show-name 
+                             #:path show-path 
+                             #:current-episode starting-episode)))
     (if (show:current-episode-out-of-bounds? new-show)
         ;; Throw an exception if starting episode index is out of bounds.
         (throw 'episode-out-of-bounds-exception 
@@ -55,5 +57,5 @@
                 ((ask-user-overwrite show-name)
                  (cons new-show (remove-show show-name show-list)))
                 (else
-                  (throw 'show-already-exists-exception
-                         (format #f "cannot add '~a': Show already exists" show-name)))))))))
+                 (throw 'show-already-exists-exception
+                        (format #f "cannot add '~a': Show already exists" show-name)))))))))

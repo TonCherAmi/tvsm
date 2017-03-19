@@ -49,7 +49,9 @@
                    ;; If custom-episode-index was passed make a show that has it as its 
                    ;; current-episode index.
                    (custom-episode-index 
-                     (make-show (show:name show-db) (show:path show-db) custom-episode-index))
+                     (make-show #:name (show:name show-db) 
+                                #:path (show:path show-db) 
+                                #:current-episode custom-episode-index))
                    (else show-db))))
           (cond 
             ((show-over? show) 

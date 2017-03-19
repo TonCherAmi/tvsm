@@ -45,9 +45,9 @@
                  (if (not show-db)
                    (throw 'show-not-found-exception
                           (format #f "cannot rename '~a': No such show" old-show-name))
-                   (make-show new-show-name 
-                              (show:path show-db)
-                              (show:current-episode show-db)))))
+                   (make-show #:name new-show-name 
+                              #:path (show:path show-db)
+                              #:current-episode (show:current-episode show-db)))))
           ;; If show called 'new-show-name' already exists in the db
           (if (find-show new-show-name show-list)
             ;; We ask the user whether they'd like to overwrite already existing show
@@ -80,13 +80,13 @@
                  (if (not show-db)
                    (throw 'show-not-found-exception
                           (format #f "cannot set path for '~a': No such show" show-name))
-                   (make-show (show:name show-db)
-                              new-show-path
-                              (show:current-episode show-db)))))
-          (if (show:current-episode-out-of-bounds? new-show)
+                   (make-show #:name (show:name show-db)
+                              #:path new-show-path
+                              #:current-episode (show:current-episode show-db)))))
+          (if (show:current-episode-out-of-bounds? show)
             (throw 'episode-out-of-bounds-exception
                    (format #f "cannot set path for '~a': Episode out of bounds" show-name))
-            (cons new-show (remove-show show-name show-list)))))))
+            (cons show (remove-show show-name show-list)))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Set current episode of show called show-name in the db ;;
@@ -96,7 +96,7 @@
 ;; #:param: new-index - an integer representing the new   ;;
 ;;          index that will be set                        ;;
 ;; ------------------------------------------------------ ;;
-(define (set-show-current-episode-db show-name new-index)
+(define (set-show-current-episode-db show-name new-current-episode)
   (call-with-show-list
     #:overwrite
       #t
@@ -108,12 +108,14 @@
                  (if (not show-db)
                    (throw 'show-not-found-exception
                           (format #f "cannot set current episode for '~a': No such show" show-name))
-                   (make-show (show:name show-db)
-                              (show:path show-db)
-                              new-index))))
-          (if (show:current-episode-out-of-bounds? new-show)
+                   (make-show #:name (show:name show-db)
+                              #:path (show:path show-db)
+                              #:current-episode new-current-episode))))
+          (if (show:current-episode-out-of-bounds? show)
             (throw 'episode-out-of-bounds-exception
-                   (format #f "cannot set current episode for '~a': Episode out of bounds" show-name))
+                   (format #f 
+                           "cannot set current episode for '~a': Episode out of bounds" 
+                           show-name))
             (cons show (remove-show show-name show-list)))))))
 
 ;; ------------------------------------------------------ ;;
@@ -137,7 +139,9 @@
                (show 
                  (if (not show-db)
                    (throw 'show-not-found-exception
-                          (format #f "cannot move to next episode of '~a': No Such show" show-name))
+                          (format #f 
+                                  "cannot move to next episode of '~a': No Such show"
+                                  show-name))
                    (show:current-episode-inc show-db))))
           (cons show (remove-show show-name show-list))))))
 
@@ -162,6 +166,8 @@
                (show 
                  (if (not show-db)
                    (throw 'show-not-found-exception
-                          (format #f "cannot move to previous episode of '~a': No Such show" show-name))
+                          (format #f 
+                                  "cannot move to previous episode of '~a': No Such show" 
+                                  show-name))
                    (show:current-episode-dec show-db))))
           (cons show (remove-show show-name show-list))))))
