@@ -27,13 +27,15 @@
 ;; ------------------------------------------------------------------------ ;;
 ;; #:param: show-name - a string representing the name of the show that is  ;;
 ;;          played                                                          ;;
+;;                                                                          ;;
 ;; #:param: increment? - a boolean value that determines whether show's     ;;
 ;;          current-episode index will be incremented after current episode ;;
 ;;          is played. #t by default                                        ;;
+;;                                                                          ;;
 ;; #:param: custom-episode-index - an integer that will be used instead of  ;;
 ;;          shows's current-epsidoe index. #f by default                    ;; 
 ;; ------------------------------------------------------------------------ ;;
-(define* (play-show-db show-name #:key (increment? #t) (custom-episode-index #f))
+(define* (play-show-db show-name #:key (increment? #t) (episode #f))
   (call-with-show-list 
     #:overwrite
       #t
@@ -48,24 +50,23 @@
                            (format #f "cannot play '~a': No such show" show-name)))
                    ;; If custom-episode-index was passed make a show that has it as its 
                    ;; current-episode index.
-                   (custom-episode-index 
-                     (make-show #:name (show:name show-db) 
-                                #:path (show:path show-db) 
-                                #:current-episode custom-episode-index))
+                   (episode 
+                     (remake-show show-db #:current-episode 
+                                            (- episode (show:episode-offset show-db))))
                    (else show-db))))
           (cond 
             ((show-over? show) 
              (throw 'show-is-over-exception
                     (format #f "cannot play '~a': Show is over" show-name)))
-            ;; Very unlikely but who knows.
+            ;; Unlikely but who knows.
             ((show:current-episode-out-of-bounds? show) 
              (throw 'episode-out-of-bounds-exception 
                     (format #f "cannot play '~a': Episode index is out of bounds" show-name)))
             (else 
-              (let ((current-episode-path (show:current-episode-path show))) 
+              (let ((episode-path (show:current-episode-path show))) 
                 (cond
                   ;; Shell will return 0 on successful command execution.
-                  ((not (zero? (play-episode current-episode-path)))
+                  ((not (zero? (play-episode episode-path)))
                    (throw 'external-command-fail-exception 
                           (format #f "cannot play '~a': Media player command failed")))
                   (increment?
@@ -82,9 +83,15 @@
 ;;           of show pointed to by current-episode index.       ;;
 ;; ------------------------------------------------------------ ;;
 (define (show:current-episode-path show)
-  (let ((format-string (if (string-suffix? "/" (show:path show)) "~a~a" "~a/~a")))
-    (format #f format-string (show:path show)
-                             (list-ref (show:episode-list show) (show:current-episode show)))))
+  (let ((format-string 
+          (if (string-suffix? "/" (show:path show)) 
+            "~a~a" 
+            "~a/~a")))
+    (format #f 
+            format-string 
+            (show:path show)
+            (list-ref (show:episode-list show) 
+                      (show:current-episode show)))))
 
 ;; ------------------------------------------------------------ ;;
 ;; Play an episode using user-defined media player command.     ;;
@@ -98,4 +105,6 @@
 (define (play-episode episode-path)
   ;; This doesn't work for paths with double quotes in them
   ;; but who would put a double quote in a filename anyway?
-  (system (format #f "~a \"~a\"" (config 'media-player-command) episode-path)))
+  (system (format #f 
+                  "~a \"~a\"" 
+                  (config 'media-player-command) episode-path)))

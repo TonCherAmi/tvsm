@@ -45,16 +45,15 @@
                  (if (not show-db)
                    (throw 'show-not-found-exception
                           (format #f "cannot rename '~a': No such show" old-show-name))
-                   (make-show #:name new-show-name 
-                              #:path (show:path show-db)
-                              #:current-episode (show:current-episode show-db)))))
+                   (remake-show show-db #:name new-show-name))))
           ;; If show called 'new-show-name' already exists in the db
           (if (find-show new-show-name show-list)
             ;; We ask the user whether they'd like to overwrite already existing show
             (if (ask-user-overwrite new-show-name)
               ;; If the answer is positive we overwrite it
               (cons show (remove-show new-show-name (remove-show old-show-name show-list)))
-              ;; If the answer is negative we cannot proceed and therefore an exception is thrown
+              ;; If the answer is negative we cannot proceed and therefore 
+              ;; an exception is thrown
               (throw 'show-already-exists-exception
                      (format #f "cannot rename '~a' to '~a': Show already exists"
                              old-show-name new-show-name)))
@@ -80,9 +79,7 @@
                  (if (not show-db)
                    (throw 'show-not-found-exception
                           (format #f "cannot set path for '~a': No such show" show-name))
-                   (make-show #:name (show:name show-db)
-                              #:path new-show-path
-                              #:current-episode (show:current-episode show-db)))))
+                   (remake-show show-db #:path new-show-path))))
           (if (show:current-episode-out-of-bounds? show)
             (throw 'episode-out-of-bounds-exception
                    (format #f "cannot set path for '~a': Episode out of bounds" show-name))
@@ -107,10 +104,12 @@
                (show
                  (if (not show-db)
                    (throw 'show-not-found-exception
-                          (format #f "cannot set current episode for '~a': No such show" show-name))
-                   (make-show #:name (show:name show-db)
-                              #:path (show:path show-db)
-                              #:current-episode new-current-episode))))
+                          (format #f 
+                                  "cannot set current episode for '~a': No such show" 
+                                  show-name))
+                   (remake-show show-db 
+                                #:current-episode 
+                                  (- new-current-episode (show:episode-offset show-db))))))
           (if (show:current-episode-out-of-bounds? show)
             (throw 'episode-out-of-bounds-exception
                    (format #f 

@@ -23,6 +23,7 @@
              (watch list)
              (watch remove)
              (watch set)
+             (watch config)
              (ice-9 getopt-long))
 
 ;; ------------------------------------------------------ ;;
@@ -33,7 +34,9 @@
 (define (main args)
   (let* ((general-option-spec '((version (single-char #\v) (value #f))
                                 (help    (single-char #\h) (value #f))))
-         (general-options (getopt-long args general-option-spec #:stop-at-first-non-option #t))
+         (general-options (getopt-long args 
+                                       general-option-spec 
+                                       #:stop-at-first-non-option #t))
          (version-wanted  (option-ref general-options 'version #f))
          (help-wanted     (option-ref general-options 'help #f)))
     (if (or version-wanted help-wanted)
@@ -42,10 +45,13 @@
           (display-version))
         (if help-wanted 
           (display-help)))
-      (let* ((stripped-args (option-ref general-options '() '()))
+      (let* ((stripped-args 
+               (option-ref general-options '() '()))
              ;; In case no arguments whatsoever were passed, 'command' will just slip 
              ;; through the 'case' and general help will be printed.
-             (command (unless (null? stripped-args) (string->symbol (car stripped-args)))))
+             (command 
+               (unless (null? stripped-args) 
+                 (string->symbol (car stripped-args)))))
         (catch 
           #t
           ;; thunk
@@ -55,12 +61,20 @@
                (let* ((add-option-spec '((help             (single-char #\h) (value #f))
                                          (name             (single-char #\n) (value #t))
                                          (path             (single-char #\p) (value #t))
-                                         (starting-episode (single-char #\s) (value #t))))
+                                         (starting-episode (single-char #\e) (value #t))
+                                         (episode-offset   (single-char #\o) (value #t))))
                       (add-options      (getopt-long stripped-args add-option-spec))
                       (help-wanted      (option-ref add-options 'help #f))
                       (name             (option-ref add-options 'name #f))
                       (path             (option-ref add-options 'path #f))
-                      (starting-episode (option-ref add-options 'starting-episode "1")))
+                      (starting-episode (option-ref add-options
+                                                    'starting-episode 
+                                                    (number->string 
+                                                      (config 'episode-offset))))
+                      (episode-offset   (option-ref add-options 
+                                                    'episode-offset
+                                                    (number->string
+                                                      (config 'episode-offset)))))
                  (cond 
                    (help-wanted 
                      (display-help 'add))
@@ -69,7 +83,10 @@
                            "insufficient arguments
 Try 'watch add --help' for more information."))
                    (else 
-                     (add-show-db name path (1- (string->number starting-episode)))))))
+                    (add-show-db #:name name 
+                                 #:path path 
+                                 #:starting-episode (string->number starting-episode)
+                                 #:episode-offset   (string->number episode-offset))))))
               ((play)
                (let* ((play-option-spec '((help        (single-char #\h) (value #f))
                                           (episode     (single-char #\e) (value #t))
@@ -92,9 +109,9 @@ Try 'watch play --help' for more information."))
                    (episode 
                      (play-show-db (car show-name)
                                    #:increment? set-wanted 
-                                   #:custom-episode-index (1- (string->number episode))))
+                                   #:episode (string->number episode)))
                    (else 
-                     (play-show-db (car show-name))))))
+                    (play-show-db (car show-name))))))
               ((list)
                (let* ((list-option-spec '((help (single-char #\h) (value #f))
                                           (long (single-char #\l) (value #f))))
@@ -154,11 +171,12 @@ Try 'watch set --help' for more information."))
                    (new-path
                      (set-show-path-db (car show-name) new-path))
                    (new-current-episode
-                     (set-show-current-episode-db (car show-name) (1- (string->number new-current-episode))))
+                     (set-show-current-episode-db (car show-name) 
+                                                  (string->number new-current-episode)))
                    (over-wanted
                      (set-show-current-episdoe-db (car show-name) 'over)))))
               (else
-                (display-help))))
+               (display-help))))
           ;; handler
           (lambda (key message)
             (die message)))))))
@@ -193,7 +211,8 @@ required-options:
                                         episodes of the new show.
 options:
     -s, --starting-episode <integer>:   number of the episode the new show will
-                                        start playing from, default value: 1."))
+                                        start playing from.
+    -o, --episode-offset   <integer>:   TODO"))
     ((play)
      (display "\
 Usage: watch play [<options>] <show> 

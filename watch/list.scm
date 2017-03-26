@@ -23,11 +23,11 @@
   #:use-module (watch util)
   #:use-module (watch config))
 
-;; ----------------------------------------------------------- ;;
-;; Print contents of show-list database in a neat manner.      ;;
-;; ----------------------------------------------------------- ;;
-;; #:param: long-format - make output more detailed            ;;
-;; ----------------------------------------------------------- ;;
+;; ------------------------------------------------------ ;;
+;; Print contents of show-list database in a neat manner. ;;
+;; ------------------------------------------------------ ;;
+;; #:param: long-format - make output more detailed       ;;
+;; ------------------------------------------------------ ;;
 (define* (list-shows-db #:optional long-format)
   (call-with-show-list
     #:overwrite
@@ -46,12 +46,16 @@
   (format #t "total ~a~%" (length show-list))
   (let loop ((lst show-list))
     (unless (null? lst)
-      (format #t 
-              "~a ~4@a ~a~%" 
-              '<date> 
-              (show:current-episode (car lst)) 
-              (show:name (car lst)))
-      (loop (cdr lst)))))
+      (let ((show (car lst)))
+        (format #t 
+                "~a ~4@a ~a~%" 
+                (show:date show)
+                (if (show-over? show) 
+                  (show:current-episode show)
+                  (+ (show:current-episode show) 
+                     (show:episode-offset show)))
+                (show:name (car lst)))
+        (loop (cdr lst))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print show-list in short format (names only).          ;;
@@ -59,20 +63,21 @@
 ;; #:param: show-list - show-list to print                ;;
 ;; ------------------------------------------------------ ;;
 (define (list-shows-short show-list)
-  (let* ((port
-           (open-output-pipe "column -t"))
-         (output-string 
-           (let loop ((lst show-list)
-                      (count (config 'columns)))
-             (cond 
-               ((null? lst)
-                "")
-               ((>= 0 (- count (+ 2 (string-length (show:name (car lst))))))
-                (++ "\n" (loop lst (config 'columns))))
-               (else
-                (++ (show:name (car lst))
-                    "  " 
-                    (loop (cdr lst) (- count (string-length (show:name (car lst)))))))))))
-    (display output-string port)
-    (newline port)
-    (close-pipe port)))
+  (call-with-output-pipe
+    "column -t"
+    (lambda (port)
+      (let ((output-string
+              (let loop ((lst show-list)
+                         (count (config 'columns)))
+                (cond 
+                  ((null? lst)
+                   "")
+                  ((>= 0 (- count (+ 2 (string-length (show:name (car lst))))))
+                   (++ "\n" (loop lst (config 'columns))))
+                  (else
+                   (++ (show:name (car lst))
+                       "  " 
+                       (loop (cdr lst) 
+                             (- count (string-length (show:name (car lst)))))))))))
+        (display output-string)
+        (newline port)))))

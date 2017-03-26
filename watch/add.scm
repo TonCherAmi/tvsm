@@ -18,44 +18,53 @@
 
 (define-module  (watch add)
   #:export      (add-show-db)
+  #:use-module  (srfi srfi-19)
   #:use-module  (watch show))
 
-;; ---------------------------------------------------------------------- ;;
-;; Add show to the show database.                                         ;;
-;; ---------------------------------------------------------------------- ;;
-;; #:param: show-name - a string representing the name of the show that   ;;
-;;          is being added.                                               ;;
-;;          Serves as a unique identifier, there cannot  be two shows     ;;
-;;          with the same name in the db.                                 ;;
-;;                                                                        ;; 
-;; #:param: show-path - a string that is a path to the directory that     ;; 
-;;          contains the show                                             ;;
-;;                                                                        ;;
-;; #:param: starting-episode - an integer that is the index of the        ;;
-;;          episode from which the show will begin to play                ;; 
-;; ---------------------------------------------------------------------- ;;
-(define* (add-show-db show-name show-path #:optional (starting-episode 0))
-  (let ((new-show (make-show #:name show-name 
-                             #:path show-path 
-                             #:current-episode starting-episode)))
+;; ------------------------------------------------------------------ ;;
+;; Add show to the show database.                                     ;;
+;; ------------------------------------------------------------------ ;;
+;; #:param: name - a string representing the name of the show that    ;;
+;;          is being added.                                           ;;
+;;                                                                    ;;
+;; #:param: path - a string representing a path to the show directory ;; 
+;;                                                                    ;;
+;; #:param: starting-episode - an integer that is the index of the    ;;
+;;          episode from which the show will begin to play            ;; 
+;;    NOTE: it is assumed that the value is passed without            ;;
+;;          episode-offset subtracted i.e. as it was specified by the ;;
+;;          user                                                      ;;
+;;                                                                    ;;
+;; #:param: episode-offset - an integer representing episode number   ;;
+;;          offset. useful for shows whose first episode is numbered  ;;
+;;          differently than 'E01'                                    ;;
+;; ------------------------------------------------------------------ ;;
+(define* (add-show-db #:key name path starting-episode episode-offset)
+  (let ((new-show (make-show #:name name 
+                             #:path path
+                             #:date (date->string (current-date) "~b ~e ~Y")
+                             #:current-episode (- starting-episode episode-offset)
+                             #:episode-offset  episode-offset)))
     (if (show:current-episode-out-of-bounds? new-show)
         ;; Throw an exception if starting episode index is out of bounds.
         (throw 'episode-out-of-bounds-exception 
-               (format #f "cannot add '~a': Starting episode index is out of bounds" show-name))
+               (format #f 
+                       "cannot add '~a': Starting episode index is out of bounds" 
+                       name))
         (call-with-show-list
           #:overwrite
             #t
           #:proc
             (lambda (show-list)
               (cond
-                ((not (find-show show-name show-list))
+                ((not (find-show name show-list))
                  (cons new-show show-list))
                 ;; If show with such a name already exists we ask user
                 ;; whether they would like to overwrite it, if the answer 
                 ;; is positive we overwrite it, otherwise we throw an
                 ;; exception.
-                ((ask-user-overwrite show-name)
-                 (cons new-show (remove-show show-name show-list)))
+                ((ask-user-overwrite name)
+                 (cons new-show (remove-show name show-list)))
                 (else
                  (throw 'show-already-exists-exception
-                        (format #f "cannot add '~a': Show already exists" show-name)))))))))
+                        (format #f "cannot add '~a': Show already exists" name)))))))))
