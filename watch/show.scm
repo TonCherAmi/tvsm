@@ -19,6 +19,7 @@
 (define-module (watch show)
   #:export     (call-with-show-list
                 make-show
+                remake-show
                 show:name
                 show:path
                 show:current-episode
@@ -34,7 +35,6 @@
                 ask-user-overwrite)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 rdelim)
-  #:use-module (srfi srfi-19)
   #:use-module (watch db)
   #:use-module (watch config))
 
@@ -55,14 +55,17 @@
       (write-show-list-db new-show-list))))
 
 ;; ------------------------------------------------------ ;;
-;; #:TODO !                                               ;;
+;; Create a show object.                                  ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: name - a string representing the name of      ;;
 ;;          a show                                        ;;
+;;                                                        ;;
 ;; #:param: path - a string representing the path to      ;;
 ;;          a show                                        ;;
+;;                                                        ;;
 ;; #:param: current-episode - an integer representing     ;; 
 ;;          the number of the current episode a show      ;;
+;;                                                        ;;
 ;; #:param: episode-offset - an integer representing      ;;
 ;;          episode number offset                         ;;
 ;;          ---                                           ;;
@@ -81,9 +84,25 @@
 (define* (make-show #:key name 
                           path 
                           current-episode 
-                         (episode-offset (config 'episode-offset))
-                         (date (date->string (current-date) "~b ~e ~y")))
-  (list name path episode episode-offset date))
+                          episode-offset
+                          date)
+  (list name path current-episode episode-offset date))
+
+;; ------------------------------------------------------ ;;
+;; Remaake show using either new values if specified or   ;;
+;; old ones from the show object otherwise.               ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show - a show.                                ;;
+;; ------------------------------------------------------ ;;
+;; For information on other parameters take a look at     ;;
+;; the specification of 'make-show'.                      ;;
+;; ------------------------------------------------------ ;;
+(define* (remake-show show #:key (name (show:name show))
+                                 (path (show:path show))
+                                 (date (show:date show))
+                                 (current-episode (show:current-episode show))
+                                 (episode-offset  (show:episode-offset show)))
+  (list name path current-episode episode-offset date))
 
 ;; ------------------------------------------------------ ;;
 ;; Get name of show.                                      ;;
@@ -152,19 +171,16 @@
 ;;           OTHERWISE it is just incremented             ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-inc show)
-  (make-show #:name
-               (show:name show)
-             #:path
-               (show:path show) 
-             #:current-episode
-               (let ((current-episode (show:current-episode show)))
-                 (cond 
-                   ((show-over? show) 
-                    'over)
-                   ((= (1+ current-episode) (length (show:episode-list show)))
-                    'over)
-                   (else 
-                    (1+ current-episode))))))
+  (remake-show show
+               #:current-episode
+                 (let ((current-episode (show:current-episode show)))
+                   (cond 
+                     ((show-over? show) 
+                      'over)
+                     ((= (1+ current-episode) (length (show:episode-list show)))
+                      'over)
+                     (else 
+                      (1+ current-episode))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Return show with decremented current-episode index.    ;;
@@ -179,19 +195,16 @@
 ;;           OTHERWISE it is just decremented             ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-dec show)
-  (make-show #:name 
-               (show:name show)
-             #:path 
-               (show:path show)
-             #:current-episode
-               (let ((current-episode (show:current-episode show)))
-                 (cond 
-                   ((show-over? show) 
-                    (1- (length (show:episode-list show)))) 
-                   ((zero? current-episode) 
-                    0)
-                   (else 
-                    (1- current-episode))))))
+  (remake-show show
+               #:current-episode
+                 (let ((current-episode (show:current-episode show)))
+                   (cond 
+                     ((show-over? show) 
+                      (1- (length (show:episode-list show)))) 
+                     ((zero? current-episode) 
+                      0)
+                     (else 
+                      (1- current-episode))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Get a list of filenames of episodes of show.           ;;
@@ -261,6 +274,7 @@
 ;; ------------------------------------------------------ ;;
 ;; #:param: show-name - a string representing the name of ;;
 ;;          the show that is being removed                ;;
+;;                                                        ;;
 ;; #:param: show-list - a show-list                       ;;
 ;;                                                        ;; 
 ;; #:return: show-list without the show named show-name   ;;
