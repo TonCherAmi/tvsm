@@ -83,10 +83,15 @@
                            "insufficient arguments
 Try 'watch add --help' for more information."))
                    (else 
-                    (add-show-db #:name name 
-                                 #:path path 
-                                 #:starting-episode (string->number starting-episode)
-                                 #:episode-offset   (string->number episode-offset))))))
+                    (let ((ep     (string->number starting-episode))
+                          (offset (string->number episode-offset)))
+                      (if (not (and ep offset))
+                        (throw 'wrong-option-type-exception
+                               "fatal error: Cannot parse numerical value")
+                        (add-show-db #:name name 
+                                     #:path path 
+                                     #:starting-episode (if (> offset ep) offset ep)
+                                     #:episode-offset   offset)))))))
               ((play)
                (let* ((play-option-spec '((help        (single-char #\h) (value #f))
                                           (episode     (single-char #\e) (value #t))
