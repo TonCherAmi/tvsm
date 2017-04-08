@@ -48,12 +48,14 @@
     (unless (null? lst)
       (let ((show (car lst)))
         (format #t 
-                "~a ~4@a ~a~%" 
+                "~a ~6@a ~a~%" 
                 (show:date show)
                 (if (show-over? show) 
                   (show:current-episode show)
-                  (+ (show:current-episode show) 
-                     (show:episode-offset show)))
+                  (++ (number->string (+ (show:current-episode show) 
+                                         (show:episode-offset show)))
+                      "/"
+                      (length (show:episode-list))))
                 (show:name (car lst)))
         (loop (cdr lst))))))
 
