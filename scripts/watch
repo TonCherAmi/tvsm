@@ -239,7 +239,7 @@ options:
 Usage: watch remove [<options>] [<name>...]
 
 options:
-    -o, --over:     remove all shows whose current episode == over."))
+    -o, --over:     remove all shows that are over."))
     ((set)
      (display "\
 Usage: watch set [<options>] <name>
@@ -248,7 +248,7 @@ options:
     -n, --name <name>:                  set a new name.
     -p, --path <path>:                  set a new path.
     -e, --current-episode <integer>:    set current episode.
-    -o, --over:                         set current episode = over."))
+    -o, --over:                         mark show as over."))
     (else 
       (display "\
 Usage: watch [--version] [--help] <command> [<options>]
