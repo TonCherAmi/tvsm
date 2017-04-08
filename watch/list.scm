@@ -55,7 +55,8 @@
                   (++ (number->string (+ (show:current-episode show) 
                                          (show:episode-offset show)))
                       "/"
-                      (length (show:episode-list show))))
+                      (number->string (1- (+ (length (show:episode-list show))
+                                             (show:episode-offset show))))))
                 (show:name (car lst)))
         (loop (cdr lst))))))
 
