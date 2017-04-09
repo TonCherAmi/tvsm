@@ -83,10 +83,14 @@
 ;; ------------------------------------------------------ ;;
 (define* (make-show #:key name 
                           path 
+                          date
                           current-episode 
-                          episode-offset
-                          date)
-  (list name path current-episode episode-offset date))
+                          episode-offset)
+  (list (cons 'name name) 
+        (cons 'path path) 
+        (cons 'date date)
+        (cons 'current-episode current-episode)
+        (cons 'episode-offset episode-offset)))
 
 ;; ------------------------------------------------------ ;;
 ;; Remaake show using either new values if specified or   ;;
@@ -102,7 +106,11 @@
                                  (date (show:date show))
                                  (current-episode (show:current-episode show))
                                  (episode-offset  (show:episode-offset show)))
-  (list name path current-episode episode-offset date))
+  (list (cons 'name name) 
+        (cons 'path path) 
+        (cons 'date date)
+        (cons 'current-episode current-episode)
+        (cons 'episode-offset episode-offset)))
 
 ;; ------------------------------------------------------ ;;
 ;; Get name of show.                                      ;;
@@ -112,7 +120,7 @@
 ;; #:return: a string representing the name of the show   ;;
 ;; ------------------------------------------------------ ;;
 (define (show:name show)
-  (list-ref show 0))
+  (cdr (assoc 'name show)))
 
 ;; ------------------------------------------------------ ;;
 ;; Get path of show.                                      ;;
@@ -122,29 +130,7 @@
 ;; #:return: a string representing the path to the show   ;;
 ;; ------------------------------------------------------ ;;
 (define (show:path show)
-  (list-ref show 1))
-
-;; ------------------------------------------------------ ;;
-;; Get current episode of show.                           ;;
-;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
-;;                                                        ;;
-;; #:return: an integer representing current episode of   ;;
-;;           the show                                     ;;
-;; ------------------------------------------------------ ;;
-(define (show:current-episode show)
-  (list-ref show 2))
-
-;; ------------------------------------------------------ ;;
-;; Get episode offset of show.                            ;;
-;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
-;;                                                        ;; 
-;; #:return: an integer representing episode number       ;;
-;;           offset                                       ;;
-;; ------------------------------------------------------ ;;
-(define (show:episode-offset show)
-  (list-ref show 3))
+  (cdr (assoc 'path show)))
 
 ;; ------------------------------------------------------ ;;
 ;; Get date of show's creation.                           ;;
@@ -155,7 +141,29 @@
 ;;           creation                                     ;;
 ;; ------------------------------------------------------ ;;
 (define (show:date show)
-  (list-ref show 4))
+  (cdr (assoc 'date show)))
+
+;; ------------------------------------------------------ ;;
+;; Get current episode of show.                           ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show - a show                                 ;;
+;;                                                        ;;
+;; #:return: an integer representing current episode of   ;;
+;;           the show                                     ;;
+;; ------------------------------------------------------ ;;
+(define (show:current-episode show)
+  (cdr (assoc 'current-episode show)))
+
+;; ------------------------------------------------------ ;;
+;; Get episode offset of show.                            ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show - a show                                 ;;
+;;                                                        ;; 
+;; #:return: an integer representing episode number       ;;
+;;           offset                                       ;;
+;; ------------------------------------------------------ ;;
+(define (show:episode-offset show)
+  (cdr (assoc 'episode-offset show)))
 
 ;; ------------------------------------------------------ ;;
 ;; Return show with incremented current-episode index.    ;;
@@ -280,20 +288,34 @@
 ;; #:return: show-list without the show named show-name   ;;
 ;; ------------------------------------------------------ ;;
 (define (remove-show show-name show-list)
-  (assoc-remove! show-list show-name))
+  (cond 
+    ((null? show-list)
+     '())
+    ((string=? show-name (show:name (car show-list)))
+     (cdr show-list))
+    (else
+     (cons (car show-list)
+           (remove-show show-name (cdr show-list))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Find show named show-name in show-list.                ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show-name - a string representing the name of ;;
 ;;          the show that we're looking for               ;;
+;;                                                        ;;
 ;; #:param: show-list - a show list to search             ;;
 ;;                                                        ;;
 ;; #:return: in case the show was found - the show itself ;;
 ;;           otherwise - #f                               ;;
 ;; ------------------------------------------------------ ;;
 (define (find-show show-name show-list)
-  (assoc show-name show-list))
+  (cond
+    ((null? show-list)
+     #f)
+    ((string=? show-name (show:name (car show-list)))
+     (car show-list))
+    (else
+     (find-show show-name (cdr show-list)))))
 
 ;; -------------------------------------------------------------------- ;;
 ;; Ask the user whether they'd like to overwrite already existing show. ;;
