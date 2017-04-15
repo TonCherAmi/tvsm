@@ -33,7 +33,9 @@ OBJ := ${SRC:.scm=.go}
 OBJ: ${SRC}
 	$(foreach object, ${OBJ}, ${GUILEC} -o ${object} ${object:.go=.scm};)	
 
-all: ${OBJ}
+all:
+	@export GUILE_LOAD_PATH ${CURDIR}
+	${OBJ}
 
 install:
 	@mkdir -p ${GUILEINC}/${PROGNAME}
