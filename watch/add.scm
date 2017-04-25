@@ -49,8 +49,7 @@
     (if (show:current-episode-out-of-bounds? new-show)
         ;; Throw an exception if starting episode index is out of bounds.
         (throw 'episode-out-of-bounds-exception 
-               (format #f 
-                       "cannot add '~a': Starting episode index is out of bounds" 
+               (format #f "cannot add '~a': Starting episode index is out of bounds" 
                        name))
         (call-with-show-list
           #:overwrite
