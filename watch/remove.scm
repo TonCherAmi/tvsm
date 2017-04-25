@@ -18,7 +18,7 @@
 
 (define-module (watch remove)
   #:export     (remove-show-db
-                remove-over-db)
+                remove-finished-db)
   #:use-module (watch show))
 
 ;; ---------------------------------------------------- ;;
@@ -38,9 +38,9 @@
           (remove-show show-name show-list)))))
 
 ;; ---------------------------------------------------- ;;
-;; Remove shows that are over from the database.        ;;
+;; Remove completed shows from the database.            ;;
 ;; ---------------------------------------------------- ;;
-(define (remove-over-db)
+(define (remove-finished-db)
   (call-with-show-list
     #:overwrite
       #t
@@ -48,5 +48,6 @@
       (lambda (show-list)
         (filter
           (lambda (show)
-            (not (show-over? show)))
+            (or (show:airing? show)
+                (show-playable? show)))
           show-list))))

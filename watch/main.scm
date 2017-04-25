@@ -61,12 +61,14 @@
                (let* ((add-option-spec '((help             (single-char #\h) (value #f))
                                          (name             (single-char #\n) (value #t))
                                          (path             (single-char #\p) (value #t))
+                                         (airing           (single-char #\a) (value #f))
                                          (starting-episode (single-char #\e) (value #t))
                                          (episode-offset   (single-char #\o) (value #t))))
                       (add-options      (getopt-long stripped-args add-option-spec))
                       (help-wanted      (option-ref add-options 'help #f))
                       (name             (option-ref add-options 'name #f))
                       (path             (option-ref add-options 'path #f))
+                      (airing?          (option-ref add-options 'airing #f))
                       (starting-episode (option-ref add-options
                                                     'starting-episode 
                                                     (number->string 
@@ -90,6 +92,7 @@ Try 'watch add --help' for more information."))
                                "fatal error: Cannot parse numerical value")
                         (add-show-db #:name name 
                                      #:path path 
+                                     #:airing? airing?
                                      #:starting-episode (if (> offset ep) offset ep)
                                      #:episode-offset   offset)))))))
               ((play)
@@ -127,21 +130,19 @@ Try 'watch play --help' for more information."))
                    (display-help 'list)
                    (list-shows-db long-format-wanted))))
               ((remove)
-               (let* ((remove-option-spec '((help (single-char #\h) (value #f))
-                                            (over (single-char #\o) (value #f))))
-                      (remove-options (getopt-long stripped-args remove-option-spec))
-                      (help-wanted    (option-ref remove-options 'help #f))
-                      (over-wanted    (option-ref remove-options 'over #f))
+               (let* ((remove-option-spec '((help     (single-char #\h) (value #f))
+                                            (finished (single-char #\f) (value #f))))
+                      (remove-options  (getopt-long stripped-args remove-option-spec))
+                      (help-wanted     (option-ref remove-options 'help #f))
+                      (finished-wanted (option-ref remove-options 'finished #f))
                       ;; Here we get a list that should consist of one element
                       ;; which is the show name passed as an argument.
                       (show-name      (option-ref remove-options '() '())))
                  (cond 
                    (help-wanted 
                      (display-help 'remove))
-                   (over-wanted
-                     (remove-over-db))
-                   ;; If neither '--over' nor a show name were passed
-                   ;; signal an error.
+                   (finished-wanted
+                     (remove-finished-db))
                    ((null? show-name)
                     (throw 'insufficient-args-exception
                            "insufficient arguments
@@ -152,14 +153,16 @@ Try 'watch remove --help' for more information."))
                (let* ((set-option-spec '((help            (single-char #\h) (value #f))
                                          (name            (single-char #\n) (value #t))
                                          (path            (single-char #\p) (value #t))
-                                         (current-episode (single-char #\e) (value #t))
-                                         (over            (single-char #\o) (value #f))))
+                                         (airing          (single-char #\a) (value #f))
+                                         (completed       (single-char #\c) (value #f))
+                                         (current-episode (single-char #\e) (value #t))))
                       (set-options         (getopt-long stripped-args set-option-spec))
                       (help-wanted         (option-ref set-options 'help #f))
                       (new-name            (option-ref set-options 'name #f))
                       (new-path            (option-ref set-options 'path #f))
+                      (airing?             (option-ref set-options 'airing #f))
+                      (completed?          (option-ref set-options 'completed #f))
                       (new-current-episode (option-ref set-options 'current-episode #f))
-                      (over-wanted         (option-ref set-options 'over #f))
                       ;; Here we get a list that should consist of one element
                       ;; which is the show name passed as an argument.
                       (show-name           (option-ref set-options '() '())))
@@ -175,11 +178,13 @@ Try 'watch set --help' for more information."))
                      (set-show-name-db (car show-name) new-name))
                    (new-path
                      (set-show-path-db (car show-name) new-path))
+                   (airing?
+                     (set-show-airing-db (car show-name) #t))
+                   (completed?
+                     (set-show-airing-db (car show-name) #f))
                    (new-current-episode
                      (set-show-current-episode-db (car show-name) 
-                                                  (string->number new-current-episode)))
-                   (over-wanted
-                     (set-show-current-episdoe-db (car show-name) 'over)))))
+                                                  (string->number new-current-episode))))))
               (else
                (display-help))))
           ;; handler
@@ -217,7 +222,10 @@ required-options:
 options:
     -s, --starting-episode <integer>:   number of the episode the new show will
                                         start playing from.
-    -o, --episode-offset   <integer>:   TODO"))
+    -o, --episode-offset   <integer>:   useful when episode numbering of a show
+                                        deviates from the usual sequential numbering
+                                        i.e. when first episode is not numbered 'E01'.
+    -a, --airing:                       mark show as airing."))
     ((play)
      (display "\
 Usage: watch play [<options>] <show> 
@@ -239,7 +247,7 @@ options:
 Usage: watch remove [<options>] [<name>...]
 
 options:
-    -o, --over:     remove all shows that are over."))
+    -f, --finished:     remove all shows that you have finished watching."))
     ((set)
      (display "\
 Usage: watch set [<options>] <name>
@@ -247,8 +255,9 @@ Usage: watch set [<options>] <name>
 options:
     -n, --name <name>:                  set a new name.
     -p, --path <path>:                  set a new path.
-    -e, --current-episode <integer>:    set current episode.
-    -o, --over:                         mark show as over."))
+    -a, --airing:                       mark show as airing.
+    -c, --completed:                    mark show as completed.
+    -e, --current-episode <integer>:    set current episode."))
     (else 
       (display "\
 Usage: watch [--version] [--help] <command> [<options>]

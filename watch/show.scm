@@ -25,10 +25,11 @@
                 show:current-episode
                 show:episode-offset
                 show:date
+                show:airing?
                 show:current-episode-inc
                 show:current-episode-dec
                 show:episode-list
-                show-over?
+                show-playable?
                 show:current-episode-out-of-bounds?
                 remove-show
                 find-show
@@ -84,11 +85,13 @@
 (define* (make-show #:key name 
                           path 
                           date
+                          airing?
                           current-episode 
                           episode-offset)
   (list (cons 'name name) 
         (cons 'path path) 
         (cons 'date date)
+        (cons 'airing? airing?)
         (cons 'current-episode current-episode)
         (cons 'episode-offset episode-offset)))
 
@@ -101,14 +104,16 @@
 ;; For information on other parameters take a look at     ;;
 ;; the specification of 'make-show'.                      ;;
 ;; ------------------------------------------------------ ;;
-(define* (remake-show show #:key (name (show:name show))
-                                 (path (show:path show))
-                                 (date (show:date show))
+(define* (remake-show show #:key (name    (show:name show))
+                                 (path    (show:path show))
+                                 (date    (show:date show))
+                                 (airing? (show:airing? show))
                                  (current-episode (show:current-episode show))
                                  (episode-offset  (show:episode-offset show)))
   (list (cons 'name name) 
         (cons 'path path) 
         (cons 'date date)
+        (cons 'airing? airing?)
         (cons 'current-episode current-episode)
         (cons 'episode-offset episode-offset)))
 
@@ -144,6 +149,16 @@
   (cdr (assoc 'date show)))
 
 ;; ------------------------------------------------------ ;;
+;; Check whether show is airing.                          ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show - a show                                 ;;
+;;                                                        ;; 
+;; #:return: #t if show is airing, #f otherwise           ;;
+;; ------------------------------------------------------ ;;
+(define (show:airing? show)
+  (cdr (assoc 'airing? show)))
+
+;; ------------------------------------------------------ ;;
 ;; Get current episode of show.                           ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show - a show                                 ;;
@@ -166,53 +181,32 @@
   (cdr (assoc 'episode-offset show)))
 
 ;; ------------------------------------------------------ ;;
-;; Return show with incremented current-episode index.    ;;
+;; Get show with incremented current episode.             ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show - a show                                 ;;
 ;;                                                        ;;
-;; #:return: the same show but with its current-episode   ;;
-;;           index:                                       ;;
-;;           IF show is already over then index remains   ;;
-;;              'over                                     ;;
-;;           IF show has already reached the final        ;;
-;;              episode index becomes 'over               ;;
-;;           OTHERWISE it is just incremented             ;;
+;; #:return: show with incremented current episode        ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-inc show)
   (remake-show show
                #:current-episode
-                 (let ((current-episode (show:current-episode show)))
-                   (cond 
-                     ((show-over? show) 
-                      'over)
-                     ((= (1+ current-episode) (length (show:episode-list show)))
-                      'over)
-                     (else 
-                      (1+ current-episode))))))
+                 (1+ (show:current-episode show))))
 
 ;; ------------------------------------------------------ ;;
-;; Return show with decremented current-episode index.    ;;
+;; Get show with decremented current episode.             ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show - a show                                 ;;
 ;;                                                        ;;
-;; #:return: the same show but with its current-episode   ;;
-;;           index:                                       ;;
-;;           IF show is already over set it to index of   ;;
-;;              the last episode of show                  ;;
-;;           IF it is zero then it remains zero           ;;
-;;           OTHERWISE it is just decremented             ;;
+;; #:return: show with decremented current epsidoe        ;;
+;;           if current episode > 0, otherwise unmodified ;;
+;;           show                                         ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-dec show)
-  (remake-show show
-               #:current-episode
-                 (let ((current-episode (show:current-episode show)))
-                   (cond 
-                     ((show-over? show) 
-                      (1- (length (show:episode-list show)))) 
-                     ((zero? current-episode) 
-                      0)
-                     (else 
-                      (1- current-episode))))))
+  (if (>= 0 (show:current-episode show))
+    show
+    (remake-show show
+                 #:current-episode
+                   (1- (show:current-episode show)))))
 
 ;; ------------------------------------------------------ ;;
 ;; Get a list of filenames of episodes of show.           ;;
@@ -249,16 +243,16 @@
       episode-list)))
 
 ;; ------------------------------------------------------ ;;
-;; Check whether show is over (final episode had been     ;;
-;; played)                                                ;;
+;; Check whether show is playable.                        ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show - a show                                 ;;
 ;;                                                        ;;
-;; #:return: #t if show is over                           ;;
-;;           #f otherwise                                 ;;
+;; #:return: #t if show is playable, #f otherwise         ;;
 ;; ------------------------------------------------------ ;;
-(define (show-over? show)
-  (eq? 'over (show:current-episode show)))
+(define (show-playable? show)
+  (and (<= 0 (show:current-episode show))
+       (< (show:current-episode show) 
+          (length (show:episode-list show)))))
 
 ;; ------------------------------------------------------ ;;
 ;; Check whether current episode index of show is out     ;;
@@ -266,15 +260,15 @@
 ;; ------------------------------------------------------ ;;
 ;; #:param: show - a show                                 ;;
 ;;                                                        ;;
-;; #:return: #t - IF current episode index < 0            ;;
-;;                OR index >= length of episode list      ;;
-;;           #f - otherwise                               ;;
+;; #:return: #t if current episode is out of bounds,      ;;
+;;           #f otherwise                                 ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-out-of-bounds? show)
-  (and (not (show-over? show))
-       (let ((episode-list (show:episode-list show)))
-         (or (<= (length episode-list) (show:current-episode show))
-             (> 0 (show:current-episode show))))))
+  (let ((ep-lst-len (length (show:episode-list show)))
+        (current-ep (show:current-episode show)))
+        ;; Out of bounds if current episode < 0
+    (or (> 0 current-ep)
+        ((if (show:airing? show) > >=) current-ep ep-lst-len))))
 
 ;; ------------------------------------------------------ ;;
 ;; Remove show named show-name from show-list. Original   ;;

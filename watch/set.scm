@@ -20,6 +20,7 @@
   #:export     (set-show-name-db
                 set-show-path-db
                 set-show-current-episode-db
+                set-show-airing-db
                 jump-to-next-episode-db
                 jump-to-previous-episode-db)
   #:use-module (watch show))
@@ -116,6 +117,32 @@
                            "cannot set current episode for '~a': Episode out of bounds" 
                            show-name))
             (cons show (remove-show show-name show-list)))))))
+
+;; ------------------------------------------------------ ;;
+;; Mark/unmark show as airing.                            ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show-name - a string representing the name of ;;
+;;          the show that is being modified.              ;;
+;; #:param: airing? - a boolean that determines whether   ;;
+;;                    show is airing.                     ;;
+;; ------------------------------------------------------ ;;
+(define (set-show-airing-db show-name airing?)
+  (call-with-show-list
+    #:overwrite
+      #t
+    #:proc
+      (lambda (show-list)
+        (let* ((show-db 
+                 (find-show show-name show-list))
+               (show
+                 (if (not show-db)
+                   (throw 'show-not-found-exception
+                          (format #f 
+                                  "cannot mark '~a' as ~a: No such show" 
+                                  show-name
+                                  (if airing? "airing" "not airing")))
+                   (remake-show show-db #:airing? airing?))))
+          (cons show (remove-show show-name show-list))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Jump to next episode of show called show-name.         ;;

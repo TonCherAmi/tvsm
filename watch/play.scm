@@ -30,10 +30,10 @@
 ;;                                                                          ;;
 ;; #:param: increment? - a boolean value that determines whether show's     ;;
 ;;          current-episode index will be incremented after current episode ;;
-;;          is played. #t by default                                        ;;
+;;          is played.                                                      ;;
 ;;                                                                          ;;
-;; #:param: custom-episode-index - an integer that will be used instead of  ;;
-;;          shows's current-epsidoe index. #f by default                    ;; 
+;; #:param: episode - an integer that represents an episode that will be    ;;
+;;          used instead of shows's current-epsidoe if specified.           ;;
 ;; ------------------------------------------------------------------------ ;;
 (define* (play-show-db show-name #:key (increment? #t) (episode #f))
   (call-with-show-list 
@@ -54,25 +54,23 @@
                      (remake-show show-db #:current-episode 
                                             (- episode (show:episode-offset show-db))))
                    (else show-db))))
-          (cond 
-            ((show-over? show) 
-             (throw 'show-is-over-exception
-                    (format #f "cannot play '~a': Show is over" show-name)))
-            ;; Unlikely but who knows.
-            ((show:current-episode-out-of-bounds? show) 
-             (throw 'episode-out-of-bounds-exception 
-                    (format #f "cannot play '~a': Episode index is out of bounds" show-name)))
-            (else 
-              (let ((episode-path (show:current-episode-path show))) 
-                (cond
-                  ;; Shell will return 0 on successful command execution.
-                  ((not (zero? (play-episode episode-path)))
-                   (throw 'external-command-fail-exception 
-                          (format #f "cannot play '~a': Media player command failed")))
-                  (increment?
-                    (let ((updated-show (show:current-episode-inc show)))
-                      (cons updated-show (remove-show show-name show-list))))
-                  (else show-list)))))))))
+          (if (not (show-playable? show))
+            (throw 'show-not-playable-exception
+                   (format #f "cannot play '~a': ~a" 
+                           show-name
+                           (if (show:airing? show)
+                             "No new episodes"
+                             "No episodes left")))
+            (let ((episode-path (show:current-episode-path show))) 
+              (cond
+                ;; Shell will return 0 on successful command execution.
+                ((not (zero? (play-episode episode-path)))
+                 (throw 'external-command-fail-exception 
+                        (format #f "cannot play '~a': Media player command failed" show-name)))
+                (increment?
+                  (let ((updated-show (show:current-episode-inc show)))
+                    (cons updated-show (remove-show show-name show-list))))
+                (else show-list))))))))
 
 ;; ------------------------------------------------------------ ;;
 ;; Get full path to show's current-episode.                     ;;

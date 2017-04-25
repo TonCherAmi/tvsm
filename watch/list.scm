@@ -46,19 +46,21 @@
   (format #t "total ~a~%" (length show-list))
   (let loop ((lst show-list))
     (unless (null? lst)
-      (let ((show (car lst)))
-        (format #t 
-                "~a ~6@a ~a~%" 
+      (let* ((show (car lst))
+             (finished? (and (not (show:airing? show))
+                             (not (show-playable? show)))))
+        (format #t "~a  ~7@a  ~a~%"
                 (show:date show)
-                (if (show-over? show) 
-                  (show:current-episode show)
-                  (++ (number->string (+ (show:current-episode show) 
-                                         (show:episode-offset show)))
-                      "/"
-                      (number->string (1- (+ (length (show:episode-list show))
-                                             (show:episode-offset show))))))
-                (show:name (car lst)))
-        (loop (cdr lst))))))
+                (if finished?
+                  "[fin]"
+                  (format #f (if (show:airing? show)
+                               ;; Parentheses indicate that show is still airing.
+                               "~a/(~a)"
+                               "~a/~a")
+                          (+ (show:current-episode show) (show:episode-offset show))
+                          (+ (length (show:episode-list show)) (show:episode-offset show))))
+                (show:name show)))
+      (loop (cdr lst)))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print show-list in short format (names only).          ;;

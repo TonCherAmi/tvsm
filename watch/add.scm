@@ -39,10 +39,11 @@
 ;;          offset. useful for shows whose first episode is numbered  ;;
 ;;          differently than 'E01'                                    ;;
 ;; ------------------------------------------------------------------ ;;
-(define* (add-show-db #:key name path starting-episode episode-offset)
+(define* (add-show-db #:key name path airing? starting-episode episode-offset)
   (let ((new-show (make-show #:name name 
                              #:path path
                              #:date (date->string (current-date) "~b ~e ~Y")
+                             #:airing? airing?
                              #:current-episode (- starting-episode episode-offset)
                              #:episode-offset  episode-offset)))
     (if (show:current-episode-out-of-bounds? new-show)
