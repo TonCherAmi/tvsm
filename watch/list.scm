@@ -58,7 +58,10 @@
                                "~a/(~a)"
                                "~a/~a")
                           (+ (show:current-episode show) (show:episode-offset show))
-                          (+ (length (show:episode-list show)) (show:episode-offset show))))
+                          (+ (length (show:episode-list show)) 
+                             (if (zero? (show:episode-offset show))
+                               0
+                               (1- (show:episode-offset show))))))
                 (show:name show)))
       (loop (cdr lst)))))
 
