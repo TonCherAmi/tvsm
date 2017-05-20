@@ -40,8 +40,9 @@
 ;; #:return: x<list<string>>: list of possible config paths   ;;
 ;; ---------------------------------------------------------- ;;
 (define (path-list) 
-  (list "config"
-        (++ (getenv "HOME") "/" ".config/watch/config"))))
+  (let ((home (++ (getenv "HOME") "/")))
+    (list (++ home ".watch")
+          (++ home ".config/watch/config"))))
 
 ;; ---------------------------------------------------------- ;;
 ;; Read the config from (current-input-port).                 ;;
