@@ -20,18 +20,37 @@
   #:export     (config)
   #:use-module (watch util))
 
-;; TODO - comments
-
+;; ---------------------------------------------------------- ;;
+;; Get value of 'property' from the config.                   ;;
+;; ---------------------------------------------------------- ;;
+;; #:param: property<symbol> - name of the config property    ;;
+;;                                                            ;;
+;; #:return: x<a> - value of 'property' if it is found,       ;;
+;;           #f otherwise                                     ;;
+;; ---------------------------------------------------------- ;;
 (define (config property)
   (let ((cfg-pair (assoc property config-list)))
     (if cfg-pair
       (cdr cfg-pair)
       #f)))
 
+;; ---------------------------------------------------------- ;;
+;; Get a list of possible config paths.                       ;;
+;; ---------------------------------------------------------- ;;
+;; #:return: x<list<string>>: list of possible config paths   ;;
+;; ---------------------------------------------------------- ;;
 (define (path-list) 
   (list "config"
-        (++ (getenv "HOME") "/" ".config/watch/config")))
+        (++ (getenv "HOME") "/" ".config/watch/config"))))
 
+;; ---------------------------------------------------------- ;;
+;; Read the config from (current-input-port).                 ;;
+;; ---------------------------------------------------------- ;;
+;; #:return: x<alist<symbol, a>> - association list where the ;;
+;;           first item of an element pair is a property      ;;
+;;           identifier and the second is that property's     ;;
+;;           value.                                           ;;
+;; ---------------------------------------------------------- ;;
 (define (read-config)
   (let loop ((cfg-lst (read)))
     (cond
@@ -44,12 +63,24 @@
        (cons (car cfg-lst)
              (loop (cdr cfg-lst)))))))
 
+;; ---------------------------------------------------------- ;;
+;; Expand environment variables in a string.                  ;; 
+;; ---------------------------------------------------------- ;;
+;; #:param: str<string> - a string                            ;;
+;;                                                            ;;
+;; #:return: x<string> - 'str' with environment variables     ;;
+;;           expanded.                                        ;;
+;; ---------------------------------------------------------- ;;
 (define (expand-variables str)
   (call-with-input-pipe 
     (++ "echo " str) 
     (lambda (port) 
       (symbol->string (read port)))))
-
+ 
+;; ---------------------------------------------------------- ;;
+;; Association list containing config properties with their   ;;
+;; values.                                                    ;;
+;; ---------------------------------------------------------- ;;
 (define config-list
   (let loop ((paths (path-list)))
     (cond
