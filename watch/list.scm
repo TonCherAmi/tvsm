@@ -49,19 +49,19 @@
       (let* ((show (car lst))
              (finished? (and (not (show:airing? show))
                              (not (show-playable? show)))))
-        (format #t "~a  ~7@a  ~a~%"
+        (format #t "~a  [~a~a] ~5@a  ~a~%"
                 (show:date show)
-                (if finished?
-                  "[fin]"
-                  (format #f (if (show:airing? show)
-                               ;; Parentheses indicate that show is still airing.
-                               "~a/(~a)"
-                               "~a/~a")
-                          (+ (show:current-episode show) (show:episode-offset show))
-                          (+ (length (show:episode-list show)) 
-                             (if (zero? (show:episode-offset show))
-                               0
-                               (1- (show:episode-offset show))))))
+                ;; 'f' for finished, 'w' for watching
+                (if finished? #\f #\w)
+                ;; 'a' for airing, 'c' for completed
+                (if (show:airing? show) #\a #\c)
+                (format #f "~a/~a"
+                        (if finished? #\- (+ (show:current-episode show)
+                                             (show:episode-offset show)))
+                        (+ (length (show:episode-list show))
+                           (if (zero? (show:episode-offset show))
+                             0
+                             (1- (show:episode-offset show)))))
                 (show:name show)))
       (loop (cdr lst)))))
 
