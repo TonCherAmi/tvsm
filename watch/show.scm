@@ -30,6 +30,7 @@
                 show:current-episode-dec
                 show:episode-list
                 show-playable?
+                show-finished?
                 show:current-episode-out-of-bounds?
                 remove-show
                 find-show
@@ -253,6 +254,17 @@
   (and (<= 0 (show:current-episode show))
        (< (show:current-episode show) 
           (length (show:episode-list show)))))
+
+;; ------------------------------------------------------ ;;
+;; Check whether show is fisnished.                       ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show - a show                                 ;;
+;;                                                        ;;
+;; #:return: #t if show is finished, #f otherwise         ;;
+;; ------------------------------------------------------ ;;
+(define (show-finished? show)
+  (and (not (show:airing? show))
+       (not (show-playable? show))))
 
 ;; ------------------------------------------------------ ;;
 ;; Check whether current episode index of show is out     ;;
