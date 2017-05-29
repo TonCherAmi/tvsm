@@ -46,8 +46,5 @@
       #t
     #:proc
       (lambda (show-list)
-        (filter
-          (lambda (show)
-            (or (show:airing? show)
-                (show-playable? show)))
-          show-list))))
+        (filter (lambda (show) (show-finished? show))
+                show-list))))
