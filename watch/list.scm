@@ -87,5 +87,5 @@
                        "  " 
                        (loop (cdr lst) 
                              (- count (string-length (show:name (car lst)))))))))))
-        (display output-string)
+        (display output-string port)
         (newline port)))))
