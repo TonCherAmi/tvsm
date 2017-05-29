@@ -122,13 +122,15 @@ Try 'watch play --help' for more information."))
                     (play-show-db (car show-name))))))
               ((list)
                (let* ((list-option-spec '((help (single-char #\h) (value #f))
+                                          (all  (single-char #\a) (value #f))
                                           (long (single-char #\l) (value #f))))
                       (list-options       (getopt-long stripped-args list-option-spec))
                       (help-wanted        (option-ref  list-options 'help #f))
-                      (long-format-wanted (option-ref  list-options 'long #f)))
+                      (all-wanted         (option-ref  list-options 'all  #f))
+                      (long-wanted        (option-ref  list-options 'long #f)))
                  (if help-wanted 
                    (display-help 'list)
-                   (list-shows-db long-format-wanted))))
+                   (list-shows-db #:all all-wanted #:long long-wanted))))
               ((remove)
                (let* ((remove-option-spec '((help     (single-char #\h) (value #f))
                                             (finished (single-char #\f) (value #f))))
@@ -241,6 +243,7 @@ options:
 Usage: watch list [<options>]
 
 options:
+    -a, --all:      do not ignore finished shows.
     -l, --long:     use a long listing format."))
     ((remove)
      (display "\

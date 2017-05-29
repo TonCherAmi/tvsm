@@ -18,7 +18,6 @@
 
 (define-module (watch list)
   #:export     (list-shows-db)
-  #:use-module (ice-9 popen)
   #:use-module (watch show)
   #:use-module (watch util)
   #:use-module (watch config))
@@ -28,14 +27,16 @@
 ;; ------------------------------------------------------ ;;
 ;; #:param: long-format - make output more detailed       ;;
 ;; ------------------------------------------------------ ;;
-(define* (list-shows-db #:optional long-format)
+(define* (list-shows-db #:key all long)
   (call-with-show-list
     #:overwrite
       #f
     #:proc
-      (if long-format 
-        list-shows-long
-        list-shows-short)))
+      (lambda (show-list)
+        (let ((show-list (if (not all)
+                           (filter (lambda (x) (not (show-finished? x))) show-list)
+                           show-list)))
+          ((if long list-shows-long list-shows-short) show-list)))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print show-list in long format.                        ;;
@@ -47,8 +48,7 @@
   (let loop ((lst show-list))
     (unless (null? lst)
       (let* ((show (car lst))
-             (finished? (and (not (show:airing? show))
-                             (not (show-playable? show)))))
+             (finished? (show-finished? show)))
         (format #t "~a  [~a~a] ~5@a  ~a~%"
                 (show:date show)
                 ;; 'f' for finished, 'w' for watching
