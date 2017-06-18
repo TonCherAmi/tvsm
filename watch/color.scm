@@ -16,10 +16,10 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with watch. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module    (watch color)
-     #:export     (color
+(define-module (watch color)
+  #:export     (color
                    colorize-string)
-     #:use-module (srfi srfi-13))
+  #:use-module (srfi srfi-13))
 
 ;; ------------------------------------------------------ ;;
 ;; An alist of attributes and their corresponding codes.  ;;
