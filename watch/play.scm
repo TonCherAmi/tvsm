@@ -20,6 +20,7 @@
   #:export     (play-show-db)
   #:use-module (ice-9 ftw)
   #:use-module (watch show)
+  #:use-module (watch color)
   #:use-module (watch config))
 
 ;; ------------------------------------------------------------------------ ;;
@@ -62,6 +63,9 @@
                              "No new episodes"
                              "No episodes left")))
             (let ((episode-path (show:current-episode-path show))) 
+              (format #t "Playing episode no. ~a of '~a'~%"
+                      (colorize-string (number->string (show:current-episode show)) 'BOLD)
+                      (colorize-string (show:name show) 'BOLD))
               (cond
                 ;; Shell will return 0 on successful command execution.
                 ((not (zero? (play-episode episode-path)))
