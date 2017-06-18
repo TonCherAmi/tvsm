@@ -85,12 +85,10 @@
 ;;           of show pointed to by current-episode index.       ;;
 ;; ------------------------------------------------------------ ;;
 (define (show:current-episode-path show)
-  (let ((format-string 
-          (if (string-suffix? "/" (show:path show)) 
-            "~a~a" 
-            "~a/~a")))
-    (format #f 
-            format-string 
+  (let ((format-string (if (string-suffix? "/" (show:path show)) 
+                         "~a~a" 
+                         "~a/~a")))
+    (format #f format-string 
             (show:path show)
             (list-ref (show:episode-list show) 
                       (show:current-episode show)))))
@@ -107,6 +105,5 @@
 (define (play-episode episode-path)
   ;; This doesn't work for paths with double quotes in them
   ;; but who would put a double quote in a filename anyway?
-  (system (format #f 
-                  "~a \"~a\"" 
+  (system (format #f "~a \"~a\"" 
                   (config 'media-player-command) episode-path)))
