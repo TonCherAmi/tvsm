@@ -18,7 +18,7 @@
 
 (define-module (watch color)
   #:export     (color
-                   colorize-string)
+                colorize-string)
   #:use-module (srfi srfi-13))
 
 ;; ------------------------------------------------------ ;;
