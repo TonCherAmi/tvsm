@@ -39,26 +39,26 @@ all:
 	${OBJ}
 
 install:
-	mkdir -p ${GUILEINC}/${PROGNAME}
-	echo installing source files in ${GUILEINC}/${PROGNAME}
-	cp -p ${SRC} ${GUILEINC}/${PROGNAME}
+	@mkdir -p ${GUILEINC}/${PROGNAME}
+	@echo installing source files in ${GUILEINC}/${PROGNAME}
+	@cp -p ${SRC} ${GUILEINC}/${PROGNAME}
 	
-	mkdir -p ${GUILELIB}/${PROGNAME}
-	echo installing object files in ${GUILELIB}/${PROGNAME}
-	cp -p ${OBJ} ${GUILELIB}/${PROGNAME}
+	@mkdir -p ${GUILELIB}/${PROGNAME}
+	@echo installing object files in ${GUILELIB}/${PROGNAME}
+	@cp -p ${OBJ} ${GUILELIB}/${PROGNAME}
 	
-	mkdir -p ${DESTDIR}${PREFIX}/bin
-	echo installing executable script in ${DESTDIR}${PREFIX}/bin
-	cp -p scripts/${PROGNAME} ${DESTDIR}${PREFIX}/bin
+	@mkdir -p ${DESTDIR}${PREFIX}/bin
+	@echo installing executable script in ${DESTDIR}${PREFIX}/bin
+	@cp -p scripts/${PROGNAME} ${DESTDIR}${PREFIX}/bin
 
-	mkdir -p ${CONFIG_DESTDIR}
-	cp -p ${CONFIG} ${CONFIG_DESTDIR}/${CONFIG}
+	@mkdir -p ${CONFIG_DESTDIR}
+	@cp -p ${CONFIG} ${CONFIG_DESTDIR}/${CONFIG}
 
 uninstall:
-	rm -rf ${GUILEINC}/${PROGNAME} 
-	rm -rf ${GUILELIB}/${PROGNAME} 
-	rm -f  ${DESTDIR}${PREFIX}/bin/${PROGNAME}
-	rm -rf ${CONFIG_DESTDIR}
+	@rm -rf ${GUILEINC}/${PROGNAME} 
+	@rm -rf ${GUILELIB}/${PROGNAME} 
+	@rm -f  ${DESTDIR}${PREFIX}/bin/${PROGNAME}
+	@rm -rf ${CONFIG_DESTDIR}
 
 clean:
-	rm ${OBJ}
+	@rm ${OBJ}
