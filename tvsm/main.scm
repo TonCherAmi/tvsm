@@ -1,29 +1,29 @@
-;; watch - a tv show manager.
+;; tvsm - a tv show manager.
 ;; Copyright © 2017 Vasili Karaev
 ;;
-;; This file is part of watch.
+;; This file is part of tvsm.
 ;;
-;; watch is free software: you can redistribute  it and/or modify
+;; tvsm is free software: you can redistribute  it and/or modify
 ;; it under the terms of the GNU Lesser General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 ;; 
-;; watch is distributed in the hope that it will be useful,
+;; tvsm is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of 
 ;; MERCHENTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ;; GNU Lesser General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with watch. If not, see <http://www.gnu.org/licenses/>.
+;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (watch main)
+(define-module (tvsm main)
   #:export     (main)
-  #:use-module (watch add)
-  #:use-module (watch play)
-  #:use-module (watch list)
-  #:use-module (watch remove)
-  #:use-module (watch set)
-  #:use-module (watch config)
+  #:use-module (tvsm add)
+  #:use-module (tvsm play)
+  #:use-module (tvsm list)
+  #:use-module (tvsm remove)
+  #:use-module (tvsm set)
+  #:use-module (tvsm config)
   #:use-module (ice-9 getopt-long))
 
 ;; ------------------------------------------------------ ;;
@@ -83,7 +83,7 @@
                    ((not (and name path))
                     (throw 'insufficient-args-exception
                            "insufficient arguments
-Try 'watch add --help' for more information."))
+Try 'tvsm add --help' for more information."))
                    (else 
                     (let ((ep     (string->number starting-episode))
                           (offset (string->number episode-offset)))
@@ -113,7 +113,7 @@ Try 'watch add --help' for more information."))
                    ((null? show-name) 
                     (throw 'insufficient-args-exception
                            "missing show name
-Try 'watch play --help' for more information."))
+Try 'tvsm play --help' for more information."))
                    (episode 
                      (play-show-db (car show-name)
                                    #:increment? set-wanted 
@@ -148,7 +148,7 @@ Try 'watch play --help' for more information."))
                    ((null? show-name)
                     (throw 'insufficient-args-exception
                            "insufficient arguments
-Try 'watch remove --help' for more information."))
+Try 'tvsm remove --help' for more information."))
                    (else 
                      (remove-show-db (car show-name))))))
               ((set)
@@ -175,7 +175,7 @@ Try 'watch remove --help' for more information."))
                    ((null? show-name)
                     (throw 'insufficient-args-exception
                            "insufficient arguments
-Try 'watch set --help' for more information."))
+Try 'tvsm set --help' for more information."))
                    (new-name
                      (set-show-name-db (car show-name) new-name))
                    (new-path
@@ -200,7 +200,7 @@ Try 'watch set --help' for more information."))
 ;;          message                                       ;;
 ;; ------------------------------------------------------ ;;
 (define (die message)
-  (format #t "watch: ~a~%" message)
+  (format #t "tvsm: ~a~%" message)
   (exit 1))
 
 ;; ------------------------------------------------------ ;;
@@ -215,7 +215,7 @@ Try 'watch set --help' for more information."))
   (case command
     ((add) 
      (display "\
-Usage: watch add <required-options> [<options>]
+Usage: tvsm add <required-options> [<options>]
 
 required-options: 
     -n, --name <name>:                  show name, a unique identifier.
@@ -230,7 +230,7 @@ options:
     -a, --airing:                       mark show as airing."))
     ((play)
      (display "\
-Usage: watch play [<options>] <show> 
+Usage: tvsm play [<options>] <show> 
 
 options:
     -e, --episode <integer>:    number of the episode to play instead of 
@@ -240,20 +240,20 @@ options:
                                 in the future."))
     ((list)
      (display "\
-Usage: watch list [<options>]
+Usage: tvsm list [<options>]
 
 options:
     -a, --all:      do not ignore finished shows.
     -l, --long:     use a long listing format."))
     ((remove)
      (display "\
-Usage: watch remove [<options>] [<name>...]
+Usage: tvsm remove [<options>] [<name>...]
 
 options:
     -f, --finished:     remove all shows that you have finished watching."))
     ((set)
      (display "\
-Usage: watch set [<options>] <name>
+Usage: tvsm set [<options>] <name>
 
 options:
     -n, --name <name>:                  set a new name.
@@ -263,7 +263,7 @@ options:
     -e, --current-episode <integer>:    set current episode."))
     (else 
       (display "\
-Usage: watch [--version] [--help] <command> [<options>]
+Usage: tvsm [--version] [--help] <command> [<options>]
 
 available commands:
     add:        add a show.
@@ -272,11 +272,11 @@ available commands:
     remove:     remove shows.
     set:        modify a show.
     
-See 'watch <command> --help' to learn more about a specific command.")))
+See 'tvsm <command> --help' to learn more about a specific command.")))
   (newline))
 
 ;; ------------------------------------------------------ ;;
 ;; Print current application version.                     ;;
 ;; ------------------------------------------------------ ;;
 (define (display-version)
-  (display "watch version 0.1 alpha") (newline))
+  (display "tvsm version 0.2") (newline))

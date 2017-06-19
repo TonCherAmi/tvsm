@@ -1,6 +1,6 @@
 ## Introduction
 
-`watch` is a lightweight TV show manager. It is written in GNU Guile.
+`tvsm` is a lightweight TV show manager. It is written in GNU Guile.
 
 ## Why would you want to use it?
 
@@ -15,7 +15,7 @@ typing stuff like:
 mpv <super-long-path-to-a-directory-containing-a-tv-show>/<name-of-an-episode>
 ```
 every time you want to watch a show or, perhaps, you may have trouble remembering what episode
-you've watched last after a particularly busy workweek, `watch` automates that for you.
+you've watched last after a particularly busy workweek, `tvsm` automates that for you.
 
 ## Dependencies
 
@@ -24,15 +24,15 @@ GNU Guile 2.x
 ## Installation
 
 1. Clone the repository.
-    * `git clone https://github.com/TonCherAmi/watch` 
+    * `git clone https://github.com/TonCherAmi/tvsm` 
   
-2. Change working directory to `watch`.
-    * `cd watch`
+2. Change working directory to `tvsm`.
+    * `cd tvsm`
   
 3. Compile the source using the Makefile.
     * `make`
   
-4. Install watch using the Makefile.
+4. Install tvsm using the Makefile.
     * `make install`
     * **NOTE:** it might be necessary to run this as root.
 
@@ -47,13 +47,13 @@ After installation you will need to set up the configuration file.
     * e.g. `(media-player-command . "mpv")`
 
 3. Copy the configuration file to the required location.
-    * `mkdir -p ~/.config/watch`
-    * `cp config ~/.config/watch`
+    * `mkdir -p ~/.config/tvsm`
+    * `cp config ~/.config/tvsm`
 
 ## Usage
 
 ```
-Usage: watch [--version] [--help] <command> [<options>]
+Usage: tvsm [--version] [--help] <command> [<options>]
 
 available commands:
     add:        add a show.
@@ -62,7 +62,7 @@ available commands:
     remove:     remove shows.
     set:        modify a show.
     
-See 'watch <command> --help' to learn more about a specific command.
+See 'tvsm <command> --help' to learn more about a specific command.
 ```
 
 ## Examples 

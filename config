@@ -1,4 +1,4 @@
-;; watch default config file
+;; tvsm default config file
 
  ;; media player command
 ((media-player-command . "media-player-command-not-set")
@@ -12,6 +12,6 @@
  ;; terminal width used to restrain output
  (columns              . 79)
  ;; path to the show database
- (show-db-path         . "$HOME/.local/share/watch/shows"))
+ (show-db-path         . "$HOME/.local/share/tvsm/shows"))
 
 ;; vim: filetype=scheme

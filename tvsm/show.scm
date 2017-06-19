@@ -1,22 +1,22 @@
-;; watch - a tv show manager.
+;; tvsm - a tv show manager.
 ;; Copyright © 2017 Vasili Karaev
 ;;
-;; This file is part of watch.
+;; This file is part of tvsm.
 ;;
-;; watch is free software: you can redistribute  it and/or modify
+;; tvsm is free software: you can redistribute  it and/or modify
 ;; it under the terms of the GNU Lesser General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 ;; 
-;; watch is distributed in the hope that it will be useful,
+;; tvsm is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of 
 ;; MERCHENTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ;; GNU Lesser General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU Lesser General Public License
-;; along with watch. If not, see <http://www.gnu.org/licenses/>.
+;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (watch show)
+(define-module (tvsm show)
   #:export     (call-with-show-list
                 make-show
                 remake-show
@@ -37,8 +37,8 @@
                 ask-user-overwrite)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 rdelim)
-  #:use-module (watch db)
-  #:use-module (watch config))
+  #:use-module (tvsm db)
+  #:use-module (tvsm config))
 
 ;; ------------------------------------------------------- ;;
 ;; Read show-list database and call '(proc show-list)'     ;;
