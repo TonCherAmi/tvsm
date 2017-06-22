@@ -42,7 +42,8 @@
 (define (path-list) 
   (let ((home (++ (getenv "HOME") "/")))
     (list (++ home ".tvsm")
-          (++ home ".config/tvsm/config"))))
+          (++ home ".config/tvsm/config")
+          "config")))
 
 ;; ---------------------------------------------------------- ;;
 ;; Read the config from (current-input-port).                 ;;
