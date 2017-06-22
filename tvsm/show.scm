@@ -111,12 +111,12 @@
                                  (airing? (show:airing? show))
                                  (current-episode (show:current-episode show))
                                  (episode-offset  (show:episode-offset show)))
-  (list (cons 'name name) 
-        (cons 'path path) 
-        (cons 'date date)
-        (cons 'airing? airing?)
-        (cons 'current-episode current-episode)
-        (cons 'episode-offset episode-offset)))
+  (make-show #:name name 
+             #:path path
+             #:date date
+             #:airing? airing?
+             #:current-episode current-episode
+             #:episode-offset episode-offset))
 
 ;; ------------------------------------------------------ ;;
 ;; Get name of show.                                      ;;
