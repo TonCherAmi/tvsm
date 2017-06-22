@@ -22,8 +22,8 @@ PREFIX := /usr
 CONFIG         := config
 CONFIG_DESTDIR := ${DESTDIR}${PREFIX}/share/doc/${PROGNAME}
 
-GUILEINC := $(shell guile -c "(display (%site-dir))")
-GUILELIB := $(shell guile -c "(display (%site-ccache-dir))")
+GUILEINC := ${DESTDIR}$(shell guile -c "(display (%site-dir))")
+GUILELIB := ${DESTDIR}$(shell guile -c "(display (%site-ccache-dir))")
 
 GUILEC := guild compile
 
