@@ -52,8 +52,7 @@
                    ;; If custom-episode-index was passed make a show that has it as its 
                    ;; current-episode index.
                    (episode 
-                     (remake-show show-db #:current-episode 
-                                            (- episode (show:episode-offset show-db))))
+                     (remake-show show-db #:current-episode episode))
                    (else show-db))))
           (if (not (show-playable? show))
             (throw 'show-not-playable-exception
@@ -64,7 +63,7 @@
                              "No episodes left")))
             (let ((episode-path (show:current-episode-path show))) 
               (format #t "Playing episode no. ~a of '~a'~%"
-                      (colorize-string (number->string (show:current-episode show)) 'BOLD)
+                      (colorize-string (number->string (show:current-episode show #:with-offset #t)) 'BOLD)
                       (colorize-string (show:name show) 'BOLD))
               (cond
                 ;; Shell will return 0 on successful command execution.

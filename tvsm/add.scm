@@ -44,7 +44,7 @@
                              #:path path
                              #:date (date->string (current-date) "~b ~e ~Y")
                              #:airing? airing?
-                             #:current-episode (- starting-episode episode-offset)
+                             #:current-episode starting-episode
                              #:episode-offset  episode-offset)))
     (if (show:current-episode-out-of-bounds? new-show)
         ;; Throw an exception if starting episode index is out of bounds.

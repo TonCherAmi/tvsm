@@ -93,7 +93,7 @@
         (cons 'path path) 
         (cons 'date date)
         (cons 'airing? airing?)
-        (cons 'current-episode current-episode)
+        (cons 'current-episode (- current-episode episode-offset))
         (cons 'episode-offset episode-offset)))
 
 ;; ------------------------------------------------------ ;;
@@ -164,11 +164,17 @@
 ;; ------------------------------------------------------ ;;
 ;; #:param: show - a show                                 ;;
 ;;                                                        ;;
+;; #:param: with-offset - if #t episode offset is added   ;;
+;;          to current episode                            ;;
+;;                                                        ;;
 ;; #:return: an integer representing current episode of   ;;
 ;;           the show                                     ;;
 ;; ------------------------------------------------------ ;;
-(define (show:current-episode show)
-  (cdr (assoc 'current-episode show)))
+(define* (show:current-episode show #:key with-offset)
+  (+ (cdr (assoc 'current-episode show))
+     (if with-offset 
+       (show:episode-offset show)
+       0)))
 
 ;; ------------------------------------------------------ ;;
 ;; Get episode offset of show.                            ;;

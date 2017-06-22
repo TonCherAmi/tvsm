@@ -105,16 +105,12 @@
                (show
                  (if (not show-db)
                    (throw 'show-not-found-exception
-                          (format #f 
-                                  "cannot set current episode for '~a': No such show" 
+                          (format #f "cannot set current episode for '~a': No such show" 
                                   show-name))
-                   (remake-show show-db 
-                                #:current-episode 
-                                  (- new-current-episode (show:episode-offset show-db))))))
+                   (remake-show show-db #:current-episode new-current-episode))))
           (if (show:current-episode-out-of-bounds? show)
             (throw 'episode-out-of-bounds-exception
-                   (format #f 
-                           "cannot set current episode for '~a': Episode out of bounds" 
+                   (format #f "cannot set current episode for '~a': Episode out of bounds" 
                            show-name))
             (cons show (remove-show show-name show-list)))))))
 
@@ -137,10 +133,9 @@
                (show
                  (if (not show-db)
                    (throw 'show-not-found-exception
-                          (format #f 
-                                  "cannot mark '~a' as ~a: No such show" 
+                          (format #f "cannot mark '~a' as ~a: No such show" 
                                   show-name
-                                  (if airing? "airing" "not airing")))
+                                  (if airing? "airing" "completed")))
                    (remake-show show-db #:airing? airing?))))
           (cons show (remove-show show-name show-list))))))
 

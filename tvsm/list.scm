@@ -56,8 +56,7 @@
                 ;; 'a' for airing, 'c' for completed
                 (if (show:airing? show) #\a #\c)
                 (format #f "~a/~a"
-                        (if finished? #\- (+ (show:current-episode show)
-                                             (show:episode-offset show)))
+                        (if finished? #\- (show:current-episode show #:with-offset #t))
                         (+ (length (show:episode-list show))
                            (if (zero? (show:episode-offset show))
                              0
