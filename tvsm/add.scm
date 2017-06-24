@@ -45,7 +45,8 @@
                              #:date (date->string (current-date) "~b ~e ~Y")
                              #:airing? airing?
                              #:current-episode starting-episode
-                             #:episode-offset  episode-offset)))
+                             #:episode-offset episode-offset
+                             #:subtract-offset? #t)))
     (if (show:current-episode-out-of-bounds? new-show)
         ;; Throw an exception if starting episode index is out of bounds.
         (throw 'episode-out-of-bounds-exception 

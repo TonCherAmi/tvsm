@@ -107,7 +107,9 @@
                    (throw 'show-not-found-exception
                           (format #f "cannot set current episode for '~a': No such show" 
                                   show-name))
-                   (remake-show show-db #:current-episode new-current-episode))))
+                   (remake-show show-db 
+                                #:current-episode new-current-episode
+                                #:subtract-offset? #t))))
           (if (show:current-episode-out-of-bounds? show)
             (throw 'episode-out-of-bounds-exception
                    (format #f "cannot set current episode for '~a': Episode out of bounds" 

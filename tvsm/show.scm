@@ -68,6 +68,13 @@
 ;; #:param: current-episode - an integer representing     ;; 
 ;;          the number of the current episode a show      ;;
 ;;                                                        ;;
+;; #:param: date - a string representing the date of      ;;
+;;          show's creation                               ;;
+;;                                                        ;;
+;; #:param: airing? - if #t show is marked as airing,     ;;
+;;          meaning that new episodes could be added      ;;
+;;          in the future                                 ;;
+;;                                                        ;;
 ;; #:param: episode-offset - an integer representing      ;;
 ;;          episode number offset                         ;;
 ;;          ---                                           ;;
@@ -78,8 +85,9 @@
 ;;          which has a pilot episode numbered 'E00'      ;;
 ;;          episode-offset should be equal to 0           ;;
 ;;          ---                                           ;;
-;; #:param: date - a string representing the date of      ;;
-;;          show's creation                               ;;
+;;                                                        ;;
+;; #:param: subtract-offset? - if #t episode-offset will  ;;
+;;          be subtracted from current-episode            ;;
 ;;                                                        ;;
 ;; #:return: a newly created show                         ;;
 ;; ------------------------------------------------------ ;;
@@ -88,12 +96,15 @@
                           date
                           airing?
                           current-episode 
-                          episode-offset)
+                          episode-offset
+                          subtract-offset?)
   (list (cons 'name name) 
         (cons 'path path) 
         (cons 'date date)
         (cons 'airing? airing?)
-        (cons 'current-episode (- current-episode episode-offset))
+        (cons 'current-episode (if subtract-offset? 
+                                 (- current-episode episode-offset)
+                                 current-episode))
         (cons 'episode-offset episode-offset)))
 
 ;; ------------------------------------------------------ ;;
@@ -110,13 +121,15 @@
                                  (date    (show:date show))
                                  (airing? (show:airing? show))
                                  (current-episode (show:current-episode show))
-                                 (episode-offset  (show:episode-offset show)))
+                                 (episode-offset  (show:episode-offset show))
+                                 subtract-offset?)
   (make-show #:name name 
              #:path path
              #:date date
              #:airing? airing?
              #:current-episode current-episode
-             #:episode-offset episode-offset))
+             #:episode-offset episode-offset
+             #:subtract-offset? subtract-offset?))
 
 ;; ------------------------------------------------------ ;;
 ;; Get name of show.                                      ;;

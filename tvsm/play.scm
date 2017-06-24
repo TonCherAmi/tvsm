@@ -52,7 +52,9 @@
                    ;; If custom-episode-index was passed make a show that has it as its 
                    ;; current-episode index.
                    (episode 
-                     (remake-show show-db #:current-episode episode))
+                     (remake-show show-db 
+                                  #:current-episode episode
+                                  #:subtract-offset? #t))
                    (else show-db))))
           (if (not (show-playable? show))
             (throw 'show-not-playable-exception
