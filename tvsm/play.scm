@@ -65,13 +65,16 @@
                              "No episodes left")))
             (let ((episode-path (show:current-episode-path show))) 
               (format #t "Playing episode no. ~a of '~a'~%"
-                      (colorize-string (number->string (show:current-episode show #:with-offset #t)) 'BOLD)
+                      (colorize-string 
+                        (number->string (show:current-episode show #:with-offset #t))
+                        'BOLD)
                       (colorize-string (show:name show) 'BOLD))
               (cond
                 ;; Shell will return 0 on successful command execution.
                 ((not (zero? (play-episode episode-path)))
                  (throw 'external-command-fail-exception 
-                        (format #f "cannot play '~a': Media player command failed" show-name)))
+                        (format #f "cannot play '~a': Media player command failed" 
+                                show-name)))
                 (increment?
                   (let ((updated-show (show:current-episode-inc show)))
                     (cons updated-show (remove-show show-name show-list))))
@@ -87,8 +90,8 @@
 ;; ------------------------------------------------------------ ;;
 (define (show:current-episode-path show)
   (let ((format-string (if (string-suffix? "/" (show:path show)) 
-                         "~a~a" 
-                         "~a/~a")))
+                         "\"~a~a\"" 
+                         "\"~a/~a\"")))
     (format #f format-string 
             (show:path show)
             (list-ref (show:episode-list show) 
@@ -104,7 +107,5 @@
 ;;           non-zero error code is returned otherwise          ;;
 ;; ------------------------------------------------------------ ;;
 (define (play-episode episode-path)
-  ;; This doesn't work for paths with double quotes in them
-  ;; but who would put a double quote in a filename anyway?
-  (system (format #f "~a \"~a\"" 
-                  (config 'media-player-command) episode-path)))
+  (system (format #f (config 'media-player-command)
+                  episode-path)))
