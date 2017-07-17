@@ -43,8 +43,11 @@ After installation you will need to set up the configuration file.
 1. Open the `config` file with a text editor of your choice.
     * e.g. `vi config`
 
-2. Set `media-player-command` to a media player of your choice.
-    * e.g. `(media-player-command . "mpv")`
+2. Set `media-player-command` to a shell command that invokes a media player
+   of your choice.
+    * e.g. `(media-player-command . "mpv ~a --quiet")`
+    * **NOTE:** `~a` is substitued for the media file path,
+                it is required that you specify it in the command.
 
 3. Copy the configuration file to the required location.
     * `mkdir -p ~/.config/tvsm`
