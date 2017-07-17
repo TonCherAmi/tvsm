@@ -18,6 +18,7 @@
 
 (define-module (tvsm config)
   #:export     (config)
+  #:use-module (ice-9 rdelim)
   #:use-module (tvsm util))
 
 ;; ---------------------------------------------------------- ;;
@@ -77,7 +78,7 @@
   (call-with-input-pipe 
     (++ "echo " str) 
     (lambda (port) 
-      (symbol->string (read port)))))
+      (read-line port))))
  
 ;; ---------------------------------------------------------- ;;
 ;; Association list containing config properties with their   ;;
