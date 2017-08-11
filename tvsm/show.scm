@@ -240,27 +240,25 @@
 ;;           extension)                                   ;;
 ;; ------------------------------------------------------ ;;
 (define (show:episode-list show)
-  (let ((episode-list 
-          ;; If show-path is a symlink read it and pass to result to scandir
-          ;; it is necessary because scandir does not work with symlinks.
-          (scandir (if (eq? 'symlink (stat:type (lstat (show:path show)))) 
-                     (readlink (show:path show))
-                     (show:path show))
-                   ;; This predicate checks whether filepath's suffix is
-                   ;; present in the 'media-format-list'.
-                   (lambda (filepath)
-                     (let loop ((format-list (config 'media-format-list)))
-                       (cond 
-                         ((null? format-list) 
-                          #f)
-                         ((string-suffix-ci? (car format-list) filepath)
-                          #t)
-                         (else 
-                          (loop (cdr format-list)))))))))
-    (if (not episode-list)
-      (throw 'directory-not-readable-exception
-             (format #f "cannot stat '~a': No such directory" (show:path show)))
-      episode-list)))
+  (let ((path (show:path show)))
+    (cond
+      ((not (file-exists? path))
+       (throw 'invalid-path-exception
+              (format #f "invalid path '~a': No such file or directory" path)))
+      ((not (eq? 'directory (stat:type (stat path))))
+       (throw 'invalid-path-exception
+              (format #f "invalid path '~a': Not a directory" path)))
+      (else
+       (scandir path
+                (lambda (path)
+                  (let loop ((format-list (config 'media-format-list)))
+                    (cond
+                      ((null? format-list)
+                       #f)
+                      ((string-suffix-ci? (car format-list) path)
+                       #t)
+                      (else
+                       (loop (cdr format-list)))))))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Check whether show is playable.                        ;;
