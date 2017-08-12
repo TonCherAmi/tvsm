@@ -20,7 +20,8 @@
   #:export     (list-shows-db)
   #:use-module (tvsm show)
   #:use-module (tvsm util)
-  #:use-module (tvsm config))
+  #:use-module (tvsm config)
+  #:use-module (tvsm color))
 
 ;; ------------------------------------------------------ ;;
 ;; Print contents of show-list database in a neat manner. ;;
@@ -45,24 +46,26 @@
 ;; ------------------------------------------------------ ;;
 (define (list-shows-long show-list)
   (format #t "total ~a~%" (length show-list))
-  (let loop ((lst show-list))
-    (unless (null? lst)
-      (let* ((show (car lst))
-             (finished? (show-finished? show)))
-        (format #t "~a  [~a~a] ~5@a  ~a~%"
-                (show:date show)
-                ;; 'f' for finished, 'w' for watching
-                (if finished? #\f #\w)
-                ;; 'a' for airing, 'c' for completed
-                (if (show:airing? show) #\a #\c)
-                (format #f "~a/~a"
-                        (if finished? #\- (show:current-episode show #:with-offset #t))
-                        (+ (length (show:episode-list show))
-                           (if (zero? (show:episode-offset show))
-                             0
-                             (1- (show:episode-offset show)))))
-                (show:name show)))
-      (loop (cdr lst)))))
+  (let ((cs colorize-string))
+    (let loop ((lst show-list))
+      (unless (null? lst)
+        (let* ((show (car lst))
+               (fin? (show-finished? show))
+               (air? (show:airing? show)))
+          (format #t (++ "~a " (cs "[" 'BLUE) "~a~a" (cs "]" 'BLUE) " ~5@a  ~a~%")
+                  (show:date show)
+                  ;; 'f' stands for finished, 'w' for watching
+                  (if fin? (cs "f" 'RED) (cs "w" 'GREEN))
+                  ;; 'a' stands for airing, 'c' for completed
+                  (if air? (cs "a" 'CYAN) (cs "c" 'MAGENTA))
+                  (format #f "~a/~a"
+                          (if fin? #\- (show:current-episode show #:with-offset #t))
+                          (+ (length (show:episode-list show))
+                             (if (zero? (show:episode-offset show))
+                               0 
+                               (1- (show:episode-offset show)))))
+                  (cs (show:name show) 'BOLD)))
+        (loop (cdr lst))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print show-list in short format (names only).          ;;
