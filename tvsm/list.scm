@@ -73,21 +73,7 @@
 ;; #:param: show-list - show-list to print                ;;
 ;; ------------------------------------------------------ ;;
 (define (list-shows-short show-list)
-  (call-with-output-pipe
-    "column -t"
-    (lambda (port)
-      (let ((output-string
-              (let loop ((lst show-list)
-                         (count (config 'columns)))
-                (cond 
-                  ((null? lst)
-                   "")
-                  ((>= 0 (- count (+ 2 (string-length (show:name (car lst))))))
-                   (++ "\n" (loop lst (config 'columns))))
-                  (else
-                   (++ (show:name (car lst))
-                       "  " 
-                       (loop (cdr lst) 
-                             (- count (string-length (show:name (car lst)))))))))))
-        (display output-string port)
-        (newline port)))))
+  (for-each
+    (lambda (show)
+      (display (show:name show)) (newline))
+    show-list))
