@@ -2,21 +2,6 @@
 
 `tvsm` is a lightweight TV show manager. It is written in GNU Guile.
 
-## Why would you want to use it?
-
-First of all, if when you hear the words 'TV show manager' a question like: 
-"Doesn't Netflix already does that for me?" arises in your head then this is most likely not 
-for you.
-
-Now on the other hand if you are like me, if you live in the terminal and store your
-TV shows/anime series/etc. on your hard drive, there is a chance that you are quite tired of
-typing stuff like: 
-```
-mpv <super-long-path-to-a-directory-containing-a-tv-show>/<name-of-an-episode>
-```
-every time you want to watch a show or, perhaps, you may have trouble remembering what episode
-you've watched last after a particularly busy workweek, `tvsm` automates that for you.
-
 ## Dependencies
 
 GNU Guile 2.x
@@ -74,4 +59,4 @@ See 'tvsm <command> --help' to learn more about a specific command.
 
 ## License
 
-/TODO/
+`tvsm` is licensed under the GNU Lesser General Public License v3.0. [See LICENSE for more information](https://github.com/TonCherAmi/tvsm/blob/master/LICENSE).
