@@ -41,14 +41,13 @@
   #:use-module (tvsm config))
 
 ;; ------------------------------------------------------- ;;
-;; Read show-list database and call '(proc show-list)'     ;;
-;; with the read show-list.
+;; Read the show database and call '(proc show-list)'      ;;
+;; with the read show-list.                                ;;
 ;; ------------------------------------------------------- ;;
-;; #:param: proc - a procedure that takes a show-list as   ;;
-;;          its only argument. Must return a show-list if  ;;
-;;          'overwrite' is #t                              ;;
-;; #:param: overwrite - if #t show-list database will be   ;;
-;;          overwritten with the result of 'proc'          ;;
+;; #:param: proc :: [show] -> [show] - must return a show  ;;
+;;          list only if 'overwrite' is #t                 ;;
+;; #:param: overwrite :: bool - if #t show-list database   ;;
+;;          will be overwritten with the result of 'proc'  ;;
 ;; ------------------------------------------------------- ;;
 (define* (call-with-show-list #:key proc overwrite)
   (let* ((show-list-db  (read-show-list-db))
@@ -57,39 +56,37 @@
       (write-show-list-db new-show-list))))
 
 ;; ------------------------------------------------------ ;;
-;; Create a show object.                                  ;;
+;; Create a show.                                         ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: name - a string representing the name of      ;;
-;;          a show                                        ;;
+;; #:param: name :: string - show name                    ;;
 ;;                                                        ;;
-;; #:param: path - a string representing the path to      ;;
-;;          a show                                        ;;
+;; #:param: path :: string - path to the show directory   ;;
 ;;                                                        ;;
-;; #:param: current-episode - an integer representing     ;; 
-;;          the number of the current episode a show      ;;
+;; #:param: current-episode :: int - current episode      ;;
+;;          number                                        ;;
 ;;                                                        ;;
-;; #:param: date - a string representing the date of      ;;
-;;          show's creation                               ;;
+;; #:param: date :: string - show creation date in form   ;;
+;;          'MMM DD YYYY' e.g. 'Jan 01 1970'              ;;
 ;;                                                        ;;
-;; #:param: airing? - if #t show is marked as airing,     ;;
-;;          meaning that new episodes could be added      ;;
-;;          in the future                                 ;;
+;; #:param: airing? :: bool - if #t show is not marked as ;;
+;;          finished when all of its episodes have been   ;;
+;;          watched                                       ;;
 ;;                                                        ;;
-;; #:param: episode-offset - an integer representing      ;;
-;;          episode number offset                         ;;
+;; #:param: episode-offset :: int - episode number offset ;;
 ;;          ---                                           ;;
-;;          most shows would have episode-offset equal    ;;
+;;          most shows should have episode-offset equal   ;;
 ;;          to 1 since their first episode is numbered    ;;
-;;          as 'E01'                                      ;;
+;;          as 'E01',                                     ;;
 ;;          but for example in case of Star Trek TOS S01  ;;
 ;;          which has a pilot episode numbered 'E00'      ;;
 ;;          episode-offset should be equal to 0           ;;
 ;;          ---                                           ;;
 ;;                                                        ;;
-;; #:param: subtract-offset? - if #t episode-offset will  ;;
-;;          be subtracted from current-episode            ;;
+;; #:param: subtract-offset? :: bool - if #t              ;;
+;;          'episode-offset is subtracted from            ;;
+;;          'current-episode'                             ;;
 ;;                                                        ;;
-;; #:return: a newly created show                         ;;
+;; #:return: x :: show - show                             ;;
 ;; ------------------------------------------------------ ;;
 (define* (make-show #:key name 
                           path 
@@ -108,10 +105,10 @@
         (cons 'episode-offset episode-offset)))
 
 ;; ------------------------------------------------------ ;;
-;; Remaake show using either new values if specified or   ;;
-;; old ones from the show object otherwise.               ;;
+;; Remake a show using either newly specified values or   ;;
+;; old ones from the 'show' parameter.                    ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show.                                ;;
+;; #:param: show :: show - show                           ;;
 ;; ------------------------------------------------------ ;;
 ;; For information on other parameters take a look at     ;;
 ;; the specification of 'make-show'.                      ;;
@@ -132,32 +129,31 @@
              #:subtract-offset? subtract-offset?))
 
 ;; ------------------------------------------------------ ;;
-;; Get name of show.                                      ;;
+;; Get name of a show.                                    ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
+;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
-;; #:return: a string representing the name of the show   ;;
+;; #:return: x :: string - show name                      ;;
 ;; ------------------------------------------------------ ;;
 (define (show:name show)
   (cdr (assoc 'name show)))
 
 ;; ------------------------------------------------------ ;;
-;; Get path of show.                                      ;;
+;; Get path of a show.                                    ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
+;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
-;; #:return: a string representing the path to the show   ;;
+;; #:return: x :: string - show path                      ;;
 ;; ------------------------------------------------------ ;;
 (define (show:path show)
   (cdr (assoc 'path show)))
 
 ;; ------------------------------------------------------ ;;
-;; Get date of show's creation.                           ;;
+;; Get creation date of a show.                           ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
+;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
-;; #:return: a string representing date of show's         ;;
-;;           creation                                     ;;
+;; #:return: x :: string - show creation date             ;;
 ;; ------------------------------------------------------ ;;
 (define (show:date show)
   (cdr (assoc 'date show)))
@@ -165,23 +161,23 @@
 ;; ------------------------------------------------------ ;;
 ;; Check whether show is airing.                          ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
+;; #:param: show :: show - show                           ;;
 ;;                                                        ;; 
-;; #:return: #t if show is airing, #f otherwise           ;;
+;; #:return: x :: bool - #t if show is airing,            ;;
+;;           #f otherwise                                 ;;
 ;; ------------------------------------------------------ ;;
 (define (show:airing? show)
   (cdr (assoc 'airing? show)))
 
 ;; ------------------------------------------------------ ;;
-;; Get current episode of show.                           ;;
+;; Get current episode number of a show.                  ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
+;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
-;; #:param: with-offset - if #t episode offset is added   ;;
-;;          to current episode                            ;;
+;; #:param: with-offset :: bool - if #t episode offset    ;;
+;;          is added to current episode number            ;;
 ;;                                                        ;;
-;; #:return: an integer representing current episode of   ;;
-;;           the show                                     ;;
+;; #:return: x :: bool - current episode number           ;;
 ;; ------------------------------------------------------ ;;
 (define* (show:current-episode show #:key with-offset)
   (+ (cdr (assoc 'current-episode show))
@@ -190,22 +186,22 @@
        0)))
 
 ;; ------------------------------------------------------ ;;
-;; Get episode offset of show.                            ;;
+;; Get episode offset of a show.                          ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
+;; #:param: show :: show - show                           ;;
 ;;                                                        ;; 
-;; #:return: an integer representing episode number       ;;
-;;           offset                                       ;;
+;; #:return: x :: int - show episode offset               ;;
 ;; ------------------------------------------------------ ;;
 (define (show:episode-offset show)
   (cdr (assoc 'episode-offset show)))
 
 ;; ------------------------------------------------------ ;;
-;; Get show with incremented current episode.             ;;
+;; Increment current episode number of a show.            ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
+;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
-;; #:return: show with incremented current episode        ;;
+;; #:return: x :: show - the same show with incremented   ;;
+;;           current episode number                       ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-inc show)
   (remake-show show
@@ -213,13 +209,14 @@
                  (1+ (show:current-episode show))))
 
 ;; ------------------------------------------------------ ;;
-;; Get show with decremented current episode.             ;;
+;; Decrement current episode number of a show.            ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
+;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
-;; #:return: show with decremented current epsidoe        ;;
-;;           if current episode > 0, otherwise unmodified ;;
-;;           show                                         ;;
+;; #:return: x :: show - the same show with decremented   ;;
+;;           current episode number if current episode    ;;
+;;           is > 0, otherwise the same show with         ;;
+;;           no changes                                   ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-dec show)
   (if (>= 0 (show:current-episode show))
@@ -229,13 +226,12 @@
                    (1- (show:current-episode show)))))
 
 ;; ------------------------------------------------------ ;;
-;; Get a list of filenames of episodes of show.           ;;
+;; Get episode filelist of a show.                        ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;; 
+;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
-;; #:return: a list of strings representing filenames of  ;;
-;;           episodes of show.                            ;;
-;;           (essentially contents of directory located   ;;
+;; #:return: x :: [string] - episode filelist of a show   ;;
+;;           (essentially contents of a directory located ;;
 ;;           at (show:path show) filtered by their        ;; 
 ;;           extension)                                   ;;
 ;; ------------------------------------------------------ ;;
@@ -263,9 +259,10 @@
 ;; ------------------------------------------------------ ;;
 ;; Check whether show is playable.                        ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
+;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
-;; #:return: #t if show is playable, #f otherwise         ;;
+;; #:return: x :: bool - #t if show is playable,          ;;
+;;           #f otherwise                                 ;;
 ;; ------------------------------------------------------ ;;
 (define (show-playable? show)
   (and (<= 0 (show:current-episode show))
@@ -275,9 +272,10 @@
 ;; ------------------------------------------------------ ;;
 ;; Check whether show is fisnished.                       ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
+;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
-;; #:return: #t if show is finished, #f otherwise         ;;
+;; #:return: x :: bool - #t if show is finished,          ;;
+;;           #f otherwise                                 ;;
 ;; ------------------------------------------------------ ;;
 (define (show-finished? show)
   (and (not (show:airing? show))
@@ -287,10 +285,12 @@
 ;; Check whether current episode index of show is out     ;;
 ;; of bounds.                                             ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show - a show                                 ;;
+;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
 ;; #:return: #t if current episode is out of bounds,      ;;
 ;;           #f otherwise                                 ;;
+;; #:return: x :: bool - #t if current episode number is  ;;
+;;           out of bounds, #f otherwise                  ;;
 ;; ------------------------------------------------------ ;;
 (define (show:current-episode-out-of-bounds? show)
   (let ((ep-lst-len (length (show:episode-list show)))
@@ -300,15 +300,15 @@
         ((if (show:airing? show) > >=) current-ep ep-lst-len))))
 
 ;; ------------------------------------------------------ ;;
-;; Remove show named show-name from show-list. Original   ;;
-;; list remains unmodified.                               ;;
+;; Remove a show from a show-list. Original list remains  ;;
+;; unmodified.                                            ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show-name - a string representing the name of ;;
-;;          the show that is being removed                ;;
+;; #:param: show-name :: string - show name               ;;
 ;;                                                        ;;
-;; #:param: show-list - a show-list                       ;;
+;; #:param: show-list :: [show] - show list               ;;
 ;;                                                        ;; 
-;; #:return: show-list without the show named show-name   ;;
+;; #:return: x :: [show] - show-list with requested show  ;;
+;;           removed                                      ;;
 ;; ------------------------------------------------------ ;;
 (define (remove-show show-name show-list)
   (cond 
@@ -321,15 +321,14 @@
            (remove-show show-name (cdr show-list))))))
 
 ;; ------------------------------------------------------ ;;
-;; Find show named show-name in show-list.                ;;
+;; Find a show in a show-list.                            ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show-name - a string representing the name of ;;
-;;          the show that we're looking for               ;;
+;; #:param: show-name :: string - show name               ;;
 ;;                                                        ;;
-;; #:param: show-list - a show list to search             ;;
+;; #:param: show-list :: [show] - show list               ;;
 ;;                                                        ;;
-;; #:return: in case the show was found - the show itself ;;
-;;           otherwise - #f                               ;;
+;; #:return: x :: show/bool - if such a show was found    ;;
+;;           it is returned, otherwise #f is returned     ;;
 ;; ------------------------------------------------------ ;;
 (define (find-show show-name show-list)
   (cond
@@ -340,11 +339,12 @@
     (else
      (find-show show-name (cdr show-list)))))
 
-;; -------------------------------------------------------------------- ;;
-;; Ask the user whether they'd like to overwrite already existing show. ;;
-;; -------------------------------------------------------------------- ;;
-;; #:param: show-name - a string representing the name of the show      ;;
-;; -------------------------------------------------------------------- ;;
+;; ------------------------------------------------------ ;;
+;; Ask the user whether they'd like to overwrite          ;;
+;; an already existing show.                              ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show-name :: string - show name               ;;
+;; ------------------------------------------------------ ;;
 (define (ask-user-overwrite show-name)
   (let loop ((ask-message (format #f 
                                   "A show called '~a' already exists, overwrite? (y/n): " 

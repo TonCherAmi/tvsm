@@ -45,10 +45,10 @@
 ;; Get a string containing the ANSI escape sequence for   ;;
 ;; producing the requested set of attributes.             ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: lst<list<symbol>> - desired attributes        ;;
+;; #:param: lst :: [symbol] - desired attributes          ;;
 ;;                                                        ;;
-;; #:return<string>: ANSI escape sequense for producing   ;;
-;;                   the requested set of attributes      ;;
+;; #:return: x :: string - ANSI escape sequense for       ;;
+;;           producing the requested set of attributes    ;;
 ;; ------------------------------------------------------ ;;
 (define (color . lst)
   (let ((color-list 
@@ -67,15 +67,15 @@
 ;; Get a copy of 'str' colorized using ANSI escape        ;;
 ;; sequences according to attributes specified in         ;;
 ;; 'color-list'. At the end of the returned string all    ;;
-;; the attributes are be reset.                           ;;
+;; the attributes are reset.                              ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: str<string> - a string to colorize            ;;
+;; #:param: str :: string - a string to colorize          ;;
 ;;                                                        ;;
-;; #:param: color-list<list<symbol>> - desired attributes ;;
+;; #:param: color-list :: [symbol] - desired attributes   ;;
 ;;                                                        ;;
-;; #:return<string>: a copy of 'str' wrapped in ANSI      ;;
-;;                   escape sequences required for        ;;
-;;                   producing requested colors           ;;
+;; #:return: x :: string - a copy of 'str' wrapped in     ;;
+;;           ANSI escape sequences required for producing ;;
+;;           requested colors                             ;;
 ;; ------------------------------------------------------ ;;
 (define (colorize-string str . color-list)
   (string-append

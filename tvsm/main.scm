@@ -29,7 +29,7 @@
 ;; ------------------------------------------------------ ;;
 ;; Main procedure.                                        ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: args - command line arguments.                ;;
+;; #:param: args :: [string] - command line arguments.    ;;
 ;; ------------------------------------------------------ ;;
 (define (main args)
   (let* ((general-option-spec '((version (single-char #\v) (value #f))
@@ -196,8 +196,7 @@ Try 'tvsm set --help' for more information."))
 ;; ------------------------------------------------------ ;;
 ;; Print a message and exit with a non-zero return value. ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: message - a string representing an error      ;;
-;;          message                                       ;;
+;; #:param: message :: string - error message             ;;
 ;; ------------------------------------------------------ ;;
 (define (die message)
   (format #t "tvsm: ~a~%" message)
@@ -206,18 +205,18 @@ Try 'tvsm set --help' for more information."))
 ;; ------------------------------------------------------ ;;
 ;; Print a help message.                                  ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: command - a symbol representing a sub-command ;;
+;; #:param: command :: symbol - a sub-command name        ;;
 ;;          whose help message is to be printed.          ;;
-;;          If not specified or not matching any existing ;;
+;;          if not specified or not matching any existing ;;
 ;;          sub-command general help message is printed.  ;;
 ;; ------------------------------------------------------ ;;
 (define* (display-help #:optional command)
   (case command
     ((add) 
      (display "\
-Usage: tvsm add <required-options> [<options>]
+Usage: tvsm add <required-arguments> [<options>]
 
-required-options: 
+required-arguments: 
     -n, --name <name>:                  show name, a unique identifier.
     -p, --path <path>:                  path to the directory that contains 
                                         episodes of the new show.

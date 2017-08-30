@@ -22,10 +22,10 @@
   #:use-module (tvsm config))
 
 ;; ------------------------------------------------------ ;;
-;; Read show-list database.                               ;;
+;; Read show database.                                    ;;
 ;; ------------------------------------------------------ ;;
-;; #:return: show list (list is empty if the database is  ;;
-;;           empty)                                       ;;
+;; #:return: x :: [show] - show-list (list is empty if    ;;
+;;           the database is empty                        ;;
 ;; ------------------------------------------------------ ;;
 (define (read-show-list-db)
   (if (access? (config 'show-db-path) R_OK)
@@ -35,9 +35,9 @@
     (list)))
 
 ;; ------------------------------------------------------ ;;
-;; Write show-list database.                              ;;
+;; Write show database.                                   ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show-list - a show list                       ;; 
+;; #:param: show-list :: [show] - show-list               ;; 
 ;; ------------------------------------------------------ ;;
 (define (write-show-list-db show-list)
   (let* ((db-path 

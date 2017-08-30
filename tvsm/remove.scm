@@ -22,9 +22,9 @@
   #:use-module (tvsm show))
 
 ;; ---------------------------------------------------- ;;
-;; Remove show called show-name from the show database. ;;
+;; Remove a show from the database.                     ;;
 ;; ---------------------------------------------------- ;;
-;; #:param: show-name - name of the show to remove      ;;
+;; #:param: show-name :: string - show name             ;;
 ;; ---------------------------------------------------- ;;
 (define (remove-show-db show-name)
   (call-with-show-list
@@ -38,7 +38,7 @@
           (remove-show show-name show-list)))))
 
 ;; ---------------------------------------------------- ;;
-;; Remove completed shows from the database.            ;;
+;; Remove finished shows from the database.             ;;
 ;; ---------------------------------------------------- ;;
 (define (remove-finished-db)
   (call-with-show-list
@@ -46,5 +46,6 @@
       #t
     #:proc
       (lambda (show-list)
-        (filter (lambda (show) (show-finished? show))
+        (filter (lambda (show)
+                  (not (show-finished? show)))
                 show-list))))

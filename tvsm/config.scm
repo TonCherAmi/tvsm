@@ -24,9 +24,9 @@
 ;; ---------------------------------------------------------- ;;
 ;; Get value of 'property' from the config.                   ;;
 ;; ---------------------------------------------------------- ;;
-;; #:param: property<symbol> - name of the config property    ;;
+;; #:param: property :: symbol - config property identifier   ;;
 ;;                                                            ;;
-;; #:return: x<a> - value of 'property' if it is found,       ;;
+;; #:return: x :: a - value of 'property' if it is found,     ;;
 ;;           #f otherwise                                     ;;
 ;; ---------------------------------------------------------- ;;
 (define (config property)
@@ -38,21 +38,20 @@
 ;; ---------------------------------------------------------- ;;
 ;; Get a list of possible config paths.                       ;;
 ;; ---------------------------------------------------------- ;;
-;; #:return: x<list<string>>: list of possible config paths   ;;
+;; #:return: x :: [string] - list of possible config paths    ;;
 ;; ---------------------------------------------------------- ;;
 (define (path-list) 
   (let ((home (++ (getenv "HOME") "/")))
-    (list (++ home ".tvsm")
-          (++ home ".config/tvsm/config")
+    (list (++ home ".config/tvsm/config")
+          (++ home ".tvsm")
           "config")))
 
 ;; ---------------------------------------------------------- ;;
 ;; Read the config from (current-input-port).                 ;;
 ;; ---------------------------------------------------------- ;;
-;; #:return: x<alist<symbol, a>> - association list where the ;;
-;;           first item of an element pair is a property      ;;
-;;           identifier and the second is that property's     ;;
-;;           value.                                           ;;
+;; #:return: x :: [(symbol, a)] - alist where the first item  ;;
+;;           of an element pair is a property identifier and  ;;
+;;           the second is that property's value              ;;
 ;; ---------------------------------------------------------- ;;
 (define (read-config)
   (let loop ((cfg-lst (read)))
@@ -69,9 +68,9 @@
 ;; ---------------------------------------------------------- ;;
 ;; Expand environment variables in a string.                  ;; 
 ;; ---------------------------------------------------------- ;;
-;; #:param: str<string> - a string                            ;;
+;; #:param: str :: string - string                            ;;
 ;;                                                            ;;
-;; #:return: x<string> - 'str' with environment variables     ;;
+;; #:return: x :: string - 'str' with environment variables   ;;
 ;;           expanded.                                        ;;
 ;; ---------------------------------------------------------- ;;
 (define (expand-variables str)
@@ -81,8 +80,7 @@
       (read-line port))))
  
 ;; ---------------------------------------------------------- ;;
-;; Association list containing config properties with their   ;;
-;; values.                                                    ;;
+;; An alist containing config properties with their values.   ;;
 ;; ---------------------------------------------------------- ;;
 (define config-list
   (let loop ((paths (path-list)))

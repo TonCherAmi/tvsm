@@ -24,22 +24,20 @@
   #:use-module (tvsm config))
 
 ;; ------------------------------------------------------------------------ ;;
-;; Play an episode of show called show-name.                                ;;
+;; Play an episode of a show.                                               ;;
 ;; ------------------------------------------------------------------------ ;;
-;; #:param: show-name - a string representing the name of the show that is  ;;
-;;          played                                                          ;;
+;; #:param: show-name :: string - show name                                 ;;
 ;;                                                                          ;;
-;; #:param: increment? - a boolean value that determines whether show's     ;;
-;;          current-episode index will be incremented after current episode ;;
-;;          is played.                                                      ;;
+;; #:param: increment? :: bool - if #t current episode number of a show is  ;;
+;;          incremented after it is played                                  ;;
 ;;                                                                          ;;
-;; #:param: episode - an integer that represents an episode that will be    ;;
-;;          used instead of shows's current-epsidoe if specified.           ;;
+;; #:param: episode :: int - number of the episode which is, if specified,  ;;
+;;          played instead of the current episode                           ;;
 ;; ------------------------------------------------------------------------ ;;
 (define* (play-show-db show-name #:key (increment? #t) (episode #f))
   (call-with-show-list 
     #:overwrite
-      #t
+      increment?
     #:proc
       (lambda (show-list)
         (let* ((show-db (find-show show-name show-list))
@@ -68,25 +66,22 @@
                       (colorize-string 
                         (number->string (show:current-episode show #:with-offset #t))
                         'BOLD)
-                      (colorize-string (show:name show) 'BOLD))
-              (cond
-                ;; Shell will return 0 on successful command execution.
-                ((not (zero? (play-episode episode-path)))
-                 (throw 'external-command-fail-exception 
-                        (format #f "cannot play '~a': Media player command failed" 
-                                show-name)))
-                (increment?
-                  (let ((updated-show (show:current-episode-inc show)))
-                    (cons updated-show (remove-show show-name show-list))))
-                (else show-list))))))))
+                      (colorize-string 
+                        (show:name show)
+                        'BOLD))
+              ;; Shell will return 0 on successful command execution.
+              (if (not (zero? (play-episode episode-path)))
+                (throw 'external-command-fail-exception
+                       (format #f "cannot play '~a': Media player command failed"))
+                (cons (show:current-episode-inc show)
+                      (remove-show show-name show-list)))))))))
 
 ;; ------------------------------------------------------------ ;;
-;; Get full path to show's current-episode.                     ;;
+;; Get full path to the current-episode of a show.              ;;
 ;; ------------------------------------------------------------ ;;
-;; #:param: show - a show                                       ;;
+;; #:param: show :: show - show                                 ;;
 ;;                                                              ;;
-;; #:return: a string representing a full path to the episode   ;;
-;;           of show pointed to by current-episode index.       ;;
+;; #:return: x :: string - full path to the current episode     ;;
 ;; ------------------------------------------------------------ ;;
 (define (show:current-episode-path show)
   (let ((format-string (if (string-suffix? "/" (show:path show)) 
@@ -100,11 +95,9 @@
 ;; ------------------------------------------------------------ ;;
 ;; Play an episode using user-defined media player command.     ;;
 ;; ------------------------------------------------------------ ;;
-;; #:param: episode-path - a string representing full path to a ;;
-;;          media file representing an episode                  ;;
+;; #:param: episode-path :: string - full path to the episode   ;;
 ;;                                                              ;;
-;; #:return: zero is returned on successful command execution   ;;
-;;           non-zero error code is returned otherwise          ;;
+;; #:return: x :: int - shell command exit code                 ;;
 ;; ------------------------------------------------------------ ;;
 (define (play-episode episode-path)
   (system (format #f (config 'media-player-command)

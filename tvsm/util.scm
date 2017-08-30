@@ -32,12 +32,11 @@
 ;; with the resulting port. Pipe is closed afterwards and ;;
 ;; value returned from 'proc' is returned.                ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: command - a string representing a shell       ;;
-;;          command                                       ;;
-;; #:param: proc - a procedure that takes an input port   ;;
-;;          as its only required argument.                ;;
+;; #:param: command :: string - shell command             ;;
 ;;                                                        ;;
-;; #:return: return value of 'proc'                       ;;
+;; #:param: proc :: port -> a - procedure                 ;;
+;;                                                        ;;
+;; #:return: x :: a - return value of 'proc'              ;;
 ;; ------------------------------------------------------ ;;
 (define (call-with-input-pipe command proc)
   (let* ((port (open-input-pipe command))
@@ -50,12 +49,11 @@
 ;; with the resulting port. Pipe is closed afterwards and ;;
 ;; value returned from 'proc' is returned.                ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: command - a string representing a shell       ;;
-;;          command                                       ;;
-;; #:param: proc - a procedure that takes an input port   ;;
-;;          as its only required argument.                ;;
+;; #:param: command :: string - shell command             ;;
 ;;                                                        ;;
-;; #:return: return value of 'proc'                       ;;
+;; #:param: proc :: port -> a - procedure                 ;;
+;;                                                        ;;
+;; #:return: x :: a - return value of 'proc'              ;;
 ;; ------------------------------------------------------ ;;
 (define (call-with-output-pipe command proc)
   (let* ((port (open-output-pipe command))

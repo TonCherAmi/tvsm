@@ -22,21 +22,23 @@
   #:use-module  (tvsm show))
 
 ;; ------------------------------------------------------------------ ;;
-;; Add show to the show database.                                     ;;
+;; Add a show to the database.                                        ;;
 ;; ------------------------------------------------------------------ ;;
-;; #:param: name - a string representing the name of the show that    ;;
-;;          is being added.                                           ;;
+;; #:param: name :: string - show name                                ;;
 ;;                                                                    ;;
-;; #:param: path - a string representing a path to the show directory ;; 
+;; #:param: path :: string - path to the show directory               ;;
 ;;                                                                    ;;
-;; #:param: starting-episode - an integer that is the index of the    ;;
-;;          episode from which the show will begin to play            ;; 
-;;    NOTE: it is assumed that the value is passed without            ;;
-;;          episode-offset subtracted i.e. as it was specified by the ;;
-;;          user                                                      ;;
+;; #:param: airing? :: bool - if #t show is not marked as finished    ;;
+;;          when all of its episodes have been watched                ;;
 ;;                                                                    ;;
-;; #:param: episode-offset - an integer representing episode number   ;;
-;;          offset. useful for shows whose first episode is numbered  ;;
+;; #:param: starting-episode :: int - number of the episode to be     ;;
+;;          played first                                              ;;
+;;    NOTE: it is assumed that this value is passed without           ;;
+;;          episode-offset subtracted i.e. as it was specified by     ;;
+;;          the user                                                  ;;
+;;                                                                    ;;
+;; #:param: episode-offset :: int - episode number offset. generally  ;;
+;;          only useful for shows whose first episode is numbered     ;;
 ;;          differently than 'E01'                                    ;;
 ;; ------------------------------------------------------------------ ;;
 (define* (add-show-db #:key name path airing? starting-episode episode-offset)
@@ -48,7 +50,6 @@
                              #:episode-offset episode-offset
                              #:subtract-offset? #t)))
     (if (show:current-episode-out-of-bounds? new-show)
-        ;; Throw an exception if starting episode index is out of bounds.
         (throw 'episode-out-of-bounds-exception 
                (format #f "cannot add '~a': Starting episode index is out of bounds" 
                        name))
@@ -61,11 +62,10 @@
                 ((not (find-show name show-list))
                  (cons new-show show-list))
                 ;; If show with such a name already exists we ask user
-                ;; whether they would like to overwrite it, if the answer 
-                ;; is positive we overwrite it, otherwise we throw an
-                ;; exception.
+                ;; whether they would like to overwrite it
                 ((ask-user-overwrite name)
                  (cons new-show (remove-show name show-list)))
                 (else
                  (throw 'show-already-exists-exception
-                        (format #f "cannot add '~a': Show already exists" name)))))))))
+                        (format #f "cannot add '~a': Show already exists"
+                                name)))))))))

@@ -24,9 +24,12 @@
   #:use-module (tvsm color))
 
 ;; ------------------------------------------------------ ;;
-;; Print contents of show-list database in a neat manner. ;;
+;; Print contents of the show database in a neat manner.  ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: long-format - make output more detailed       ;;
+;; #:param: all :: bool - do not ignore finished shows    ;;
+;;                                                        ;;
+;; #:param: long-format :: bool - makes output more       ;;
+;;          detailed if #t                                ;;
 ;; ------------------------------------------------------ ;;
 (define* (list-shows-db #:key all long)
   (call-with-show-list
@@ -42,7 +45,7 @@
 ;; ------------------------------------------------------ ;;
 ;; Print show-list in long format.                        ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show-list - show-list to print                ;;
+;; #:param: show-list :: [show] - show-list to print      ;;
 ;; ------------------------------------------------------ ;;
 (define (list-shows-long show-list)
   (format #t "total ~a~%" (length show-list))
@@ -70,7 +73,7 @@
 ;; ------------------------------------------------------ ;;
 ;; Print show-list in short format (names only).          ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show-list - show-list to print                ;;
+;; #:param: show-list :: [show] - show-list to print      ;;
 ;; ------------------------------------------------------ ;;
 (define (list-shows-short show-list)
   (for-each

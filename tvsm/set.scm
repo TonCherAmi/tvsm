@@ -27,12 +27,10 @@
 
 
 ;; ------------------------------------------------------ ;;
-;; Rename a show in the db.                               ;;
+;; Rename a show in the database.                         ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: old-show-name - a string representing         ;; 
-;;          the name of the show that is being renamed    ;;
-;; #:param: new-show-name - a string representing the new ;;
-;;          name that the show will bear                  ;;
+;; #:param: old-show-name :: string - old show name       ;;
+;; #:param: new-show-name :: string - new show name       ;;
 ;; ------------------------------------------------------ ;;
 (define (set-show-name-db old-show-name new-show-name)
   (call-with-show-list
@@ -47,26 +45,20 @@
                    (throw 'show-not-found-exception
                           (format #f "cannot rename '~a': No such show" old-show-name))
                    (remake-show show-db #:name new-show-name))))
-          ;; If show called 'new-show-name' already exists in the db
           (if (find-show new-show-name show-list)
-            ;; We ask the user whether they'd like to overwrite already existing show
             (if (ask-user-overwrite new-show-name)
-              ;; If the answer is positive we overwrite it
               (cons show (remove-show new-show-name (remove-show old-show-name show-list)))
-              ;; If the answer is negative we cannot proceed and therefore 
-              ;; an exception is thrown
               (throw 'show-already-exists-exception
                      (format #f "cannot rename '~a' to '~a': Show already exists"
                              old-show-name new-show-name)))
             (cons show (remove-show old-show-name show-list)))))))
 
 ;; ------------------------------------------------------ ;;
-;; Set a new path for a show.                             ;;
+;; Set new path for a show in the database.               ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show-name - a string representing the name of ;;
-;;          the show whose path is being set              ;;
-;; #:param: new-show-path - a string representing the new ;;
-;;          path to the show directory                    ;;
+;; #:param: show-name :: string - show name               ;;
+;; #:param: new-show-path :: string - new path to show    ;;
+;;          directory                                     ;;
 ;; ------------------------------------------------------ ;;
 (define (set-show-path-db show-name new-show-path)
   (call-with-show-list
@@ -87,12 +79,11 @@
             (cons show (remove-show show-name show-list)))))))
 
 ;; ------------------------------------------------------ ;;
-;; Set current episode of show called show-name in the db ;;
+;; Set new current episode for a show in the database.    ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show-name - a string representing the name of ;;
-;;          the show whose index is being modified        ;;
-;; #:param: new-index - an integer representing the new   ;;
-;;          index that will be set                        ;;
+;; #:param: show-name :: string - show name               ;;
+;; #:param: new-current-episode :: int - new current      ;;
+;;          episode                                       ;;
 ;; ------------------------------------------------------ ;;
 (define (set-show-current-episode-db show-name new-current-episode)
   (call-with-show-list
@@ -117,12 +108,11 @@
             (cons show (remove-show show-name show-list)))))))
 
 ;; ------------------------------------------------------ ;;
-;; Mark/unmark show as airing.                            ;;
+;; Mark/unmark a show in the database as airing.          ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show-name - a string representing the name of ;;
-;;          the show that is being modified.              ;;
-;; #:param: airing? - a boolean that determines whether   ;;
-;;                    show is airing.                     ;;
+;; #:param: show-name :: string - show name               ;;
+;; #:param: airing? :: bool - determines whether show is  ;;
+;;          airing                                        ;;
 ;; ------------------------------------------------------ ;;
 (define (set-show-airing-db show-name airing?)
   (call-with-show-list
@@ -139,58 +129,4 @@
                                   show-name
                                   (if airing? "airing" "completed")))
                    (remake-show show-db #:airing? airing?))))
-          (cons show (remove-show show-name show-list))))))
-
-;; ------------------------------------------------------ ;;
-;; Jump to next episode of show called show-name.         ;;
-;;                                                        ;;
-;; Essentially what this does is it increments current-   ;;
-;; episode index of the specified show and writes         ;;
-;; the result to the show db.                             ;;
-;; ------------------------------------------------------ ;;
-;; #:param: show-name - a string representing the name of ;;
-;;          the show whose index is being incremented     ;;
-;; ------------------------------------------------------ ;;
-(define (jump-to-next-episode-db show-name)
-  (call-with-show-list
-    #:overwrite 
-      #t
-    #:proc
-      (lambda (show-list)
-        (let* ((show-db 
-                 (find-show show-name show-list))
-               (show 
-                 (if (not show-db)
-                   (throw 'show-not-found-exception
-                          (format #f 
-                                  "cannot move to next episode of '~a': No Such show"
-                                  show-name))
-                   (show:current-episode-inc show-db))))
-          (cons show (remove-show show-name show-list))))))
-
-;; ------------------------------------------------------ ;;
-;; Jump to previous episode of show called show-name.     ;;
-;;                                                        ;;
-;; Essentially what this does is it decrements current-   ;;
-;; episode index of the specified show and writes         ;;
-;; the result to the show db.                             ;;
-;; ------------------------------------------------------ ;;
-;; #:param: show-name - a string representing the name of ;;
-;;          the show whose index is being decremented     ;;
-;; ------------------------------------------------------ ;;
-(define (jump-to-previous-episode-db show-name)
-  (call-with-show-list
-    #:overwrite 
-      #t
-    #:proc
-      (lambda (show-list)
-        (let* ((show-db 
-                 (find-show show-name show-list))
-               (show 
-                 (if (not show-db)
-                   (throw 'show-not-found-exception
-                          (format #f 
-                                  "cannot move to previous episode of '~a': No Such show" 
-                                  show-name))
-                   (show:current-episode-dec show-db))))
           (cons show (remove-show show-name show-list))))))
