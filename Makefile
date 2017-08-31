@@ -30,11 +30,13 @@ GUILEC := guild compile
 SRC := $(wildcard ${PROGNAME}/*.scm)
 OBJ := ${SRC:.scm=.go}
 
+.SILENT: OBJ
+
 export GUILE_AUTO_COMPILE = 0
 export GUILE_LOAD_PATH = ${CURDIR}
 
 OBJ: ${SRC}
-	$(foreach object, ${OBJ}, ${GUILEC} -o ${object} ${object:.go=.scm};)
+	$(foreach object, ${OBJ}, ${GUILEC} -o ${object} ${object:.go=.scm} 2>/dev/null;)
 
 all:
 	${OBJ}
