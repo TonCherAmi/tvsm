@@ -29,7 +29,7 @@
 ;; ------------------------------------------------------ ;;
 ;; Main procedure.                                        ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: args :: [string] - command line arguments.    ;;
+;; #:param: args :: [string] - command line arguments     ;;
 ;; ------------------------------------------------------ ;;
 (define (main args)
   (let* ((general-option-spec '((version (single-char #\v) (value #f))

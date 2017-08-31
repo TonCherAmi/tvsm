@@ -28,8 +28,8 @@
 ;; ------------------------------------------------------ ;;
 ;; #:param: all :: bool - do not ignore finished shows    ;;
 ;;                                                        ;;
-;; #:param: long-format :: bool - makes output more       ;;
-;;          detailed if #t                                ;;
+;; #:param: long :: bool - if #t makes output more        ;;
+;;          detailed                                      ;;
 ;; ------------------------------------------------------ ;;
 (define* (list-shows-db #:key all long)
   (call-with-show-list
