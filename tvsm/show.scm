@@ -33,10 +33,8 @@
                 show-finished?
                 show:current-episode-out-of-bounds?
                 remove-show
-                find-show
-                ask-user-overwrite)
+                find-show)
   #:use-module (ice-9 ftw)
-  #:use-module (ice-9 rdelim)
   #:use-module (tvsm db)
   #:use-module (tvsm config))
 
@@ -338,27 +336,3 @@
      (car show-list))
     (else
      (find-show show-name (cdr show-list)))))
-
-;; ------------------------------------------------------ ;;
-;; Ask the user whether they'd like to overwrite          ;;
-;; an already existing show.                              ;;
-;; ------------------------------------------------------ ;;
-;; #:param: show-name :: string - show name               ;;
-;; ------------------------------------------------------ ;;
-(define (ask-user-overwrite show-name)
-  (let loop ((ask-message (format #f 
-                                  "A show called '~a' already exists, overwrite? (y/n): " 
-                                  show-name)))
-    (display ask-message)
-    (let ((answer (read-line)))
-      (cond
-        ((eof-object? answer) 
-         #f)
-        ((or (string-ci=? answer "y") (string-ci=? answer "yes"))
-         #t)
-        ((or (string-ci=? answer "n") (string-ci=? answer "no")) 
-         #f)
-        ;; If the answer is neither 'yes' or 'y' nor 'no' or 'n'
-        ;; loop until the requested answer is received.
-        (else 
-         (loop "Please answer (y/n): "))))))

@@ -18,7 +18,9 @@
 
 (define-module (tvsm util)
   #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim)
   #:export     (++
+                ask-user-y/n
                 call-with-input-pipe
                 call-with-output-pipe))
 
@@ -26,6 +28,30 @@
 ;; Shorthand for 'string-append'.                         ;;
 ;; ------------------------------------------------------ ;;
 (define ++ string-append)
+
+;; ------------------------------------------------------ ;;
+;; Print a message and prompt the user for a reply until  ;;
+;; either a 'y/yes/n/no' reply is received or an eof      ;;
+;; object is detected.
+;; ------------------------------------------------------ ;;
+;; #:param: message :: string - message to print          ;;
+;;                                                        ;;
+;; #:return: x :: bool - #t if the answer is 'y/yes',     ;;
+;;           #f if the answer is 'n/no' or an eof object  ;;
+;;           is detected                                  ;;
+;; ------------------------------------------------------ ;;
+(define (ask-user-y/n message)
+  (display message)
+  (let ((answer (read-line)))
+    (cond
+      ((eof-object? answer)
+       #f)
+      ((or (string-ci=? answer "y") (string-ci=? answer "yes"))
+       #t)
+      ((or (string-ci=? answer "n") (string-ci=? answer "no"))
+       #f)
+      (else
+       (ask-user-y/n "Please answer (y/n): ")))))
 
 ;; ------------------------------------------------------ ;;
 ;; Execute 'command' with a pipe from it and call 'proc'  ;;

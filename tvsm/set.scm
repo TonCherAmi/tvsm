@@ -23,6 +23,7 @@
                 set-show-airing-db
                 jump-to-next-episode-db
                 jump-to-previous-episode-db)
+  #:use-module (tvsm util)
   #:use-module (tvsm show))
 
 
@@ -46,7 +47,7 @@
                           (format #f "cannot rename '~a': No such show" old-show-name))
                    (remake-show show-db #:name new-show-name))))
           (if (find-show new-show-name show-list)
-            (if (ask-user-overwrite new-show-name)
+            (if (ask-user-y/n (format #f "Show '~a' already exists. Overwrite? " new-show-name))
               (cons show (remove-show new-show-name (remove-show old-show-name show-list)))
               (throw 'show-already-exists-exception
                      (format #f "cannot rename '~a' to '~a': Show already exists"

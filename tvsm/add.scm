@@ -16,10 +16,11 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module  (tvsm add)
-  #:export      (add-show-db)
-  #:use-module  (srfi srfi-19)
-  #:use-module  (tvsm show))
+(define-module (tvsm add)
+  #:export     (add-show-db)
+  #:use-module (srfi srfi-19)
+  #:use-module (tvsm util)
+  #:use-module (tvsm show))
 
 ;; ------------------------------------------------------------------ ;;
 ;; Add a show to the database.                                        ;;
@@ -51,8 +52,7 @@
                              #:subtract-offset? #t)))
     (if (show:current-episode-out-of-bounds? new-show)
         (throw 'episode-out-of-bounds-exception 
-               (format #f "cannot add '~a': Starting episode index is out of bounds" 
-                       name))
+               (format #f "cannot add '~a': Starting episode index is out of bounds" name))
         (call-with-show-list
           #:overwrite
             #t
@@ -61,11 +61,8 @@
               (cond
                 ((not (find-show name show-list))
                  (cons new-show show-list))
-                ;; If show with such a name already exists we ask user
-                ;; whether they would like to overwrite it
-                ((ask-user-overwrite name)
+                ((ask-user-y/n (format #f "Show '~a' already exists. Overwrite? " name))
                  (cons new-show (remove-show name show-list)))
                 (else
                  (throw 'show-already-exists-exception
-                        (format #f "cannot add '~a': Show already exists"
-                                name)))))))))
+                        (format #f "not overwriting '~a': Exiting" name)))))))))
