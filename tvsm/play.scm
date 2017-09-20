@@ -69,12 +69,16 @@
                       (colorize-string 
                         (show:name show)
                         'BOLD))
-              ;; Shell will return 0 on successful command execution.
-              (if (not (zero? (play-episode episode-path)))
-                (throw 'external-command-fail-exception
-                       (format #f "cannot play '~a': Media player command failed"))
-                (cons (show:current-episode-inc show)
-                      (remove-show show-name show-list)))))))))
+              (catch 
+                #t
+                ;; thunk
+                (lambda ()
+                  (play-episode episode-path)
+                  (cons (show:current-episode-inc show)
+                        (remove-show show-name show-list)))
+                ;; handler
+                (lambda (key message)
+                  (throw key (format #f "could not play '~a': ~a" show-name message))))))))))
 
 ;; ------------------------------------------------------------ ;;
 ;; Get full path to the current-episode of a show.              ;;
@@ -96,9 +100,16 @@
 ;; Play an episode using user-defined media player command.     ;;
 ;; ------------------------------------------------------------ ;;
 ;; #:param: episode-path :: string - full path to the episode   ;;
-;;                                                              ;;
-;; #:return: x :: int - shell command exit code                 ;;
 ;; ------------------------------------------------------------ ;;
 (define (play-episode episode-path)
-  (system (format #f (config 'media-player-command)
-                  episode-path)))
+  (let ((command (config 'media-player-command)))
+    (cond
+      ((not command)
+       (throw 'command-not-set-exception
+              "Media player command is not set"))
+      ((or (not (string? command)) (not (string-contains command "~a")))
+       (throw 'command-malformed-exception
+              "Media player command is malformed"))
+      ((not (zero? (system (format #f command episode-path))))
+       (throw 'command-failed-exception
+              "Media player command failed")))))
