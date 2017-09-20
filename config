@@ -1,7 +1,7 @@
 ;; tvsm default config file
 
  ;; media player command
-((media-player-command . "media-player-command-not-set")
+((media-player-command . #f)
  ;; list of media formats used to distinguish media files
  ;; in show directories
  (media-format-list    . (".mkv" ".mpv" ".avi" ".mp4" ".mpeg" 
