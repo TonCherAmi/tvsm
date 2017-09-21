@@ -212,7 +212,7 @@ Try 'tvsm remove --help' for more information."))
          (current-episode (option-ref options 'current-episode #f))
          ;; Here we get a list that should consist of one element
          ;; which is the show name passed as an argument.
-         (show-name           (option-ref set-options '() '())))
+         (show-name       (option-ref options '() '())))
     (cond
       (help-wanted
         (display-help 'set))
