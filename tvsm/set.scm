@@ -19,8 +19,8 @@
 (define-module (tvsm set)
   #:export     (set-show-name-db
                 set-show-path-db
-                set-show-current-episode-db
-                set-show-airing-db)
+                set-show-airing-db
+                set-show-current-episode-db)
   #:use-module (tvsm util)
   #:use-module (tvsm show))
 
@@ -29,6 +29,7 @@
 ;; Rename a show in the database.                         ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: old-show-name :: string - old show name       ;;
+;;                                                        ;;
 ;; #:param: new-show-name :: string - new show name       ;;
 ;; ------------------------------------------------------ ;;
 (define (set-show-name-db old-show-name new-show-name)
@@ -56,6 +57,7 @@
 ;; Set new path for a show in the database.               ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show-name :: string - show name               ;;
+;;                                                        ;;
 ;; #:param: new-show-path :: string - new path to show    ;;
 ;;          directory                                     ;;
 ;; ------------------------------------------------------ ;;
@@ -78,9 +80,35 @@
             (cons show (remove-show show-name show-list)))))))
 
 ;; ------------------------------------------------------ ;;
+;; Mark/unmark a show in the database as airing.          ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show-name :: string - show name               ;;
+;;                                                        ;;
+;; #:param: airing? :: bool - determines whether show is  ;;
+;;          airing                                        ;;
+;; ------------------------------------------------------ ;;
+(define (set-show-airing-db show-name airing?)
+  (call-with-show-list
+    #:overwrite
+      #t
+    #:proc
+      (lambda (show-list)
+        (let* ((show-db 
+                 (find-show show-name show-list))
+               (show
+                 (if (not show-db)
+                   (throw 'show-not-found-exception
+                          (format #f "cannot mark '~a' as ~a: No such show" 
+                                  show-name
+                                  (if airing? "airing" "completed")))
+                   (remake-show show-db #:airing? airing?))))
+          (cons show (remove-show show-name show-list))))))
+
+;; ------------------------------------------------------ ;;
 ;; Set new current episode for a show in the database.    ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show-name :: string - show name               ;;
+;;                                                        ;;
 ;; #:param: new-current-episode :: int - new current      ;;
 ;;          episode                                       ;;
 ;; ------------------------------------------------------ ;;
@@ -105,27 +133,3 @@
                    (format #f "cannot set current episode for '~a': Episode out of bounds" 
                            show-name))
             (cons show (remove-show show-name show-list)))))))
-
-;; ------------------------------------------------------ ;;
-;; Mark/unmark a show in the database as airing.          ;;
-;; ------------------------------------------------------ ;;
-;; #:param: show-name :: string - show name               ;;
-;; #:param: airing? :: bool - determines whether show is  ;;
-;;          airing                                        ;;
-;; ------------------------------------------------------ ;;
-(define (set-show-airing-db show-name airing?)
-  (call-with-show-list
-    #:overwrite
-      #t
-    #:proc
-      (lambda (show-list)
-        (let* ((show-db 
-                 (find-show show-name show-list))
-               (show
-                 (if (not show-db)
-                   (throw 'show-not-found-exception
-                          (format #f "cannot mark '~a' as ~a: No such show" 
-                                  show-name
-                                  (if airing? "airing" "completed")))
-                   (remake-show show-db #:airing? airing?))))
-          (cons show (remove-show show-name show-list))))))
