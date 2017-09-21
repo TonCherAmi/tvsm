@@ -58,140 +58,180 @@
           (lambda ()
             (case command
               ((add) 
-               (let* ((add-option-spec '((help             (single-char #\h) (value #f))
-                                         (name             (single-char #\n) (value #t))
-                                         (path             (single-char #\p) (value #t))
-                                         (airing           (single-char #\a) (value #f))
-                                         (starting-episode (single-char #\e) (value #t))
-                                         (episode-offset   (single-char #\o) (value #t))))
-                      (add-options      (getopt-long stripped-args add-option-spec))
-                      (help-wanted      (option-ref add-options 'help #f))
-                      (name             (option-ref add-options 'name #f))
-                      (path             (option-ref add-options 'path #f))
-                      (airing?          (option-ref add-options 'airing #f))
-                      (starting-episode (option-ref add-options
-                                                    'starting-episode 
-                                                    (number->string 
-                                                      (config 'episode-offset))))
-                      (episode-offset   (option-ref add-options 
-                                                    'episode-offset
-                                                    (number->string
-                                                      (config 'episode-offset)))))
-                 (cond 
-                   (help-wanted 
-                     (display-help 'add))
-                   ((not (and name path))
-                    (throw 'insufficient-args-exception
-                           "insufficient arguments
-Try 'tvsm add --help' for more information."))
-                   (else 
-                    (let ((ep     (string->number starting-episode))
-                          (offset (string->number episode-offset)))
-                      (if (not (and ep offset))
-                        (throw 'wrong-option-type-exception
-                               "fatal error: Cannot parse numerical value")
-                        (add-show-db #:name name 
-                                     #:path path 
-                                     #:airing? airing?
-                                     #:starting-episode (if (> offset ep) offset ep)
-                                     #:episode-offset   offset)))))))
+               (add stripped-args))
               ((play)
-               (let* ((play-option-spec '((help        (single-char #\h) (value #f))
-                                          (episode     (single-char #\e) (value #t))
-                                          (set         (single-char #\s) (value #f))))
-                      (play-options (getopt-long stripped-args play-option-spec))
-                      (help-wanted  (option-ref play-options 'help #f))
-                      (episode      (option-ref play-options 'episode #f))
-                      (set-wanted   (option-ref play-options 'set #f))
-                      ;; Here we get a list that should consist of one element
-                      ;; which is the show name.
-                      (show-name    (option-ref play-options '() '())))
-                 (cond 
-                   (help-wanted
-                     (display-help 'play))
-                   ;; If the list is empty then the required argument is missing.
-                   ((null? show-name) 
-                    (throw 'insufficient-args-exception
-                           "missing show name
-Try 'tvsm play --help' for more information."))
-                   (episode 
-                     (play-show-db (car show-name)
-                                   #:increment? set-wanted 
-                                   #:episode (string->number episode)))
-                   (else 
-                    (play-show-db (car show-name))))))
+               (play stripped-args))
               ((list ls)
-               (let* ((list-option-spec '((help (single-char #\h) (value #f))
-                                          (all  (single-char #\a) (value #f))
-                                          (long (single-char #\l) (value #f))))
-                      (list-options       (getopt-long stripped-args list-option-spec))
-                      (help-wanted        (option-ref  list-options 'help #f))
-                      (all-wanted         (option-ref  list-options 'all  #f))
-                      (long-wanted        (option-ref  list-options 'long #f)))
-                 (if help-wanted 
-                   (display-help 'list)
-                   (list-shows-db #:all all-wanted #:long long-wanted))))
+               (ls stripped-args))
               ((remove rm)
-               (let* ((remove-option-spec '((help     (single-char #\h) (value #f))
-                                            (finished (single-char #\f) (value #f))))
-                      (remove-options  (getopt-long stripped-args remove-option-spec))
-                      (help-wanted     (option-ref remove-options 'help #f))
-                      (finished-wanted (option-ref remove-options 'finished #f))
-                      ;; Here we get a list that should consist of one element
-                      ;; which is the show name passed as an argument.
-                      (show-name      (option-ref remove-options '() '())))
-                 (cond 
-                   (help-wanted 
-                     (display-help 'remove))
-                   (finished-wanted
-                     (remove-finished-db))
-                   ((null? show-name)
-                    (throw 'insufficient-args-exception
-                           "insufficient arguments
-Try 'tvsm remove --help' for more information."))
-                   (else 
-                     (remove-show-db (car show-name))))))
+               (rm stripped-args))
               ((set)
-               (let* ((set-option-spec '((help            (single-char #\h) (value #f))
-                                         (name            (single-char #\n) (value #t))
-                                         (path            (single-char #\p) (value #t))
-                                         (airing          (single-char #\a) (value #f))
-                                         (completed       (single-char #\c) (value #f))
-                                         (current-episode (single-char #\e) (value #t))))
-                      (set-options         (getopt-long stripped-args set-option-spec))
-                      (help-wanted         (option-ref set-options 'help #f))
-                      (new-name            (option-ref set-options 'name #f))
-                      (new-path            (option-ref set-options 'path #f))
-                      (airing?             (option-ref set-options 'airing #f))
-                      (completed?          (option-ref set-options 'completed #f))
-                      (new-current-episode (option-ref set-options 'current-episode #f))
-                      ;; Here we get a list that should consist of one element
-                      ;; which is the show name passed as an argument.
-                      (show-name           (option-ref set-options '() '())))
-                 (cond
-                   (help-wanted
-                     (display-help 'set))
-                   ;; This checks for the case where no show name was passed as an argument.
-                   ((null? show-name)
-                    (throw 'insufficient-args-exception
-                           "insufficient arguments
-Try 'tvsm set --help' for more information."))
-                   (new-name
-                     (set-show-name-db (car show-name) new-name))
-                   (new-path
-                     (set-show-path-db (car show-name) new-path))
-                   (airing?
-                     (set-show-airing-db (car show-name) #t))
-                   (completed?
-                     (set-show-airing-db (car show-name) #f))
-                   (new-current-episode
-                     (set-show-current-episode-db (car show-name) 
-                                                  (string->number new-current-episode))))))
+               (set args))
               (else
                (display-help))))
           ;; handler
           (lambda (key message)
             (die message)))))))
+
+;; ------------------------------------------------------ ;;
+;; 'add' subcommand.                                      ;;
+;; ------------------------------------------------------ ;;
+;; #:param: args :: [string] - subcommand arguments       ;;
+;; ------------------------------------------------------ ;;
+(define (add args)
+  (let* ((option-spec '((help             (single-char #\h) (value #f))
+                        (name             (single-char #\n) (value #t))
+                        (path             (single-char #\p) (value #t))
+                        (airing           (single-char #\a) (value #f))
+                        (starting-episode (single-char #\e) (value #t))
+                        (episode-offset   (single-char #\o) (value #t))))
+         (options          (getopt-long args option-spec))
+         (help-wanted      (option-ref options 'help #f))
+         (name             (option-ref options 'name #f))
+         (path             (option-ref options 'path #f))
+         (airing?          (option-ref options 'airing #f))
+         (starting-episode (option-ref options
+                                       'starting-episode 
+                                       (number->string 
+                                         (config 'episode-offset))))
+         (episode-offset   (option-ref options 
+                                       'episode-offset
+                                       (number->string
+                                         (config 'episode-offset)))))
+    (cond 
+      (help-wanted 
+        (display-help 'add))
+      ((not (and name path))
+       (throw 'insufficient-args-exception
+              "insufficient arguments
+Try 'tvsm add --help' for more information."))
+      (else 
+       (let ((ep     (string->number starting-episode))
+             (offset (string->number episode-offset)))
+         (if (not (and ep offset))
+            (throw 'wrong-option-type-exception
+                   "fatal error: Cannot parse numerical value")
+            (add-show-db #:name name 
+                         #:path path 
+                         #:airing? airing?
+                         #:starting-episode (if (> offset ep) offset ep)
+                         #:episode-offset offset)))))))
+
+;; ------------------------------------------------------ ;;
+;; 'play' subcommand.                                     ;;
+;; ------------------------------------------------------ ;;
+;; #:param: args :: [string] - subcommand arguments       ;;
+;; ------------------------------------------------------ ;;
+(define (play args)
+  (let* ((option-spec '((help        (single-char #\h) (value #f))
+                        (episode     (single-char #\e) (value #t))
+                        (set         (single-char #\s) (value #f))))
+         (options      (getopt-long args option-spec))
+         (help-wanted  (option-ref options 'help #f))
+         (episode      (option-ref options 'episode #f))
+         (set-wanted   (option-ref options 'set #f))
+         ;; Here we get a list that should consist of one element
+         ;; which is the show name.
+         (show-name    (option-ref options '() '())))
+    (cond 
+      (help-wanted
+        (display-help 'play))
+      ;; If the list is empty then the required argument is missing.
+      ((null? show-name)
+       (throw 'insufficient-args-exception
+              "missing show name
+Try 'tvsm play --help' for more information."))
+      (episode 
+        (play-show-db (car show-name)
+                      #:increment? set-wanted 
+                      #:episode (string->number episode)))
+      (else 
+       (play-show-db (car show-name))))))
+
+;; ------------------------------------------------------ ;;
+;; 'ls' subcommand.                                       ;;
+;; ------------------------------------------------------ ;;
+;; #:param: args :: [string] - subcommand arguments       ;;
+;; ------------------------------------------------------ ;;
+(define (ls args)
+  (let* ((option-spec '((help (single-char #\h) (value #f))
+                        (all  (single-char #\a) (value #f))
+                        (long (single-char #\l) (value #f))))
+         (options     (getopt-long args option-spec))
+         (help-wanted (option-ref options 'help #f))
+         (all-wanted  (option-ref options 'all  #f))
+         (long-wanted (option-ref options 'long #f)))
+    (if help-wanted 
+      (display-help 'list)
+      (list-shows-db #:all all-wanted #:long long-wanted))))
+
+;; ------------------------------------------------------ ;;
+;; 'rm' subcommand.                                       ;;
+;; ------------------------------------------------------ ;;
+;; #:param: args :: [string] - subcommand arguments       ;;
+;; ------------------------------------------------------ ;;
+(define (rm args)
+  (let* ((option-spec '((help     (single-char #\h) (value #f))
+                        (finished (single-char #\f) (value #f))))
+         (options         (getopt-long args option-spec))
+         (help-wanted     (option-ref options 'help #f))
+         (finished-wanted (option-ref options 'finished #f))
+         ;; Here we get a list that should consist of one element
+         ;; which is the show name passed as an argument.
+         (show-name      (option-ref options '() '())))
+    (cond 
+      (help-wanted 
+        (display-help 'remove))
+      (finished-wanted
+        (remove-finished-db))
+      ((null? show-name)
+       (throw 'insufficient-args-exception
+              "insufficient arguments
+Try 'tvsm remove --help' for more information."))
+      (else 
+        (remove-show-db (car show-name))))))
+
+;; ------------------------------------------------------ ;;
+;; 'set' subcommand.                                      ;;
+;; ------------------------------------------------------ ;;
+;; #:param: args :: [string] - subcommand arguments       ;;
+;; ------------------------------------------------------ ;;
+(define (set args)
+  (let* ((option-spec '((help (single-char #\h) (value #f))
+                        (name            (single-char #\n) (value #t))
+                        (path            (single-char #\p) (value #t))
+                        (airing          (single-char #\a) (value #f))
+                        (completed       (single-char #\c) (value #f))
+                        (current-episode (single-char #\e) (value #t))))
+         (options         (getopt-long args option-spec))
+         (help-wanted     (option-ref options 'help #f))
+         (name            (option-ref options 'name #f))
+         (path            (option-ref options 'path #f))
+         (airing?         (option-ref options 'airing #f))
+         (completed?      (option-ref options 'completed #f))
+         (current-episode (option-ref options 'current-episode #f))
+         ;; Here we get a list that should consist of one element
+         ;; which is the show name passed as an argument.
+         (show-name           (option-ref set-options '() '())))
+    (cond
+      (help-wanted
+        (display-help 'set))
+      ;; This checks for the case where no show name was passed as an argument.
+      ((null? show-name)
+       (throw 'insufficient-args-exception
+              "insufficient arguments
+Try 'tvsm set --help' for more information."))
+      (name
+        (set-show-name-db (car show-name) name))
+      (path
+        (set-show-path-db (car show-name) path))
+      (airing?
+        (set-show-airing-db (car show-name) #t))
+      (completed?
+        (set-show-airing-db (car show-name) #f))
+      (current-episode
+        (set-show-current-episode-db (car show-name) 
+                                     (string->number current-episode))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print a message and exit with a non-zero return value. ;;
