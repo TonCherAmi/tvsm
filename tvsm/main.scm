@@ -32,13 +32,13 @@
 ;; #:param: args :: [string] - command line arguments     ;;
 ;; ------------------------------------------------------ ;;
 (define (main args)
-  (let* ((general-option-spec '((version (single-char #\v) (value #f))
-                                (help    (single-char #\h) (value #f))))
-         (general-options (getopt-long args 
-                                       general-option-spec 
-                                       #:stop-at-first-non-option #t))
-         (version-wanted  (option-ref general-options 'version #f))
-         (help-wanted     (option-ref general-options 'help #f)))
+  (let* ((option-spec '((version (single-char #\v) (value #f))
+                        (help    (single-char #\h) (value #f))))
+         (options (getopt-long args 
+                               option-spec 
+                               #:stop-at-first-non-option #t))
+         (version-wanted  (option-ref options 'version #f))
+         (help-wanted     (option-ref options 'help #f)))
     (if (or version-wanted help-wanted)
       (begin
         (if version-wanted
@@ -46,7 +46,7 @@
         (if help-wanted 
           (display-help)))
       (let* ((stripped-args 
-               (option-ref general-options '() '()))
+               (option-ref options '() '()))
              ;; In case no arguments whatsoever were passed, 'command' will just slip 
              ;; through the 'case' and general help will be printed.
              (command 
