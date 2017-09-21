@@ -20,8 +20,8 @@
   #:export     (main)
   #:use-module (tvsm add)
   #:use-module (tvsm play)
-  #:use-module (tvsm list)
-  #:use-module (tvsm remove)
+  #:use-module (tvsm ls)
+  #:use-module (tvsm rm)
   #:use-module (tvsm set)
   #:use-module (tvsm config)
   #:use-module (ice-9 getopt-long))
@@ -61,9 +61,9 @@
                (add stripped-args))
               ((play)
                (play stripped-args))
-              ((list ls)
+              ((ls)
                (ls stripped-args))
-              ((remove rm)
+              ((rm)
                (rm stripped-args))
               ((set)
                (set args))
@@ -279,14 +279,14 @@ options:
                                 in the future."))
     ((list)
      (display "\
-Usage: tvsm list [<options>]
+Usage: tvsm ls [<options>]
 
 options:
     -a, --all:      do not ignore finished shows.
     -l, --long:     use a long listing format."))
     ((remove)
      (display "\
-Usage: tvsm remove [<options>] [<name>...]
+Usage: tvsm rm [<options>] [<name>...]
 
 options:
     -f, --finished:     remove all shows that you have finished watching."))
@@ -305,11 +305,11 @@ options:
 Usage: tvsm [--version] [--help] <command> [<options>]
 
 available commands:
-    add:        add a show.
-    play:       play a show.
-    list:       list existing shows.
-    remove:     remove shows.
-    set:        modify a show.
+    add:      add a show.
+    play:     play a show.
+    ls:       list existing shows.
+    rm:       remove shows.
+    set:      modify a show.
     
 See 'tvsm <command> --help' to learn more about a specific command.")))
   (newline))

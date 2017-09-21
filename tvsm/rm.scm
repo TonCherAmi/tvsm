@@ -16,7 +16,7 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tvsm remove)
+(define-module (tvsm rm)
   #:export     (remove-show-db
                 remove-finished-db)
   #:use-module (tvsm show))
