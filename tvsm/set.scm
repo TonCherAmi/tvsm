@@ -20,9 +20,7 @@
   #:export     (set-show-name-db
                 set-show-path-db
                 set-show-current-episode-db
-                set-show-airing-db
-                jump-to-next-episode-db
-                jump-to-previous-episode-db)
+                set-show-airing-db)
   #:use-module (tvsm util)
   #:use-module (tvsm show))
 
