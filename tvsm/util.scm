@@ -21,6 +21,7 @@
   #:use-module (ice-9 rdelim)
   #:export     (++
                 ask-user-y/n
+                expand-variables
                 call-with-input-pipe
                 call-with-output-pipe))
 
@@ -52,6 +53,20 @@
        #f)
       (else
        (ask-user-y/n "Please answer (y/n): ")))))
+
+;; ---------------------------------------------------------- ;;
+;; Expand environment variables in a string.                  ;; 
+;; ---------------------------------------------------------- ;;
+;; #:param: str :: string - string                            ;;
+;;                                                            ;;
+;; #:return: x :: string - 'str' with environment variables   ;;
+;;           expanded.                                        ;;
+;; ---------------------------------------------------------- ;;
+(define (expand-variables str)
+  (call-with-input-pipe 
+    (++ "echo " str) 
+    (lambda (port) 
+      (read-line port))))
 
 ;; ------------------------------------------------------ ;;
 ;; Execute 'command' with a pipe from it and call 'proc'  ;;

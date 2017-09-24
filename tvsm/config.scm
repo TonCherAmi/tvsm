@@ -18,7 +18,6 @@
 
 (define-module (tvsm config)
   #:export     (config)
-  #:use-module (ice-9 rdelim)
   #:use-module (tvsm util))
 
 ;; ---------------------------------------------------------- ;;
@@ -65,20 +64,6 @@
        (cons (car cfg-lst)
              (loop (cdr cfg-lst)))))))
 
-;; ---------------------------------------------------------- ;;
-;; Expand environment variables in a string.                  ;; 
-;; ---------------------------------------------------------- ;;
-;; #:param: str :: string - string                            ;;
-;;                                                            ;;
-;; #:return: x :: string - 'str' with environment variables   ;;
-;;           expanded.                                        ;;
-;; ---------------------------------------------------------- ;;
-(define (expand-variables str)
-  (call-with-input-pipe 
-    (++ "echo " str) 
-    (lambda (port) 
-      (read-line port))))
- 
 ;; ---------------------------------------------------------- ;;
 ;; An alist containing config properties with their values.   ;;
 ;; ---------------------------------------------------------- ;;
