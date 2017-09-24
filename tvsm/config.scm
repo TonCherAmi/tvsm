@@ -76,4 +76,4 @@
       ((access? (car paths) R_OK)
        (with-input-from-file (car paths) read-config))
       (else
-        (loop (cdr paths))))))
+       (loop (cdr paths))))))
