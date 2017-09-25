@@ -29,7 +29,7 @@
 ;;           #f otherwise                                     ;;
 ;; ---------------------------------------------------------- ;;
 (define (config key)
-  (let ((property (assoc key config-list)))
+  (let ((property (assoc key *config-list*)))
     (and=> property cdr)))
 
 ;; ---------------------------------------------------------- ;;
@@ -64,9 +64,11 @@
        cfg-lst))
 
 ;; ---------------------------------------------------------- ;;
-;; An alist containing config properties with their values.   ;;
+;; A list containing config properties.                       ;;
 ;; ---------------------------------------------------------- ;;
-(define config-list
+;; #:global: *config-list* :: [(symbol . a)]                  ;;
+;; ---------------------------------------------------------- ;;
+(define *config-list*
   (let loop ((paths (path-list)))
     (cond
       ((null? paths)
