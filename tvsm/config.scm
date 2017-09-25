@@ -21,18 +21,16 @@
   #:use-module (tvsm util))
 
 ;; ---------------------------------------------------------- ;;
-;; Get value of 'property' from the config.                   ;;
+;; Get a property value from the config.                      ;;
 ;; ---------------------------------------------------------- ;;
-;; #:param: property :: symbol - config property identifier   ;;
+;; #:param: key :: symbol - config property key               ;;
 ;;                                                            ;;
-;; #:return: x :: a - value of 'property' if it is found,     ;;
+;; #:return: x :: a - value of property if it is found,       ;;
 ;;           #f otherwise                                     ;;
 ;; ---------------------------------------------------------- ;;
-(define (config property)
-  (let ((cfg-pair (assoc property config-list)))
-    (if cfg-pair
-      (cdr cfg-pair)
-      #f)))
+(define (config key)
+  (let ((property (assoc key config-list)))
+    (and=> property cdr)))
 
 ;; ---------------------------------------------------------- ;;
 ;; Get a list of possible config paths.                       ;;
