@@ -46,23 +46,24 @@
           "config")))
 
 ;; ---------------------------------------------------------- ;;
-;; Read the config from (current-input-port).                 ;;
+;; Expand environment variables in string properties of       ;;
+;; a config.                                                  ;;
 ;; ---------------------------------------------------------- ;;
-;; #:return: x :: [(symbol, a)] - alist where the first item  ;;
-;;           of an element pair is a property identifier and  ;;
-;;           the second is that property's value              ;;
+;; #:param: cfg-lst :: [(symbol . a)] - config list           ;;
+;;                                                            ;;
+;; #:return: x :: [(symbol . a)] - copy of that config list   ;;
+;;           with environment variables in string properties  ;;
+;;           expanded                                         ;;
 ;; ---------------------------------------------------------- ;;
-(define (read-config)
-  (let loop ((cfg-lst (read)))
-    (cond
-      ((null? cfg-lst)
-       '())
-      ((string? (cdar cfg-lst))
-       (cons (cons (caar cfg-lst) (expand-variables (cdar cfg-lst)))
-             (loop (cdr cfg-lst))))
-      (else
-       (cons (car cfg-lst)
-             (loop (cdr cfg-lst)))))))
+(define (expand-config cfg-lst)
+  (map (lambda (property)
+         (let ((key   (car property))
+               (value (cdr property)))
+         (cons key
+               (if (string? value)
+                 (expand-variables value)
+                 value))))
+       cfg-lst))
 
 ;; ---------------------------------------------------------- ;;
 ;; An alist containing config properties with their values.   ;;
@@ -74,6 +75,6 @@
        (throw 'config-not-found-exception
               "cannot continue: Configuration file not found"))
       ((access? (car paths) R_OK)
-       (with-input-from-file (car paths) read-config))
+       (expand-config (with-input-from-file (car paths) read)))
       (else
        (loop (cdr paths))))))
