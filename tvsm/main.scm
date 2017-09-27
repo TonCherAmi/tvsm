@@ -66,7 +66,7 @@
               ((rm)
                (rm stripped-args))
               ((set)
-               (set args))
+               (set stripped-args))
               (else
                (display-help))))
           ;; handler
