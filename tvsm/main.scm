@@ -178,7 +178,7 @@ Try 'tvsm play --help' for more information."))
          (finished-wanted (option-ref options 'finished #f))
          ;; Here we get a list that should consist of one element
          ;; which is the show name passed as an argument.
-         (show-name      (option-ref options '() '())))
+         (show-name       (option-ref options '() '())))
     (cond 
       (help-wanted 
         (display-help 'remove))
