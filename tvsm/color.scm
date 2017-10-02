@@ -19,12 +19,52 @@
 (define-module (tvsm color)
   #:export     (color
                 colorize-string)
-  #:use-module (srfi srfi-13))
+  #:use-module (srfi srfi-13)
+               (tvsm util))
 
 ;; ------------------------------------------------------ ;;
-;; An alist of attributes and their corresponding codes.  ;;
+;; Get a string containing the ANSI escape sequence for   ;;
+;; producing the requested set of attributes.             ;;
 ;; ------------------------------------------------------ ;;
-(define sgr-parameters
+;; #:param: lst :: [symbol] - desired attributes          ;;
+;;                                                        ;;
+;; #:return: x :: string - ANSI escape sequense for       ;;
+;;           producing the requested set of attributes    ;;
+;; ------------------------------------------------------ ;;
+(define (color . lst)
+  (let ((color-list
+          (map cdr (filter identity (map (lambda (clr) 
+                                           (assoc clr *sgr-parameters*))
+                                         lst)))))
+    (if (null? color-list)
+        ""
+        (++ (string #\esc #\[)
+            (string-join color-list ";" 'infix)
+            "m"))))
+  
+;; ------------------------------------------------------ ;;
+;; Get a copy of 'str' colorized using ANSI escape        ;;
+;; sequences according to attributes specified in 'lst'   ;;
+;; At the end of the returned string all the attributes   ;;
+;; are reset.                                             ;;
+;; ------------------------------------------------------ ;;
+;; #:param: str :: string - a string to colorize          ;;
+;;                                                        ;;
+;; #:param: lst :: [symbol] - desired attributes          ;;
+;;                                                        ;;
+;; #:return: x :: string - a copy of 'str' wrapped in     ;;
+;;           ANSI escape sequences required for producing ;;
+;;           requested colors                             ;;
+;; ------------------------------------------------------ ;;
+(define (colorize-string str . lst)
+  (++ (apply color lst) str (color 'CLEAR)))
+
+;; ------------------------------------------------------ ;;
+;; A list of attributes and their corresponding codes.    ;;
+;; ------------------------------------------------------ ;;
+;; #:global: *sgr-parameters* :: [(symbol . string)]      ;;
+;; ------------------------------------------------------ ;;
+(define *sgr-parameters*
   (list '(CLEAR      . "0")
         '(BOLD       . "1")
         '(DARK       . "2")
@@ -40,45 +80,3 @@
         '(MAGENTA    . "35")
         '(CYAN       . "36")
         '(WHITE      . "37")))
-
-;; ------------------------------------------------------ ;;
-;; Get a string containing the ANSI escape sequence for   ;;
-;; producing the requested set of attributes.             ;;
-;; ------------------------------------------------------ ;;
-;; #:param: lst :: [symbol] - desired attributes          ;;
-;;                                                        ;;
-;; #:return: x :: string - ANSI escape sequense for       ;;
-;;           producing the requested set of attributes    ;;
-;; ------------------------------------------------------ ;;
-(define (color . lst)
-  (let ((color-list 
-          (map cdr
-               (filter (lambda (x) x)
-                       (map (lambda (color) (assoc color sgr-parameters))
-                            lst)))))
-    (if (null? color-list)
-        ""
-        (string-append 
-         (string #\esc #\[)
-         (string-join color-list ";" 'infix)
-         "m"))))
-  
-;; ------------------------------------------------------ ;;
-;; Get a copy of 'str' colorized using ANSI escape        ;;
-;; sequences according to attributes specified in         ;;
-;; 'color-list'. At the end of the returned string all    ;;
-;; the attributes are reset.                              ;;
-;; ------------------------------------------------------ ;;
-;; #:param: str :: string - a string to colorize          ;;
-;;                                                        ;;
-;; #:param: color-list :: [symbol] - desired attributes   ;;
-;;                                                        ;;
-;; #:return: x :: string - a copy of 'str' wrapped in     ;;
-;;           ANSI escape sequences required for producing ;;
-;;           requested colors                             ;;
-;; ------------------------------------------------------ ;;
-(define (colorize-string str . color-list)
-  (string-append
-   (apply color color-list)
-   str
-   (color 'CLEAR)))
