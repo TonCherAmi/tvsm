@@ -17,6 +17,7 @@
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (tvsm util)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
   #:export     (++
@@ -63,10 +64,13 @@
 ;;           expanded.                                        ;;
 ;; ---------------------------------------------------------- ;;
 (define (expand-variables str)
-  (call-with-input-pipe 
-    (++ "echo " str) 
-    (lambda (port) 
-      (read-line port))))
+  (let ((m (string-match "\\$\\w*\\b" str)))
+    (if (not m)
+      str
+      (let* ((env (getenv (string-trim (match:substring m) #\$))))
+        (expand-variables (string-replace str (if env env "")
+                                          (match:start m)
+                                          (match:end m)))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Execute 'command' with a pipe from it and call 'proc'  ;;
