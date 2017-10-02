@@ -20,7 +20,7 @@
   #:export     (color
                 colorize-string)
   #:use-module (srfi srfi-13)
-               (tvsm util))
+  #:use-module (tvsm util))
 
 ;; ------------------------------------------------------ ;;
 ;; Get a string containing the ANSI escape sequence for   ;;
