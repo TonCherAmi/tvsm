@@ -46,6 +46,4 @@
       #t
     #:proc
       (lambda (show-list)
-        (filter (lambda (show)
-                  (not (show-finished? show)))
-                show-list))))
+        (filter (negate show-finished?) show-list))))
