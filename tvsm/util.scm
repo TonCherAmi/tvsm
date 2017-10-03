@@ -55,14 +55,14 @@
       (else
        (ask-user-y/n "Please answer (y/n): ")))))
 
-;; ---------------------------------------------------------- ;;
-;; Expand environment variables in a string.                  ;; 
-;; ---------------------------------------------------------- ;;
-;; #:param: str :: string - string                            ;;
-;;                                                            ;;
-;; #:return: x :: string - 'str' with environment variables   ;;
-;;           expanded.                                        ;;
-;; ---------------------------------------------------------- ;;
+;; ------------------------------------------------------ ;;
+;; Expand environment variables in a string.              ;; 
+;; ------------------------------------------------------ ;;
+;; #:param: str :: string - string                        ;;
+;;                                                        ;;
+;; #:return: x :: string - 'str' with environment         ;;
+;;           variables expanded.                          ;;
+;; ------------------------------------------------------ ;;
 (define (expand-variables str)
   (let ((m (string-match "\\$\\w*\\b" str)))
     (if (not m)
