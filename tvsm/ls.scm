@@ -50,12 +50,11 @@
 (define (list-shows-long show-list)
   (format #t "total ~a~%" (length show-list))
   (let ((cs colorize-string))
-    (let loop ((lst show-list))
-      (unless (null? lst)
-        (let* ((show (car lst))
-               (fin? (show-finished? show))
-               (air? (show:airing? show)))
-          (format #t (++ "~a " (cs "[" 'BLUE) "~a~a" (cs "]" 'BLUE) " ~5@a  ~a~%")
+    (for-each
+      (lambda (show)
+        (let ((fin? (show-finished? show))
+              (air? (show:airing? show)))
+          (format #t (++ "~a " (cs "[" 'BLUE) "~a~a" (cs "]" 'BLUE) " ~5@a ~a~%")
                   (show:date show)
                   ;; 'f' stands for finished, 'w' for watching
                   (if fin? (cs "f" 'RED) (cs "w" 'GREEN))
@@ -65,8 +64,8 @@
                           (show:ep/played show)
                           (+ (length (show:ep/list show))
                              (show:ep/offset show)))
-                  (cs (show:name show) 'BOLD)))
-        (loop (cdr lst))))))
+                  (cs (show:name show) 'BOLD))))
+      show-list)))
 
 ;; ------------------------------------------------------ ;;
 ;; Print show-list in short format (names only).          ;;
