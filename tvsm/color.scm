@@ -37,10 +37,10 @@
                                            (assoc clr *sgr-parameters*))
                                          lst)))))
     (if (null? color-list)
-        ""
-        (++ (string #\esc #\[)
-            (string-join color-list ";" 'infix)
-            "m"))))
+      ""
+      (++ (string #\esc #\[)
+          (string-join color-list ";" 'infix)
+          "m"))))
   
 ;; ------------------------------------------------------ ;;
 ;; Get a copy of 'str' colorized using ANSI escape        ;;
