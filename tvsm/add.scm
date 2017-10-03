@@ -32,27 +32,24 @@
 ;; #:param: airing? :: bool - if #t show is not marked as finished    ;;
 ;;          when all of its episodes have been watched                ;;
 ;;                                                                    ;;
-;; #:param: starting-episode :: int - number of the episode to be     ;;
-;;          played first                                              ;;
+;; #:param: ep/current :: int - current episode number                ;;
 ;;    NOTE: it is assumed that this value is passed without           ;;
-;;          episode-offset subtracted i.e. as it was specified by     ;;
-;;          the user                                                  ;;
+;;          ep/offset subtracted i.e. as it was specified by the user ;;
 ;;                                                                    ;;
-;; #:param: episode-offset :: int - episode number offset. generally  ;;
+;; #:param: ep/offset :: int - episode number offset. generally       ;;
 ;;          only useful for shows whose first episode is numbered     ;;
 ;;          differently than 'E01'                                    ;;
 ;; ------------------------------------------------------------------ ;;
-(define* (add-show-db #:key name path airing? starting-episode episode-offset)
+(define* (add-show-db #:key name path airing? ep/current ep/offset)
   (let ((new-show (make-show #:name name 
                              #:path path
                              #:date (date->string (current-date) "~b ~e ~Y")
                              #:airing? airing?
-                             #:current-episode starting-episode
-                             #:episode-offset episode-offset
-                             #:subtract-offset? #t)))
-    (if (show:current-episode-out-of-bounds? new-show)
+                             #:ep/current ep/current
+                             #:ep/offset ep/offset)))
+    (if (show:ep/index-out-of-bounds? new-show)
         (throw 'episode-out-of-bounds-exception 
-               (format #f "cannot add '~a': Starting episode index is out of bounds" name))
+               (format #f "cannot add '~a': Current episode is out of bounds" name))
         (call-with-show-list
           #:overwrite
             #t

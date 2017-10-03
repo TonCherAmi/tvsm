@@ -74,7 +74,7 @@
                    (throw 'show-not-found-exception
                           (format #f "cannot set path for '~a': No such show" show-name))
                    (remake-show show-db #:path new-show-path))))
-          (if (show:current-episode-out-of-bounds? show)
+          (if (show:ep/index-out-of-bounds? show)
             (throw 'episode-out-of-bounds-exception
                    (format #f "cannot set path for '~a': Episode out of bounds" show-name))
             (cons show (remove-show show-name show-list)))))))
@@ -125,10 +125,8 @@
                    (throw 'show-not-found-exception
                           (format #f "cannot set current episode for '~a': No such show" 
                                   show-name))
-                   (remake-show show-db 
-                                #:current-episode new-current-episode
-                                #:subtract-offset? #t))))
-          (if (show:current-episode-out-of-bounds? show)
+                   (remake-show show-db #:ep/current new-current-episode))))
+          (if (show:ep/index-out-of-bounds? show)
             (throw 'episode-out-of-bounds-exception
                    (format #f "cannot set current episode for '~a': Episode out of bounds" 
                            show-name))

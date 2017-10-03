@@ -62,11 +62,9 @@
                   ;; 'a' stands for airing, 'c' for completed
                   (if air? (cs "a" 'CYAN) (cs "c" 'MAGENTA))
                   (format #f "~a/~a"
-                          (if fin? #\- (show:current-episode show #:with-offset #t))
-                          (+ (length (show:episode-list show))
-                             (if (zero? (show:episode-offset show))
-                               0 
-                               (1- (show:episode-offset show)))))
+                          (show:ep/played show)
+                          (+ (length (show:ep/list show))
+                             (show:ep/offset show)))
                   (cs (show:name show) 'BOLD)))
         (loop (cdr lst))))))
 

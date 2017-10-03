@@ -18,13 +18,12 @@
 
 (define-module (tvsm main)
   #:export     (main)
+  #:use-module (ice-9 getopt-long)
   #:use-module (tvsm add)
   #:use-module (tvsm play)
   #:use-module (tvsm ls)
   #:use-module (tvsm rm)
-  #:use-module (tvsm set)
-  #:use-module (tvsm config)
-  #:use-module (ice-9 getopt-long))
+  #:use-module (tvsm set))
 
 ;; ------------------------------------------------------ ;;
 ;; Main procedure.                                        ;;
@@ -79,25 +78,19 @@
 ;; #:param: args :: [string] - subcommand arguments       ;;
 ;; ------------------------------------------------------ ;;
 (define (add args)
-  (let* ((option-spec '((help             (single-char #\h) (value #f))
-                        (name             (single-char #\n) (value #t))
-                        (path             (single-char #\p) (value #t))
-                        (airing           (single-char #\a) (value #f))
-                        (starting-episode (single-char #\e) (value #t))
-                        (episode-offset   (single-char #\o) (value #t))))
-         (options          (getopt-long args option-spec))
-         (help-wanted      (option-ref options 'help #f))
-         (name             (option-ref options 'name #f))
-         (path             (option-ref options 'path #f))
-         (airing?          (option-ref options 'airing #f))
-         (starting-episode (option-ref options
-                                       'starting-episode 
-                                       (number->string 
-                                         (config 'episode-offset))))
-         (episode-offset   (option-ref options 
-                                       'episode-offset
-                                       (number->string
-                                         (config 'episode-offset)))))
+  (let* ((option-spec '((help            (single-char #\h) (value #f))
+                        (name            (single-char #\n) (value #t))
+                        (path            (single-char #\p) (value #t))
+                        (airing          (single-char #\a) (value #f))
+                        (current-episode (single-char #\e) (value #t))
+                        (episode-offset  (single-char #\o) (value #t))))
+         (options     (getopt-long args option-spec))
+         (help-wanted (option-ref options 'help #f))
+         (name        (option-ref options 'name #f))
+         (path        (option-ref options 'path #f))
+         (airing?     (option-ref options 'airing #f))
+         (ep/current  (option-ref options 'current-episode "1"))
+         (ep/offset   (option-ref options 'episode-offset "0")))
     (cond 
       (help-wanted 
         (display-help 'add))
@@ -106,16 +99,16 @@
               "insufficient arguments
 Try 'tvsm add --help' for more information."))
       (else 
-       (let ((ep     (string->number starting-episode))
-             (offset (string->number episode-offset)))
+       (let ((ep     (string->number ep/current))
+             (offset (string->number ep/offset)))
          (if (not (and ep offset))
             (throw 'wrong-option-type-exception
                    "fatal error: Cannot parse numerical value")
             (add-show-db #:name name 
                          #:path path 
                          #:airing? airing?
-                         #:starting-episode (if (> offset ep) offset ep)
-                         #:episode-offset offset)))))))
+                         #:ep/current (if (> offset ep) offset ep)
+                         #:ep/offset offset)))))))
 
 ;; ------------------------------------------------------ ;;
 ;; 'play' subcommand.                                     ;;
@@ -123,16 +116,16 @@ Try 'tvsm add --help' for more information."))
 ;; #:param: args :: [string] - subcommand arguments       ;;
 ;; ------------------------------------------------------ ;;
 (define (play args)
-  (let* ((option-spec '((help        (single-char #\h) (value #f))
-                        (episode     (single-char #\e) (value #t))
-                        (set         (single-char #\s) (value #f))))
-         (options      (getopt-long args option-spec))
-         (help-wanted  (option-ref options 'help #f))
-         (episode      (option-ref options 'episode #f))
-         (set-wanted   (option-ref options 'set #f))
+  (let* ((option-spec '((help    (single-char #\h) (value #f))
+                        (episode (single-char #\e) (value #t))
+                        (set     (single-char #\s) (value #f))))
+         (options     (getopt-long args option-spec))
+         (help-wanted (option-ref options 'help #f))
+         (episode     (option-ref options 'episode #f))
+         (set-wanted  (option-ref options 'set #f))
          ;; Here we get a list that should consist of one element
          ;; which is the show name.
-         (show-name    (option-ref options '() '())))
+         (show-name   (option-ref options '() '())))
     (cond 
       (help-wanted
         (display-help 'play))
@@ -197,22 +190,22 @@ Try 'tvsm remove --help' for more information."))
 ;; #:param: args :: [string] - subcommand arguments       ;;
 ;; ------------------------------------------------------ ;;
 (define (set args)
-  (let* ((option-spec '((help (single-char #\h) (value #f))
+  (let* ((option-spec '((help            (single-char #\h) (value #f))
                         (name            (single-char #\n) (value #t))
                         (path            (single-char #\p) (value #t))
                         (airing          (single-char #\a) (value #f))
                         (completed       (single-char #\c) (value #f))
                         (current-episode (single-char #\e) (value #t))))
-         (options         (getopt-long args option-spec))
-         (help-wanted     (option-ref options 'help #f))
-         (name            (option-ref options 'name #f))
-         (path            (option-ref options 'path #f))
-         (airing?         (option-ref options 'airing #f))
-         (completed?      (option-ref options 'completed #f))
-         (current-episode (option-ref options 'current-episode #f))
+         (options     (getopt-long args option-spec))
+         (help-wanted (option-ref options 'help #f))
+         (name        (option-ref options 'name #f))
+         (path        (option-ref options 'path #f))
+         (airing?     (option-ref options 'airing #f))
+         (completed?  (option-ref options 'completed #f))
+         (ep/current  (option-ref options 'current-episode #f))
          ;; Here we get a list that should consist of one element
          ;; which is the show name passed as an argument.
-         (show-name       (option-ref options '() '())))
+         (show-name   (option-ref options '() '())))
     (cond
       (help-wanted
         (display-help 'set))
@@ -229,9 +222,9 @@ Try 'tvsm set --help' for more information."))
         (set-show-airing-db (car show-name) #t))
       (completed?
         (set-show-airing-db (car show-name) #f))
-      (current-episode
+      (ep/current
         (set-show-current-episode-db (car show-name) 
-                                     (string->number current-episode))))))
+                                     (string->number ep/current))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print a message and exit with a non-zero return value. ;;
@@ -257,16 +250,16 @@ Try 'tvsm set --help' for more information."))
 Usage: tvsm add <required-arguments> [<options>]
 
 required-arguments: 
-    -n, --name <name>:                  show name, a unique identifier.
-    -p, --path <path>:                  path to the directory that contains 
-                                        episodes of the new show.
+    -n, --name <name>:                 show name, a unique identifier.
+    -p, --path <path>:                 path to the directory that contains 
+                                       episodes of the show.
 options:
-    -s, --starting-episode <integer>:   number of the episode the new show will
-                                        start playing from.
-    -o, --episode-offset   <integer>:   useful when episode numbering of a show
-                                        deviates from the usual sequential numbering
-                                        i.e. when first episode is not numbered 'E01'.
-    -a, --airing:                       mark show as airing."))
+    -a, --airing:                      mark show as airing.
+    -e, --current-episode <integer>:   number of the episode the show will
+                                       start playing from.
+    -o, --episode-offset  <integer>:   useful when episode numbering of a show
+                                       deviates from the usual sequential numbering
+                                       i.e. when first episode is not numbered 'E01'."))
     ((play)
      (display "\
 Usage: tvsm play [<options>] <show> 

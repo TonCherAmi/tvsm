@@ -7,8 +7,6 @@
  (media-format-list    . (".mkv" ".mpv" ".avi" ".mp4" ".mpeg" 
                           ".mov" ".m4v" ".svi" ".ogv" ".webm"
                           ".vob" ".flv" ".wmv" ".qt"))
- ;; default episode number offset
- (episode-offset       . 1)
  ;; path to the show database
  (show-db-path         . "$HOME/.local/share/tvsm/shows"))
 
