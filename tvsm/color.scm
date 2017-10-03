@@ -19,7 +19,6 @@
 (define-module (tvsm color)
   #:export     (color
                 colorize-string)
-  #:use-module (srfi srfi-13)
   #:use-module (tvsm util))
 
 ;; ------------------------------------------------------ ;;
