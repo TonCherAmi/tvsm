@@ -16,7 +16,7 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tvsm ls)
+(define-module (tvsm cmd ls)
   #:export     (list-shows-db)
   #:use-module (tvsm common)
   #:use-module (tvsm base show)
