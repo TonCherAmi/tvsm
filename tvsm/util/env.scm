@@ -17,8 +17,8 @@
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (tvsm util env)
-  #:use-module (ice-9 regex)
-  #:export     (expand-variables))
+  #:export     (expand-variables)
+  #:use-module (ice-9 regex))
 
 ;; ------------------------------------------------------ ;;
 ;; Expand environment variables in a string.              ;; 
