@@ -16,7 +16,7 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tvsm show)
+(define-module (tvsm base show)
   #:export     (call-with-show-list
                 make-show
                 remake-show
@@ -37,8 +37,8 @@
                 remove-show
                 find-show)
   #:use-module (ice-9 ftw)
-  #:use-module (tvsm db)
-  #:use-module (tvsm config))
+  #:use-module (tvsm base db)
+  #:use-module (tvsm base config))
 
 ;; ------------------------------------------------------- ;;
 ;; Read the show database and call '(proc show-list)'      ;;
