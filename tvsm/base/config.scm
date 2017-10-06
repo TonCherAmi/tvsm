@@ -18,7 +18,8 @@
 
 (define-module (tvsm base config)
   #:export     (config)
-  #:use-module (tvsm common))
+  #:use-module (tvsm common)
+  #:use-module (tvsm util env))
 
 ;; ---------------------------------------------------------- ;;
 ;; Get a property value from the config.                      ;;
