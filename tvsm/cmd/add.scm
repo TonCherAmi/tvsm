@@ -16,11 +16,11 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tvsm add)
+(define-module (tvsm cmd add)
   #:export     (add-show-db)
   #:use-module (srfi srfi-19)
-  #:use-module (tvsm util)
-  #:use-module (tvsm show))
+  #:use-module (tvsm base show)
+  #:use-module (tvsm util ask-user))
 
 ;; ------------------------------------------------------------------ ;;
 ;; Add a show to the database.                                        ;;
