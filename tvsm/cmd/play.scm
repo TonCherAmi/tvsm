@@ -16,11 +16,11 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tvsm play)
+(define-module (tvsm cmd play)
   #:export     (play-show-db)
-  #:use-module (tvsm show)
-  #:use-module (tvsm color)
-  #:use-module (tvsm config))
+  #:use-module (tvsm base show)
+  #:use-module (tvsm base config)
+  #:use-module (tvsm util color))
 
 ;; ------------------------------------------------------------------------ ;;
 ;; Play an episode of a show.                                               ;;
