@@ -16,11 +16,9 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tvsm util)
-  #:use-module (ice-9 regex)
+(define-module (tvsm util ask-user)
   #:use-module (ice-9 rdelim)
-  #:export     (ask-user-y/n
-                expand-variables))
+  #:export     (ask-user-y/n))
 
 ;; ------------------------------------------------------ ;;
 ;; Print a message and prompt the user for a reply until  ;;
@@ -45,20 +43,3 @@
        #f)
       (else
        (ask-user-y/n "Please answer (y/n): ")))))
-
-;; ------------------------------------------------------ ;;
-;; Expand environment variables in a string.              ;; 
-;; ------------------------------------------------------ ;;
-;; #:param: str :: string - string                        ;;
-;;                                                        ;;
-;; #:return: x :: string - 'str' with environment         ;;
-;;           variables expanded.                          ;;
-;; ------------------------------------------------------ ;;
-(define (expand-variables str)
-  (let ((m (string-match "\\$\\w*\\b" str)))
-    (if (not m)
-      str
-      (let* ((env (getenv (string-trim (match:substring m) #\$))))
-        (expand-variables (string-replace str (if env env "")
-                                          (match:start m)
-                                          (match:end m)))))))
