@@ -17,9 +17,9 @@
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (tvsm util color)
-  #:use-module (tvsm common)
   #:export     (color
-                colorize-string))
+                colorize-string)
+  #:use-module (tvsm common))
 
 ;; ------------------------------------------------------ ;;
 ;; Get a string containing the ANSI escape sequence for   ;;
