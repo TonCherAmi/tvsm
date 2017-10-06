@@ -16,10 +16,10 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tvsm db)
+(define-module (tvsm base db)
   #:export     (read-show-list-db
                 write-show-list-db)
-  #:use-module (tvsm config))
+  #:use-module (tvsm base config))
 
 ;; ------------------------------------------------------ ;;
 ;; Read show database.                                    ;;
