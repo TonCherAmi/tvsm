@@ -22,9 +22,7 @@
   #:use-module (ice-9 rdelim)
   #:export     (++
                 ask-user-y/n
-                expand-variables
-                call-with-input-pipe
-                call-with-output-pipe))
+                expand-variables))
 
 ;; ------------------------------------------------------ ;;
 ;; Shorthand for 'string-append'.                         ;;
@@ -71,37 +69,3 @@
         (expand-variables (string-replace str (if env env "")
                                           (match:start m)
                                           (match:end m)))))))
-
-;; ------------------------------------------------------ ;;
-;; Execute 'command' with a pipe from it and call 'proc'  ;;
-;; with the resulting port. Pipe is closed afterwards and ;;
-;; value returned from 'proc' is returned.                ;;
-;; ------------------------------------------------------ ;;
-;; #:param: command :: string - shell command             ;;
-;;                                                        ;;
-;; #:param: proc :: port -> a - procedure                 ;;
-;;                                                        ;;
-;; #:return: x :: a - return value of 'proc'              ;;
-;; ------------------------------------------------------ ;;
-(define (call-with-input-pipe command proc)
-  (let* ((port (open-input-pipe command))
-         (ret  (proc port)))
-    (close-pipe port)
-    ret))
-
-;; ------------------------------------------------------ ;;
-;; Execute 'command' with a pipe to it and call 'proc'    ;;
-;; with the resulting port. Pipe is closed afterwards and ;;
-;; value returned from 'proc' is returned.                ;;
-;; ------------------------------------------------------ ;;
-;; #:param: command :: string - shell command             ;;
-;;                                                        ;;
-;; #:param: proc :: port -> a - procedure                 ;;
-;;                                                        ;;
-;; #:return: x :: a - return value of 'proc'              ;;
-;; ------------------------------------------------------ ;;
-(define (call-with-output-pipe command proc)
-  (let* ((port (open-output-pipe command))
-         (ret  (proc port)))
-    (close-pipe port)
-    ret))
