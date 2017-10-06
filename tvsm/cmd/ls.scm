@@ -18,10 +18,10 @@
 
 (define-module (tvsm ls)
   #:export     (list-shows-db)
-  #:use-module (tvsm show)
-  #:use-module (tvsm util)
-  #:use-module (tvsm config)
-  #:use-module (tvsm color))
+  #:use-module (tvsm common)
+  #:use-module (tvsm base show)
+  #:use-module (tvsm base config)
+  #:use-module (tvsm util color))
 
 ;; ------------------------------------------------------ ;;
 ;; Print contents of the show database in a neat manner.  ;;
