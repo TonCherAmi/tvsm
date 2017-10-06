@@ -19,14 +19,8 @@
 (define-module (tvsm util)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
-  #:export     (++
-                ask-user-y/n
+  #:export     (ask-user-y/n
                 expand-variables))
-
-;; ------------------------------------------------------ ;;
-;; Shorthand for 'string-append'.                         ;;
-;; ------------------------------------------------------ ;;
-(define ++ string-append)
 
 ;; ------------------------------------------------------ ;;
 ;; Print a message and prompt the user for a reply until  ;;
