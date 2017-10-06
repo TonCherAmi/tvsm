@@ -16,7 +16,7 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tvsm color)
+(define-module (tvsm util color)
   #:export     (color
                 colorize-string)
   #:use-module (tvsm util))
