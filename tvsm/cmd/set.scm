@@ -16,13 +16,13 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tvsm set)
+(define-module (tvsm cmd set)
   #:export     (set-show-name-db
                 set-show-path-db
                 set-show-airing-db
                 set-show-current-episode-db)
-  #:use-module (tvsm util)
-  #:use-module (tvsm show))
+  #:use-module (tvsm base show)
+  #:use-module (tvsm util ask-user))
 
 
 ;; ------------------------------------------------------ ;;
