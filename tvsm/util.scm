@@ -18,7 +18,6 @@
 
 (define-module (tvsm util)
   #:use-module (ice-9 regex)
-  #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
   #:export     (++
                 ask-user-y/n
