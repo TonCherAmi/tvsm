@@ -19,6 +19,7 @@
 (define-module (tvsm main)
   #:export     (main)
   #:use-module (ice-9 getopt-long)
+  #:use-module (tvsm syntax cond-star)
   #:use-module (tvsm cmd add)
   #:use-module (tvsm cmd play)
   #:use-module (tvsm cmd ls)
@@ -33,44 +34,41 @@
 (define (main args)
   (let* ((option-spec '((version (single-char #\v) (value #f))
                         (help    (single-char #\h) (value #f))))
-         (options (getopt-long args 
-                               option-spec 
-                               #:stop-at-first-non-option #t))
+         (options         (getopt-long args option-spec
+                                       #:stop-at-first-non-option #t))
          (version-wanted  (option-ref options 'version #f))
          (help-wanted     (option-ref options 'help #f)))
-    (if (or version-wanted help-wanted)
-      (begin
-        (if version-wanted
-          (display-version))
-        (if help-wanted 
-          (display-help)))
-      (let* ((stripped-args 
-               (option-ref options '() '()))
+    (cond*
+      (version-wanted
+       (display-version))
+      (help-wanted
+       (display-help))
+      (else
+       (let* ((stripped-args (option-ref options '() '()))
              ;; In case no arguments whatsoever were passed, 'command' will just slip 
              ;; through the 'case' and general help will be printed.
-             (command 
-               (unless (null? stripped-args) 
-                 (string->symbol (car stripped-args)))))
-        (catch 
-          #t
-          ;; thunk
-          (lambda ()
-            (case command
-              ((add) 
-               (add stripped-args))
-              ((play)
-               (play stripped-args))
-              ((ls)
-               (ls stripped-args))
-              ((rm)
-               (rm stripped-args))
-              ((set)
-               (set stripped-args))
-              (else
-               (display-help))))
-          ;; handler
-          (lambda (key message)
-            (die message)))))))
+             (command (unless (null? stripped-args) 
+                        (string->symbol (car stripped-args)))))
+         (catch 
+           #t
+           ;; thunk
+           (lambda ()
+             (case command
+               ((add) 
+                (add stripped-args))
+               ((play)
+                (play stripped-args))
+               ((ls)
+                (ls stripped-args))
+               ((rm)
+                (rm stripped-args))
+               ((set)
+                (set stripped-args))
+               (else
+                 (display-help))))
+           ;; handler
+           (lambda (key message)
+             (die message))))))))
 
 ;; ------------------------------------------------------ ;;
 ;; 'add' subcommand.                                      ;;
@@ -206,25 +204,23 @@ Try 'tvsm remove --help' for more information."))
          ;; Here we get a list that should consist of one element
          ;; which is the show name passed as an argument.
          (show-name   (option-ref options '() '())))
-    (cond
-      (help-wanted
-        (display-help 'set))
-      ;; This checks for the case where no show name was passed as an argument.
-      ((null? show-name)
-       (throw 'insufficient-args-exception
-              "insufficient arguments
+    (if help-wanted
+      (display-help 'set)
+      (cond*
+        ((null? show-name)
+         (throw 'insufficient-args-exception
+                "insufficient arguments
 Try 'tvsm set --help' for more information."))
-      (name
-        (set-show-name-db (car show-name) name))
-      (path
-        (set-show-path-db (car show-name) path))
-      (airing?
-        (set-show-airing-db (car show-name) #t))
-      (completed?
-        (set-show-airing-db (car show-name) #f))
-      (ep/current
-        (set-show-current-episode-db (car show-name) 
-                                     (string->number ep/current))))))
+        (airing?
+         (set-show-airing-db (car show-name) #t))
+        (completed?
+         (set-show-airing-db (car show-name) #f))
+        (ep/current
+         (set-show-current-episode-db (car show-name) (string->number ep/current)))
+        (path
+         (set-show-path-db (car show-name) path))
+        (name
+         (set-show-name-db (car show-name) name))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print a message and exit with a non-zero return value. ;;
