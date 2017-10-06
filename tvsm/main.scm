@@ -19,11 +19,11 @@
 (define-module (tvsm main)
   #:export     (main)
   #:use-module (ice-9 getopt-long)
-  #:use-module (tvsm add)
-  #:use-module (tvsm play)
-  #:use-module (tvsm ls)
-  #:use-module (tvsm rm)
-  #:use-module (tvsm set))
+  #:use-module (tvsm cmd add)
+  #:use-module (tvsm cmd play)
+  #:use-module (tvsm cmd ls)
+  #:use-module (tvsm cmd rm)
+  #:use-module (tvsm cmd set))
 
 ;; ------------------------------------------------------ ;;
 ;; Main procedure.                                        ;;
