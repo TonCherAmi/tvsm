@@ -19,7 +19,7 @@
 (define-module (tvsm util color)
   #:export     (color
                 colorize-string)
-  #:use-module (tvsm util))
+  #:use-module (tvsm common))
 
 ;; ------------------------------------------------------ ;;
 ;; Get a string containing the ANSI escape sequence for   ;;
