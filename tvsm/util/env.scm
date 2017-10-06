@@ -16,7 +16,7 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tvsm util)
+(define-module (tvsm util env)
   #:use-module (ice-9 regex)
   #:export     (expand-variables))
 
@@ -32,7 +32,7 @@
   (let ((m (string-match "\\$\\w*\\b" str)))
     (if (not m)
       str
-      (let* ((env (getenv (string-trim (match:substring m) #\$))))
+      (let ((env (getenv (string-trim (match:substring m) #\$))))
         (expand-variables (string-replace str (if env env "")
                                           (match:start m)
                                           (match:end m)))))))
