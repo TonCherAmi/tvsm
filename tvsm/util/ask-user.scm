@@ -17,8 +17,8 @@
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (tvsm util ask-user)
-  #:use-module (ice-9 rdelim)
-  #:export     (ask-user-y/n))
+  #:export     (ask-user-y/n)
+  #:use-module (ice-9 rdelim))
 
 ;; ------------------------------------------------------ ;;
 ;; Print a message and prompt the user for a reply until  ;;
