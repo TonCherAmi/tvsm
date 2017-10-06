@@ -232,7 +232,7 @@ Try 'tvsm set --help' for more information."))
 ;; #:param: message :: string - error message             ;;
 ;; ------------------------------------------------------ ;;
 (define (die message)
-  (format #t "tvsm: ~a~%" message)
+  (format (current-error-port) "tvsm: ~a~%" message)
   (exit 1))
 
 ;; ------------------------------------------------------ ;;
