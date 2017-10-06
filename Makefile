@@ -19,6 +19,8 @@ PROGNAME := tvsm
 
 PREFIX := /usr
 
+SCRIPTDIR := scripts
+
 CONFIG         := config
 CONFIG_DESTDIR := ${DESTDIR}${PREFIX}/share/doc/${PROGNAME}
 
@@ -27,7 +29,8 @@ GUILELIB := ${DESTDIR}$(shell guile -c "(display (%site-ccache-dir))")
 
 GUILEC := guild compile
 
-SRC := $(wildcard ${PROGNAME}/*.scm)
+SUBDIRS := $(shell find ${PROGNAME} -type d -print)
+SRC := $(foreach subdir, ${SUBDIRS}, $(wildcard ${subdir}/*.scm))
 OBJ := ${SRC:.scm=.go}
 
 .SILENT: OBJ
@@ -42,24 +45,25 @@ all:
 	${OBJ}
 
 install:
-	@mkdir -p ${GUILEINC}/${PROGNAME}
+	@mkdir -p ${GUILEINC}
 	@echo installing source files in ${GUILEINC}/${PROGNAME}
-	@cp -p ${SRC} ${GUILEINC}/${PROGNAME}
+	@cp -p --parents ${SRC} ${GUILEINC}
 	
-	@mkdir -p ${GUILELIB}/${PROGNAME}
+	@mkdir -p ${GUILELIB}
 	@echo installing object files in ${GUILELIB}/${PROGNAME}
-	@cp -p ${OBJ} ${GUILELIB}/${PROGNAME}
+	@cp -p --parents ${OBJ} ${GUILELIB}
 	
 	@mkdir -p ${DESTDIR}${PREFIX}/bin
 	@echo installing executable script in ${DESTDIR}${PREFIX}/bin
-	@cp -p scripts/${PROGNAME} ${DESTDIR}${PREFIX}/bin
+	@cp -p ${SCRIPTDIR}/${PROGNAME} ${DESTDIR}${PREFIX}/bin/${PROGNAME}
 
 	@mkdir -p ${CONFIG_DESTDIR}
+	@echo installing example config in ${CONFIG_DESTDIR}
 	@cp -p ${CONFIG} ${CONFIG_DESTDIR}/${CONFIG}
 
 uninstall:
-	@rm -rf ${GUILEINC}/${PROGNAME} 
-	@rm -rf ${GUILELIB}/${PROGNAME} 
+	@rm -rf ${GUILEINC}/${PROGNAME}
+	@rm -rf ${GUILELIB}/${PROGNAME}
 	@rm -f  ${DESTDIR}${PREFIX}/bin/${PROGNAME}
 	@rm -rf ${CONFIG_DESTDIR}
 
