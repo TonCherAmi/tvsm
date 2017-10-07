@@ -37,6 +37,7 @@
                 remove-show
                 find-show)
   #:use-module (ice-9 ftw)
+  #:use-module (tvsm syntax call-if)
   #:use-module (tvsm base db)
   #:use-module (tvsm base config))
 
