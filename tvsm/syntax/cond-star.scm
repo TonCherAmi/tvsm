@@ -17,7 +17,7 @@
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (tvsm syntax cond-star)
-  #:export (cond*))
+  #:export     (cond*))
 
 ;; ------------------------------------------------------ ;;
 ;; Version of 'cond' that evaluates EVERY 'cond'-clause   ;;
