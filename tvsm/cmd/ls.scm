@@ -19,6 +19,7 @@
 (define-module (tvsm cmd ls)
   #:export     (list-shows-db)
   #:use-module (tvsm common)
+  #:use-module (tvsm syntax call-if)
   #:use-module (tvsm base show)
   #:use-module (tvsm base config)
   #:use-module (tvsm util color))
@@ -40,7 +41,8 @@
         (let ((show-list (if (not all)
                            (filter (lambda (x) (not (show-finished? x))) show-list)
                            show-list)))
-          ((if long list-shows-long list-shows-short) show-list)))))
+          (call-if long
+            (list-shows-long | list-shows-short) show-list)))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print show-list in long format.                        ;;

@@ -301,7 +301,8 @@
         (ep/index (show:ep/index show)))
         ;; Out of bounds if current episode < 0
     (or (> 0 ep/index)
-        ((if (show:airing? show) > >=) ep/index ep/list-len))))
+        (call-if (show:airing? show)
+          (> | >=) ep/index ep/list-len))))
 
 ;; ------------------------------------------------------ ;;
 ;; Remove a show from a show-list. Original list remains  ;;
