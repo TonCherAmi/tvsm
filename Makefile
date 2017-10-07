@@ -58,7 +58,7 @@ install:
 	@cp -p ${SCRIPTDIR}/${PROGNAME} ${DESTDIR}${PREFIX}/bin/${PROGNAME}
 
 	@mkdir -p ${CONFIG_DESTDIR}
-	@echo installing example config in ${CONFIG_DESTDIR}
+	@echo installing default config in ${CONFIG_DESTDIR}
 	@cp -p ${CONFIG} ${CONFIG_DESTDIR}/${CONFIG}
 
 uninstall:
