@@ -39,7 +39,8 @@
       increment?
     #:proc
       (lambda (show-list)
-        (let* ((show-db (find-show show-name show-list))
+        (let* ((show-db
+                 (find-show show-name show-list))
                (show
                  (cond
                    ((not show-db)
