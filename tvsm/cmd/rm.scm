@@ -17,25 +17,31 @@
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (tvsm cmd rm)
-  #:export     (remove-show-db
+  #:export     (remove-shows-db
                 remove-finished-db)
   #:use-module (tvsm base show))
 
 ;; ---------------------------------------------------- ;;
-;; Remove a show from the database.                     ;;
+;; Remove shows from the database.                      ;;
 ;; ---------------------------------------------------- ;;
-;; #:param: show-name :: string - show name             ;;
+;; #:param: show-names :: [string] - show names         ;;
 ;; ---------------------------------------------------- ;;
-(define (remove-show-db show-name)
+(define (remove-shows-db show-names)
   (call-with-show-list
     #:overwrite 
       #t
     #:proc
       (lambda (show-list)
-        (if (not (find-show show-name show-list))
-          (throw 'show-not-found-exception
-                 (format #f "cannot remove '~a': No such show" show-name))
-          (remove-show show-name show-list)))))
+        (for-each
+          (lambda (name)
+            (unless (find-show name show-list)
+              (throw 'show-not-found-exception
+                     (format #f "cannot remove '~a': No such show" name))))
+          show-names)
+        (filter
+          (lambda (show)
+            (not (member (show:name show) show-names)))
+          show-list))))
 
 ;; ---------------------------------------------------- ;;
 ;; Remove finished shows from the database.             ;;

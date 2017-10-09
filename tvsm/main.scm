@@ -65,7 +65,7 @@
                ((set)
                 (set stripped-args))
                (else
-                 (display-help))))
+                (display-help))))
            ;; handler
            (lambda (key message)
              (die message))))))))
@@ -167,20 +167,19 @@ Try 'tvsm play --help' for more information."))
          (options         (getopt-long args option-spec))
          (help-wanted     (option-ref options 'help #f))
          (finished-wanted (option-ref options 'finished #f))
-         ;; Here we get a list that should consist of one element
-         ;; which is the show name passed as an argument.
-         (show-name       (option-ref options '() '())))
+         ;; Here we get a list of show names passed as arguments
+         (show-names      (option-ref options '() '())))
     (cond 
       (help-wanted 
-        (display-help 'remove))
+       (display-help 'remove))
       (finished-wanted
-        (remove-finished-db))
-      ((null? show-name)
+       (remove-finished-db))
+      ((null? show-names)
        (throw 'insufficient-args-exception
               "insufficient arguments
 Try 'tvsm remove --help' for more information."))
       (else 
-        (remove-show-db (car show-name))))))
+       (remove-shows-db show-names)))))
 
 ;; ------------------------------------------------------ ;;
 ;; 'set' subcommand.                                      ;;
