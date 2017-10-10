@@ -18,23 +18,25 @@
 
 (define-module (tvsm util color)
   #:export     (color
-                colorize-string)
+                colorize)
   #:use-module (tvsm common))
 
 ;; ------------------------------------------------------ ;;
 ;; Get a string containing the ANSI escape sequence for   ;;
-;; producing the requested set of attributes.             ;;
+;; producing the requested set of parameters.             ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: lst :: [symbol] - desired attributes          ;;
+;; #:param: lst :: [symbol] - desired SGR parameters      ;;
 ;;                                                        ;;
 ;; #:return: x :: string - ANSI escape sequense for       ;;
 ;;           producing the requested set of attributes    ;;
 ;; ------------------------------------------------------ ;;
 (define (color . lst)
   (let ((color-list
-          (map cdr (filter identity (map (lambda (clr) 
-                                           (assoc clr *sgr-parameters*))
-                                         lst)))))
+          (map cdr
+               (filter identity
+                       (map (lambda (clr) 
+                              (assoc clr *sgr-parameters*))
+                            lst)))))
     (if (null? color-list)
       ""
       (++ (string #\esc #\[)
@@ -42,24 +44,24 @@
           "m"))))
   
 ;; ------------------------------------------------------ ;;
-;; Get a copy of 'str' colorized using ANSI escape        ;;
-;; sequences according to attributes specified in 'lst'   ;;
-;; At the end of the returned string all the attributes   ;;
-;; are reset.                                             ;;
+;; Get a string representation of 'obj' preceded by ANSI  ;;
+;; escape sequence necessary to produce desired effects.  ;;
+;; At the end of the string any effects are reset.        ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: str :: string - a string to colorize          ;;
+;; #:param: obj :: a - an object to colorize              ;;
 ;;                                                        ;;
-;; #:param: lst :: [symbol] - desired attributes          ;;
+;; #:param: lst :: [symbol] - desired SGR parameters      ;;
 ;;                                                        ;;
-;; #:return: x :: string - a copy of 'str' wrapped in     ;;
-;;           ANSI escape sequences required for producing ;;
-;;           requested colors                             ;;
+;; #:return: x :: string - string representation of 'obj' ;;
+;;           colorized using ANSI escape sequences        ;;
 ;; ------------------------------------------------------ ;;
-(define (colorize-string str . lst)
-  (++ (apply color lst) str (color 'CLEAR)))
+(define (colorize obj . lst)
+  (++ (apply color lst)
+      (object->string obj display)
+      (color 'CLEAR)))
 
 ;; ------------------------------------------------------ ;;
-;; A list of attributes and their corresponding codes.    ;;
+;; A list of Select Graphic Rendition parameters.         ;;
 ;; ------------------------------------------------------ ;;
 ;; #:global: *sgr-parameters* :: [(symbol . string)]      ;;
 ;; ------------------------------------------------------ ;;

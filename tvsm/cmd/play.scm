@@ -58,13 +58,10 @@
                              "No new episodes"
                              "No episodes left")))
             (let ((episode-path (show:ep/current-path show)))
-              (format #t "Playing episode no. ~a of '~a'~%"
-                      (colorize-string
-                        (number->string (show:ep/current show))
-                        'BOLD)
-                      (colorize-string
-                        (show:name show)
-                        'BOLD))
+              (format #t "Playing episode no. ~a/~a of '~a'~%"
+                      (colorize (show:ep/current show) 'BOLD)
+                      (colorize (length (show:ep/list show)) 'BOLD)
+                      (colorize (show:name show) 'BOLD))
               (catch
                 #t
                 ;; thunk

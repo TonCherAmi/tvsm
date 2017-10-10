@@ -51,22 +51,22 @@
 ;; ------------------------------------------------------ ;;
 (define (list-shows-long show-list)
   (format #t "total ~a~%" (length show-list))
-  (let ((cs colorize-string))
+  (let ((c colorize))
     (for-each
       (lambda (show)
         (let ((fin? (show-finished? show))
               (air? (show:airing? show)))
-          (format #t (++ "~a " (cs "[" 'BLUE) "~a~a" (cs "]" 'BLUE) " ~5@a ~a~%")
+          (format #t (++ "~a " (c "[" 'BLUE) "~a~a" (c "]" 'BLUE) " ~5@a ~a~%")
                   (show:date show)
                   ;; 'f' stands for finished, 'w' for watching
-                  (if fin? (cs "f" 'RED) (cs "w" 'GREEN))
+                  (if fin? (c #\f 'RED) (c #\w 'GREEN))
                   ;; 'a' stands for airing, 'c' for completed
-                  (if air? (cs "a" 'CYAN) (cs "c" 'MAGENTA))
+                  (if air? (c #\a 'CYAN) (c #\c 'MAGENTA))
                   (format #f "~a/~a"
                           (show:ep/played show)
                           (+ (length (show:ep/list show))
                              (show:ep/offset show)))
-                  (cs (show:name show) 'BOLD))))
+                  (c (show:name show) 'BOLD))))
       show-list)))
 
 ;; ------------------------------------------------------ ;;
