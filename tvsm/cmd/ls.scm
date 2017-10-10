@@ -39,7 +39,7 @@
     #:proc
       (lambda (show-list)
         (let ((show-list (if (not all)
-                           (filter (lambda (x) (not (show-finished? x))) show-list)
+                           (filter (negate show-finished?) show-list)
                            show-list)))
           (call-if long
             (list-shows-long | list-shows-short) show-list)))))
