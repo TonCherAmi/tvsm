@@ -30,7 +30,7 @@
 ;;           #f otherwise                                     ;;
 ;; ---------------------------------------------------------- ;;
 (define (config key)
-  (let ((property (assoc key *config-list*)))
+  (let ((property (assoc key (force *config-list*))))
     (and=> property cdr)))
 
 ;; ---------------------------------------------------------- ;;
@@ -67,15 +67,17 @@
 ;; ---------------------------------------------------------- ;;
 ;; A list containing config properties.                       ;;
 ;; ---------------------------------------------------------- ;;
-;; #:global: *config-list* :: [(symbol . a)]                  ;;
+;; #:global: *config-list* :: promise [(symbol . a)]          ;;
 ;; ---------------------------------------------------------- ;;
 (define *config-list*
-  (let loop ((paths (path-list)))
-    (cond
-      ((null? paths)
-       (throw 'config-not-found-exception
-              "cannot continue: Configuration file not found"))
-      ((access? (car paths) R_OK)
-       (expand-config (with-input-from-file (car paths) read)))
-      (else
-       (loop (cdr paths))))))
+  ;; lazy evaluation prevents uncaught exception on module load
+  (delay
+    (let loop ((paths (path-list)))
+      (cond
+        ((null? paths)
+         (throw 'config-not-found-exception
+                "cannot continue: Configuration file not found"))
+        ((access? (car paths) R_OK)
+         (expand-config (with-input-from-file (car paths) read)))
+        (else
+         (loop (cdr paths)))))))
