@@ -153,7 +153,7 @@ Try 'tvsm play --help' for more information."))
          (all-wanted  (option-ref options 'all  #f))
          (long-wanted (option-ref options 'long #f)))
     (if help-wanted 
-      (display-help 'list)
+      (display-help 'ls)
       (list-shows-db #:all all-wanted #:long long-wanted))))
 
 ;; ------------------------------------------------------ ;;
@@ -171,7 +171,7 @@ Try 'tvsm play --help' for more information."))
          (show-names      (option-ref options '() '())))
     (cond 
       (help-wanted 
-       (display-help 'remove))
+       (display-help 'rm))
       (finished-wanted
        (remove-finished-db))
       ((null? show-names)
@@ -265,14 +265,14 @@ options:
     -s, --set:                  if specified together with '--episode' show
                                 will continue to play from that specified episode
                                 in the future."))
-    ((list)
+    ((ls)
      (display "\
 Usage: tvsm ls [<options>]
 
 options:
     -a, --all:      do not ignore finished shows.
     -l, --long:     use a long listing format."))
-    ((remove)
+    ((rm)
      (display "\
 Usage: tvsm rm [<options>] [<name>...]
 
