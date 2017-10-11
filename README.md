@@ -44,11 +44,11 @@ After installation you will need to set up the configuration file.
 Usage: tvsm [--version] [--help] <command> [<options>]
 
 available commands:
-    add:        add a show.
-    play:       play a show.
-    list:       list existing shows.
-    remove:     remove shows.
-    set:        modify a show.
+    add:      add a show.
+    play:     play a show.
+    ls:       list existing shows.
+    rm:       remove shows.
+    set:      modify a show.
     
 See 'tvsm <command> --help' to learn more about a specific command.
 ```
