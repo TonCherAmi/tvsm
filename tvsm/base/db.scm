@@ -28,11 +28,10 @@
 ;;           the database is empty                        ;;
 ;; ------------------------------------------------------ ;;
 (define (read-show-list-db)
-  (if (access? (config 'show-db-path) R_OK)
-    (with-input-from-file 
-      (config 'show-db-path)
-      read)
-    (list)))
+  (let ((db-path (config 'show-db-path)))
+    (if (access? db-path R_OK)
+      (with-input-from-file db-path read)
+      '())))
 
 ;; ------------------------------------------------------ ;;
 ;; Write show database.                                   ;;
