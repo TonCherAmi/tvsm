@@ -19,7 +19,8 @@
 (define-module (tvsm base db)
   #:export     (read-show-list-db
                 write-show-list-db)
-  #:use-module (tvsm base config))
+  #:use-module (tvsm base config)
+  #:use-module (tvsm util path))
 
 ;; ------------------------------------------------------ ;;
 ;; Read show database.                                    ;;
@@ -39,12 +40,19 @@
 ;; #:param: show-list :: [show] - show-list               ;; 
 ;; ------------------------------------------------------ ;;
 (define (write-show-list-db show-list)
-  (let* ((db-path 
-           (config 'show-db-path))
-         (db-dir-path 
-           (substring db-path 0 (string-index-right db-path #\/))))
-    (when (not (file-exists? db-dir-path))
-      (mkdir db-dir-path))
+  (let* ((db-path (config 'show-db-path))
+         (db-dir (dirname db-path)))
+    (unless (file-exists? db-dir)
+      (catch
+        #t
+        ;; thunk
+        (lambda ()
+          (mkdirs db-dir))
+        ;; handler
+        (lambda (key code path)
+          (throw 'key (format #f "cannot create directory '~a': ~a" 
+                              path
+                              (strerror code))))))
     (with-output-to-file
       db-path
       (lambda ()
