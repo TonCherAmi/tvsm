@@ -30,9 +30,16 @@
 ;; ------------------------------------------------------ ;;
 (define (read-show-list-db)
   (let ((db-path (config 'show-db-path)))
-    (if (access? db-path R_OK)
-      (with-input-from-file db-path read)
-      '())))
+    (catch 'system-error
+      (lambda ()
+        (if (file-exists? db-path)
+          (with-input-from-file db-path read)
+          '()))
+      (lambda (key proc message args data)
+        (throw 'cannot-read-show-db-exception
+               (format #f "cannot read show db from '~a': ~a "
+                       db-path
+                       (strerror (car data))))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Write show database.                                   ;;
@@ -40,20 +47,25 @@
 ;; #:param: show-list :: [show] - show-list               ;; 
 ;; ------------------------------------------------------ ;;
 (define (write-show-list-db show-list)
-  (let* ((db-path (config 'show-db-path))
-         (db-dir (dirname db-path)))
-    (unless (file-exists? db-dir)
-      (catch
-        #t
-        ;; thunk
+  (let* ((db-path      (config 'show-db-path))
+         (db-directory (dirname db-path)))
+    (unless (file-exists? db-directory)
+      (catch #t
         (lambda ()
-          (mkdirs db-dir))
-        ;; handler
+          (mkdirs db-directory))
         (lambda (key code path)
-          (throw 'key (format #f "cannot create directory '~a': ~a" 
-                              path
-                              (strerror code))))))
-    (with-output-to-file
-      db-path
+          (throw 'cannot-create-directory-exception 
+                 (format #f "cannot create directory '~a': ~a" 
+                         path
+                         (strerror code))))))
+    (catch 'system-error
       (lambda ()
-        (write show-list)))))
+        (with-output-to-file 
+          db-path
+          (lambda ()
+            (write show-list))))
+      (lambda (key proc message args data)
+        (throw 'cannot-write-show-db-exception
+               (format #f "cannot write show db to '~a': ~a"
+                       db-path
+                       (strerror (car data))))))))
