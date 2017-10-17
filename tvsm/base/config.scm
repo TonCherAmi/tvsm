@@ -19,7 +19,7 @@
 (define-module (tvsm base config)
   #:export     (config)
   #:use-module (tvsm common)
-  #:use-module (tvsm util env))
+  #:use-module (tvsm util path))
 
 ;; ---------------------------------------------------------- ;;
 ;; Get a property value from the config.                      ;;
@@ -55,14 +55,15 @@
 ;;           expanded                                         ;;
 ;; ---------------------------------------------------------- ;;
 (define (expand-config cfg-lst)
-  (map (lambda (property)
-         (let ((key   (car property))
-               (value (cdr property)))
-         (cons key
-               (if (string? value)
-                 (expand-variables value)
-                 value))))
-       cfg-lst))
+  (let ((expand-all (compose expand-user expand-variables)))
+    (map (lambda (property)
+           (let ((key   (car property))
+                 (value (cdr property)))
+             (cons key
+                   (if (string? value)
+                     (expand-all value)
+                     value))))
+         cfg-lst)))
 
 ;; ---------------------------------------------------------- ;;
 ;; A list containing config properties.                       ;;
