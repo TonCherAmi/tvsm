@@ -39,7 +39,8 @@
   #:use-module (ice-9 ftw)
   #:use-module (tvsm syntax call-if)
   #:use-module (tvsm base db)
-  #:use-module (tvsm base config))
+  #:use-module (tvsm base config)
+  #:use-module (tvsm util path))
 
 ;; ------------------------------------------------------- ;;
 ;; Read the show database and call '(proc show-list)'      ;;
@@ -248,10 +249,10 @@
     (cond
       ((not (file-exists? path))
        (throw 'invalid-path-exception
-              (format #f "invalid path '~a': No such file or directory" path)))
-      ((not (eq? 'directory (stat:type (stat path))))
+              (format #f "invalid path '~a': ~a" (strerror ENOENT) path)))
+      ((not (directory? path))
        (throw 'invalid-path-exception
-              (format #f "invalid path '~a': Not a directory" path)))
+              (format #f "invalid path '~a' ~a:" (strerror ENOTDIR) path)))
       (else
        (scandir path
                 (lambda (path)
