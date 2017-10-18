@@ -62,14 +62,11 @@
                       (colorize (show:ep/current show) 'BOLD)
                       (colorize (length (show:ep/list show)) 'BOLD)
                       (colorize (show:name show) 'BOLD))
-              (catch
-                #t
-                ;; thunk
+              (catch #t
                 (lambda ()
                   (play-episode episode-path)
                   (cons (show:ep/index-inc show)
                         (remove-show show-name show-list)))
-                ;; handler
                 (lambda (key message)
                   (throw key (format #f "could not play '~a': ~a" show-name message))))))))))
 
