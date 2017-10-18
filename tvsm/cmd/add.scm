@@ -18,7 +18,6 @@
 
 (define-module (tvsm cmd add)
   #:export     (add-show-db)
-  #:use-module (srfi srfi-19)
   #:use-module (tvsm base show)
   #:use-module (tvsm util ask-user))
 
@@ -43,7 +42,7 @@
 (define* (add-show-db #:key name path airing? ep/current ep/offset)
   (let ((new-show (make-show #:name name 
                              #:path path
-                             #:date (date->string (current-date) "~b ~e ~Y")
+                             #:date (current-time)
                              #:airing? airing?
                              #:ep/current ep/current
                              #:ep/offset ep/offset)))

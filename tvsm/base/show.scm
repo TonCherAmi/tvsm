@@ -64,8 +64,7 @@
 ;;                                                        ;;
 ;; #:param: path :: string - path to the show directory   ;;
 ;;                                                        ;;
-;; #:param: date :: string - show creation date in form   ;;
-;;          'MMM DD YYYY' e.g. 'Jan 01 1970'              ;;
+;; #:param: date :: int - show creation date (Unix time)  ;;
 ;;                                                        ;;
 ;; #:param: airing? :: bool - if #t show is not marked as ;;
 ;;          finished when all of its episodes have been   ;;
@@ -149,7 +148,7 @@
 ;; ------------------------------------------------------ ;;
 ;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
-;; #:return: x :: string - show creation date             ;;
+;; #:return: x :: int - show creation date (Unix time)    ;;
 ;; ------------------------------------------------------ ;;
 (define (show:date show)
   (cdr (assoc 'date show)))
