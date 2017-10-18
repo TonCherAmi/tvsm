@@ -32,11 +32,10 @@
 ;; ------------------------------------------------------ ;;
 (define (color . lst)
   (let ((color-list
-          (map cdr
-               (filter identity
-                       (map (lambda (clr) 
-                              (assoc clr *sgr-parameters*))
-                            lst)))))
+          (filter identity
+                  (map (lambda (clr) 
+                         (assq-ref *sgr-parameters* clr))
+                       lst))))
     (if (null? color-list)
       ""
       (++ (string #\esc #\[)
@@ -66,18 +65,18 @@
 ;; #:global: *sgr-parameters* :: [(symbol . string)]      ;;
 ;; ------------------------------------------------------ ;;
 (define *sgr-parameters*
-  (list '(CLEAR      . "0")
-        '(BOLD       . "1")
-        '(DARK       . "2")
-        '(ITALIC     . "3")
-        '(UNDERLINED . "4")
-        '(BLINK      . "5")
-        '(HIDDEN     . "8")
-        '(BLACK      . "30")
-        '(RED        . "31")
-        '(GREEN      . "32")
-        '(YELLOW     . "33")
-        '(BLUE       . "34")
-        '(MAGENTA    . "35")
-        '(CYAN       . "36")
-        '(WHITE      . "37")))
+  '((CLEAR      . "0")
+    (BOLD       . "1")
+    (DARK       . "2")
+    (ITALIC     . "3")
+    (UNDERLINED . "4")
+    (BLINK      . "5")
+    (HIDDEN     . "8")
+    (BLACK      . "30")
+    (RED        . "31")
+    (GREEN      . "32")
+    (YELLOW     . "33")
+    (BLUE       . "34")
+    (MAGENTA    . "35")
+    (CYAN       . "36")
+    (WHITE      . "37")))
