@@ -131,7 +131,7 @@
 ;; #:return: x :: string - show name                      ;;
 ;; ------------------------------------------------------ ;;
 (define (show:name show)
-  (cdr (assoc 'name show)))
+  (assq-ref show 'name))
 
 ;; ------------------------------------------------------ ;;
 ;; Get path of a show.                                    ;;
@@ -141,7 +141,7 @@
 ;; #:return: x :: string - show path                      ;;
 ;; ------------------------------------------------------ ;;
 (define (show:path show)
-  (cdr (assoc 'path show)))
+  (assq-ref show 'path))
 
 ;; ------------------------------------------------------ ;;
 ;; Get creation date of a show.                           ;;
@@ -151,7 +151,7 @@
 ;; #:return: x :: int - show creation date (Unix time)    ;;
 ;; ------------------------------------------------------ ;;
 (define (show:date show)
-  (cdr (assoc 'date show)))
+  (assq-ref show 'date))
 
 ;; ------------------------------------------------------ ;;
 ;; Check whether show is airing.                          ;;
@@ -162,7 +162,7 @@
 ;;           #f otherwise                                 ;;
 ;; ------------------------------------------------------ ;;
 (define (show:airing? show)
-  (cdr (assoc 'airing? show)))
+  (assq-ref show 'airing?))
 
 ;; ------------------------------------------------------ ;;
 ;; Get episode index of a show.                           ;;
@@ -172,7 +172,7 @@
 ;; #:return: x :: int - episode index                     ;;
 ;; ------------------------------------------------------ ;;
 (define (show:ep/index show)
-  (cdr (assoc 'ep/index show)))
+  (assq-ref show 'ep/index))
 
 ;; ------------------------------------------------------ ;;
 ;; Get episode offset of a show.                          ;;
@@ -182,7 +182,7 @@
 ;; #:return: x :: int - episode offset                    ;;
 ;; ------------------------------------------------------ ;;
 (define (show:ep/offset show)
-  (cdr (assoc 'ep/offset show)))
+  (assq-ref show 'ep/offset))
 
 ;; ------------------------------------------------------ ;;
 ;; Get current episode number of a show.                  ;;
