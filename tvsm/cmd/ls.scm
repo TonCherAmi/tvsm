@@ -57,7 +57,7 @@
         (let ((fin? (show-finished? show))
               (air? (show:airing? show)))
           (format #t (++ "~a " (c "[" 'BLUE) "~a~a" (c "]" 'BLUE) " ~5@a ~a~%")
-                  (show:date show)
+                  (strftime (config 'date-format) (localtime (show:date show)))
                   ;; 'f' stands for finished, 'w' for watching
                   (if fin? (c #\f 'RED) (c #\w 'GREEN))
                   ;; 'a' stands for airing, 'c' for completed
