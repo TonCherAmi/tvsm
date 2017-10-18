@@ -72,9 +72,7 @@
 (define (expand-user path)
   (if (not (string-prefix? "~" path))
     path
-    (catch
-      'misc-error
-      ;; thunk
+    (catch 'misc-error
       (lambda ()
         (let* ((i (string-index path #\/ 1))
                (index (if i i (string-length path)))
@@ -85,7 +83,6 @@
                      (getpwnam (substring path 1 index)))) ;; <- throws if no such user
                (home (passwd:dir pw)))
           (string-replace path home 0 index)))
-      ;; handler
       (lambda (key . args)
         path))))
 

@@ -49,9 +49,7 @@
              ;; through the 'case' and general help will be printed.
              (command (unless (null? stripped-args) 
                         (string->symbol (car stripped-args)))))
-         (catch 
-           #t
-           ;; thunk
+         (catch #t
            (lambda ()
              (case command
                ((add) 
@@ -66,7 +64,6 @@
                 (set stripped-args))
                (else
                 (display-help))))
-           ;; handler
            (lambda (key message)
              (die message))))))))
 
