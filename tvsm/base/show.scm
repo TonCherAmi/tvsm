@@ -90,14 +90,14 @@
                           ep/index
                           ep/offset
                           ep/current)
-  (list (cons 'name name)
-        (cons 'path path)
-        (cons 'date date)
-        (cons 'airing? airing?)
-        (cons 'ep/index (if ep/current
-                          (- ep/current ep/offset 1)
-                          ep/index))
-        (cons 'ep/offset ep/offset)))
+  `((name      . ,name)
+    (path      . ,path)
+    (date      . ,date)
+    (airing?   . ,airing?)
+    (ep/index  . ,(if ep/current
+                    (- ep/current ep/offset 1)
+                    ep/index))
+    (ep/offset . ,ep/offset)))
 
 ;; ------------------------------------------------------ ;;
 ;; Remake a show using either newly specified values or   ;;
