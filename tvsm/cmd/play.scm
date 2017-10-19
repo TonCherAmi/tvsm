@@ -54,8 +54,8 @@
             (throw 'show-not-playable-exception
                    (format #f "cannot play '~a': ~a"
                            show-name
-                           (if (show:airing? show)
-                             "No new episodes"
+                           (if episode
+                             "Episode out of bounds"
                              "No episodes left")))
             (let ((episode-path (show:ep/current-path show)))
               (format #t "Playing episode no. ~a/~a of '~a'~%"
