@@ -61,7 +61,7 @@
                   (colorize (show:ep/current show) 'BOLD)
                   (colorize (length (show:ep/list show)) 'BOLD))
           (let ((episode-path (show:ep/current-path show)))
-            (catch #t
+            (catch 'media-player-command-exception
               (lambda ()
                 (play-file episode-path)
                 (cons (show:ep/index-inc show)
@@ -91,14 +91,14 @@
 ;; #:param: path :: string - absolute path to a file     ;;
 ;; ----------------------------------------------------- ;;
 (define (play-file path)
-  (let ((command (config 'media-player-command)))
+  (let ((mpcmd-err (lambda (what)
+                     (throw 'media-player-command-exception
+                            (format #f "Media player command ~a" what))))
+        (command (config 'media-player-command)))
     (cond
       ((not command)
-       (throw 'mp-command-not-set-exception
-              "Media player command is not set"))
-      ((or (not (string? command)) (not (string-contains command "~a")))
-       (throw 'mp-command-malformed-exception
-              "Media player command is malformed"))
+       (mpcmd-err "not set"))
+      ((not (and (string? command) (string-contains command "~a")))
+       (mpcmd-err "malformed"))
       ((not (zero? (system (format #f command path))))
-       (throw 'mp-command-failed-exception
-              "Media player command failed")))))
+       (mpcmd-err "failed")))))
