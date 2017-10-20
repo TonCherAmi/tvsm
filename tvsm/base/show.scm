@@ -248,10 +248,10 @@
     (cond
       ((not (file-exists? path))
        (throw 'invalid-path-exception
-              (format #f "invalid path '~a': ~a" (strerror ENOENT) path)))
+              (format #f "invalid path '~a': ~a" path (strerror ENOENT))))
       ((not (directory? path))
        (throw 'invalid-path-exception
-              (format #f "invalid path '~a' ~a:" (strerror ENOTDIR) path)))
+              (format #f "invalid path '~a' ~a:" path (strerror ENOTDIR))))
       (else
        (scandir path
                 (lambda (path)
