@@ -46,7 +46,7 @@
                     (throw 'show-not-found-exception
                            (format #f "cannot watch '~a': No such show" show-name)))
                    (ep
-                    (remake-show show-db #:ep/current ep))
+                    (remake-show show* #:ep/current ep))
                    (else
                     show*))))
           (unless (show:watchable? show)
@@ -99,6 +99,6 @@
       ((or (not (string? command)) (not (string-contains command "~a")))
        (throw 'mp-command-malformed-exception
               "Media player command is malformed"))
-      ((not (zero? (system (format #f command episode-path))))
+      ((not (zero? (system (format #f command path))))
        (throw 'mp-command-failed-exception
               "Media player command failed")))))

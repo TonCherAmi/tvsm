@@ -131,8 +131,8 @@ Try 'tvsm add --help' for more information."))
 Try 'tvsm watch --help' for more information."))
       (episode 
        (watch-show-db (car show-name)
-                      #:increment? set-wanted 
-                      #:episode (string->number episode)))
+                      #:set? set-wanted 
+                      #:ep (string->number episode)))
       (else 
        (watch-show-db (car show-name))))))
 
