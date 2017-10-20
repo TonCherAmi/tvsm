@@ -21,7 +21,7 @@
   #:use-module (ice-9 getopt-long)
   #:use-module (tvsm syntax cond-star)
   #:use-module (tvsm cmd add)
-  #:use-module (tvsm cmd play)
+  #:use-module (tvsm cmd watch)
   #:use-module (tvsm cmd ls)
   #:use-module (tvsm cmd rm)
   #:use-module (tvsm cmd set))
@@ -54,8 +54,8 @@
              (case command
                ((add) 
                 (add stripped-args))
-               ((play)
-                (play stripped-args))
+               ((watch)
+                (watch stripped-args))
                ((ls)
                 (ls stripped-args))
                ((rm)
@@ -106,11 +106,11 @@ Try 'tvsm add --help' for more information."))
                          #:ep/offset offset)))))))
 
 ;; ------------------------------------------------------ ;;
-;; 'play' subcommand.                                     ;;
+;; 'watch' subcommand.                                    ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: args :: [string] - subcommand arguments       ;;
 ;; ------------------------------------------------------ ;;
-(define (play args)
+(define (watch args)
   (let* ((option-spec '((help    (single-char #\h) (value #f))
                         (episode (single-char #\e) (value #t))
                         (set     (single-char #\s) (value #f))))
@@ -123,18 +123,18 @@ Try 'tvsm add --help' for more information."))
          (show-name   (option-ref options '() '())))
     (cond 
       (help-wanted
-        (display-help 'play))
+       (display-help 'watch))
       ;; If the list is empty then the required argument is missing.
       ((null? show-name)
        (throw 'insufficient-args-exception
               "missing show name
-Try 'tvsm play --help' for more information."))
+Try 'tvsm watch --help' for more information."))
       (episode 
-        (play-show-db (car show-name)
+       (watch-show-db (car show-name)
                       #:increment? set-wanted 
                       #:episode (string->number episode)))
       (else 
-       (play-show-db (car show-name))))))
+       (watch-show-db (car show-name))))))
 
 ;; ------------------------------------------------------ ;;
 ;; 'ls' subcommand.                                       ;;
@@ -247,21 +247,20 @@ required-arguments:
                                        episodes of the show.
 options:
     -a, --airing:                      mark show as airing.
-    -e, --current-episode <integer>:   number of the episode the show will
-                                       start playing from.
+    -e, --current-episode <integer>:   number of the current episode
     -o, --episode-offset  <integer>:   useful when episode numbering of a show
                                        deviates from the usual sequential numbering
                                        i.e. when first episode is not numbered 'E01'."))
-    ((play)
+    ((watch)
      (display "\
-Usage: tvsm play [<options>] <show> 
+Usage: tvsm watch [<options>] <show> 
 
 options:
-    -e, --episode <integer>:    number of the episode to play instead of 
+    -e, --episode <integer>:    number of the episode to watch instead of 
                                 current episode.
     -s, --set:                  if specified together with '--episode' show
-                                will continue to play from that specified episode
-                                in the future."))
+                                will continue to progress further from that
+                                specified episode."))
     ((ls)
      (display "\
 Usage: tvsm ls [<options>]
@@ -291,7 +290,7 @@ Usage: tvsm [--version] [--help] <command> [<options>]
 
 available commands:
     add:      add a show.
-    play:     play a show.
+    watch:    watch a show.
     ls:       list existing shows.
     rm:       remove shows.
     set:      modify a show.

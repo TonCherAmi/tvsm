@@ -27,12 +27,12 @@
                 show:ep/index
                 show:ep/offset
                 show:ep/current
-                show:ep/played
+                show:ep/watched
                 show:ep/index-inc
                 show:ep/index-dec
                 show:ep/list
-                show-playable?
-                show-finished?
+                show:watchable?
+                show:finished?
                 show:ep/index-out-of-bounds?
                 remove-show
                 find-show)
@@ -66,9 +66,9 @@
 ;;                                                        ;;
 ;; #:param: date :: int - show creation date (Unix time)  ;;
 ;;                                                        ;;
-;; #:param: airing? :: bool - if #t show is not marked as ;;
-;;          finished when all of its episodes have been   ;;
-;;          watched                                       ;;
+;; #:param: airing? :: bool - if #t show is not           ;;
+;;          considered finished when all of its episodes  ;;
+;;          have been watched                             ;;
 ;;                                                        ;;
 ;; #:param: ep/index :: int - episode index, points at    ;;
 ;;          the current episode inside an episode list    ;;
@@ -199,9 +199,9 @@
 ;; ------------------------------------------------------ ;;
 ;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
-;; #:return: x :: int - number of episodes played         ;;
+;; #:return: x :: int - number of episodes watched        ;;
 ;; ------------------------------------------------------ ;;
-(define (show:ep/played show)
+(define (show:ep/watched show)
   (+ (show:ep/index show) (show:ep/offset show)))
 
 ;; ------------------------------------------------------ ;;
@@ -265,14 +265,14 @@
                        (loop (cdr format-list)))))))))))
 
 ;; ------------------------------------------------------ ;;
-;; Check whether show is playable.                        ;;
+;; Check whether show is watchable.                       ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show :: show - show                           ;;
 ;;                                                        ;;
-;; #:return: x :: bool - #t if show is playable,          ;;
+;; #:return: x :: bool - #t if show is watchable,         ;;
 ;;           #f otherwise                                 ;;
 ;; ------------------------------------------------------ ;;
-(define (show-playable? show)
+(define (show:watchable? show)
   (and (<= 0 (show:ep/index show))
        (< (show:ep/index show) 
           (length (show:ep/list show)))))
@@ -285,9 +285,9 @@
 ;; #:return: x :: bool - #t if show is finished,          ;;
 ;;           #f otherwise                                 ;;
 ;; ------------------------------------------------------ ;;
-(define (show-finished? show)
+(define (show:finished? show)
   (and (not (show:airing? show))
-       (not (show-playable? show))))
+       (not (show:watchable? show))))
 
 ;; ------------------------------------------------------ ;;
 ;; Check whether episode index of a show is out of bounds ;;

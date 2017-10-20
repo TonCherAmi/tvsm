@@ -52,4 +52,4 @@
       #t
     #:proc
       (lambda (show-list)
-        (filter (negate show-finished?) show-list))))
+        (filter (negate show:finished?) show-list))))

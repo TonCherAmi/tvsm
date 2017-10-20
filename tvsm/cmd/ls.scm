@@ -39,7 +39,7 @@
     #:proc
       (lambda (show-list)
         (let ((show-list (if (not all)
-                           (filter (negate show-finished?) show-list)
+                           (filter (negate show:finished?) show-list)
                            show-list)))
           (call-if long
             (list-shows-long | list-shows-short) show-list)))))
@@ -54,7 +54,7 @@
   (let ((c colorize))
     (for-each
       (lambda (show)
-        (let ((fin? (show-finished? show))
+        (let ((fin? (show:finished? show))
               (air? (show:airing? show)))
           (format #t (++ "~a " (c "[" 'BLUE) "~a~a" (c "]" 'BLUE) " ~5@a ~a~%")
                   (strftime (config 'date-format) (localtime (show:date show)))
@@ -63,7 +63,7 @@
                   ;; 'a' stands for airing, 'c' for completed
                   (if air? (c #\a 'CYAN) (c #\c 'MAGENTA))
                   (format #f "~a/~a"
-                          (show:ep/played show)
+                          (show:ep/watched show)
                           (+ (length (show:ep/list show))
                              (show:ep/offset show)))
                   (c (show:name show) 'BOLD))))
