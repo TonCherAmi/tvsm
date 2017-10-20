@@ -21,39 +21,40 @@
   #:use-module (tvsm common)
   #:use-module (tvsm util path))
 
-;; ---------------------------------------------------------- ;;
-;; Get a property value from the config.                      ;;
-;; ---------------------------------------------------------- ;;
-;; #:param: key :: symbol - config property key               ;;
-;;                                                            ;;
-;; #:return: x :: a - value of property if it is found,       ;;
-;;           #f otherwise                                     ;;
-;; ---------------------------------------------------------- ;;
+;;------------------------------------------------------  ;;
+;; Get a property value from the config.                  ;;
+;; ------------------------------------------------------ ;;
+;; #:param: key :: symbol - config property key           ;;
+;;                                                        ;;
+;; #:return: x :: a - value of property if it is found,   ;;
+;;           #f otherwise                                 ;;
+;; ------------------------------------------------------ ;;
 (define (config key)
   (let ((property (assoc key (force *config-list*))))
     (and=> property cdr)))
 
-;; ---------------------------------------------------------- ;;
-;; Get a list of possible config paths.                       ;;
-;; ---------------------------------------------------------- ;;
-;; #:return: x :: [string] - list of possible config paths    ;;
-;; ---------------------------------------------------------- ;;
+;; ------------------------------------------------------ ;;
+;; Get a list of possible config locations.               ;;
+;; ------------------------------------------------------ ;;
+;; #:return: x :: [string] - list of possible config      ;;
+;;           locations                                    ;;
+;; ------------------------------------------------------ ;;
 (define (path-list) 
   (let ((home (++ (getenv "HOME") "/")))
     (list (++ home ".config/tvsm/config")
           (++ home ".tvsm")
           "config")))
 
-;; ---------------------------------------------------------- ;;
-;; Expand environment variables in string properties of       ;;
-;; a config.                                                  ;;
-;; ---------------------------------------------------------- ;;
-;; #:param: cfg-lst :: [(symbol . a)] - config list           ;;
-;;                                                            ;;
-;; #:return: x :: [(symbol . a)] - copy of that config list   ;;
-;;           with environment variables in string properties  ;;
-;;           expanded                                         ;;
-;; ---------------------------------------------------------- ;;
+;; ------------------------------------------------------ ;;
+;; Expand environment variables in string properties of   ;;
+;; a config.                                              ;;
+;; ------------------------------------------------------ ;;
+;; #:param: cfg-lst :: [(symbol . a)] - config list       ;;
+;;                                                        ;;
+;; #:return: x :: [(symbol . a)] - copy of that config    ;;
+;;           list with environment variables in string    ;;
+;;           properties expanded                          ;;
+;; ------------------------------------------------------ ;;
 (define (expand-config cfg-lst)
   (let ((expand-all (compose expand-user expand-variables)))
     (map (lambda (property)
@@ -65,11 +66,11 @@
                      value))))
          cfg-lst)))
 
-;; ---------------------------------------------------------- ;;
-;; A list containing config properties.                       ;;
-;; ---------------------------------------------------------- ;;
-;; #:global: *config-list* :: promise [(symbol . a)]          ;;
-;; ---------------------------------------------------------- ;;
+;; ------------------------------------------------------ ;;
+;; A list containing config properties.                   ;;
+;; ------------------------------------------------------ ;;
+;; #:global: *config-list* :: promise [(symbol . a)]      ;;
+;; ------------------------------------------------------ ;;
 (define *config-list*
   ;; lazy evaluation prevents uncaught exception on module load
   (delay
