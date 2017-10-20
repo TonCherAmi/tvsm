@@ -45,7 +45,7 @@ Usage: tvsm [--version] [--help] <command> [<options>]
 
 available commands:
     add:      add a show.
-    play:     play a show.
+    watch:    watch a show.
     ls:       list existing shows.
     rm:       remove shows.
     set:      modify a show.
