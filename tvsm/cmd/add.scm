@@ -48,7 +48,7 @@
                              #:ep/offset ep/offset)))
     (if (show:ep/index-out-of-bounds? new-show)
         (throw 'episode-out-of-bounds-exception 
-               (format #f "cannot add '~a': Current episode is out of bounds" name))
+               (format #f "cannot add '~a': Current episode out of bounds" name))
         (call-with-show-list
           #:overwrite
             #t
