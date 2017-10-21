@@ -35,7 +35,7 @@
     (if property
       (cdr property)
       (throw 'config-parameter-missing
-             (format #f "missing config parameter '~a': Invalid config" key)))))
+             (format #f "missing config parameter: '~a'" key)))))
 
 ;; ------------------------------------------------------ ;;
 ;; Get a valid config location or throw if none found.    ;;
