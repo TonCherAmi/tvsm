@@ -32,22 +32,23 @@
 ;; #:param: args :: [string] - command line arguments     ;;
 ;; ------------------------------------------------------ ;;
 (define (main args)
-  (let* ((option-spec '((version (single-char #\v) (value #f))
-                        (help    (single-char #\h) (value #f))))
-         (options         (getopt-long args option-spec
-                                       #:stop-at-first-non-option #t))
-         (version-wanted  (option-ref options 'version #f))
-         (help-wanted     (option-ref options 'help #f)))
+  (let* ((option-spec '((help    (single-char #\h))
+                        (version (single-char #\v))))
+         (options        (getopt-long args
+                                      option-spec
+                                      #:stop-at-first-non-option #t))
+         (help-wanted    (option-ref options 'help #f))
+         (version-wanted (option-ref options 'version #f)))
     (cond*
-      (version-wanted
-       (display-version))
       (help-wanted
        (display-help))
+      (version-wanted
+       (display-version))
       (else
        (let* ((stripped-args (option-ref options '() '()))
-             ;; In case no arguments whatsoever were passed, 'command' will just slip 
-             ;; through the 'case' and general help will be printed.
-             (command (unless (null? stripped-args) 
+             ;; In case no arguments whatsoever were passed, command will slip 
+             ;; through case and general help will be printed.
+             (command (unless (null? stripped-args)
                         (string->symbol (car stripped-args)))))
          (catch #t
            (lambda ()
@@ -73,12 +74,21 @@
 ;; #:param: args :: [string] - subcommand arguments       ;;
 ;; ------------------------------------------------------ ;;
 (define (add args)
-  (let* ((option-spec '((help            (single-char #\h) (value #f))
-                        (name            (single-char #\n) (value #t))
-                        (path            (single-char #\p) (value #t))
-                        (airing          (single-char #\a) (value #f))
-                        (current-episode (single-char #\e) (value #t))
-                        (episode-offset  (single-char #\o) (value #t))))
+  (let* ((option-spec
+           `((help            (single-char #\h))
+             (name            (single-char #\n)
+                              (value #t)
+                              (required? #t))
+             (path            (single-char #\p)
+                              (value #t)
+                              (required? #t))
+             (airing          (single-char #\a))
+             (current-episode (single-char #\e)
+                              (value #t)
+                              (predicate ,string->number))
+             (episode-offset  (single-char #\o)
+                              (value #t)
+                              (predicate ,string->number))))
          (options     (getopt-long args option-spec))
          (help-wanted (option-ref options 'help #f))
          (name        (option-ref options 'name #f))
@@ -86,24 +96,15 @@
          (airing?     (option-ref options 'airing #f))
          (ep/current  (option-ref options 'current-episode "1"))
          (ep/offset   (option-ref options 'episode-offset "0")))
-    (cond 
-      (help-wanted 
-        (display-help 'add))
-      ((not (and name path))
-       (throw 'insufficient-args-exception
-              "insufficient arguments
-Try 'tvsm add --help' for more information."))
-      (else 
-       (let ((ep     (string->number ep/current))
-             (offset (string->number ep/offset)))
-         (if (not (and ep offset))
-            (throw 'wrong-option-type-exception
-                   "fatal error: Cannot parse numerical value")
-            (add-show-db #:name name 
-                         #:path path 
-                         #:airing? airing?
-                         #:ep/current (if (> offset ep) offset ep)
-                         #:ep/offset offset)))))))
+    (if help-wanted
+      (display-help 'add)
+      (let ((ep     (string->number ep/current))
+            (offset (string->number ep/offset)))
+        (add-show-db #:name name
+                     #:path path
+                     #:airing? airing?
+                     #:ep/current (if (>= offset ep) (1+ offset) ep)
+                     #:ep/offset offset)))))
 
 ;; ------------------------------------------------------ ;;
 ;; 'watch' subcommand.                                    ;;
@@ -111,28 +112,30 @@ Try 'tvsm add --help' for more information."))
 ;; #:param: args :: [string] - subcommand arguments       ;;
 ;; ------------------------------------------------------ ;;
 (define (watch args)
-  (let* ((option-spec '((help    (single-char #\h) (value #f))
-                        (episode (single-char #\e) (value #t))
-                        (set     (single-char #\s) (value #f))))
+  (let* ((option-spec
+           `((help    (single-char #\h))
+             (set     (single-char #\s))
+             (episode (single-char #\e)
+                      (value #t)
+                      (predicate ,string->number))))
          (options     (getopt-long args option-spec))
          (help-wanted (option-ref options 'help #f))
-         (episode     (option-ref options 'episode #f))
          (set-wanted  (option-ref options 'set #f))
+         (episode     (option-ref options 'episode #f))
          ;; Here we get a list that should consist of one element
          ;; which is the show name.
          (show-name   (option-ref options '() '())))
     (cond 
       (help-wanted
        (display-help 'watch))
-      ;; If the list is empty then the required argument is missing.
       ((null? show-name)
        (throw 'insufficient-args-exception
-              "missing show name
+              "insufficient arguments
 Try 'tvsm watch --help' for more information."))
       (episode 
        (watch-show-db (car show-name)
-                      #:set? set-wanted 
-                      #:ep (string->number episode)))
+                      #:set? set-wanted
+                      #:ep (string->number ep)))
       (else 
        (watch-show-db (car show-name))))))
 
@@ -142,9 +145,10 @@ Try 'tvsm watch --help' for more information."))
 ;; #:param: args :: [string] - subcommand arguments       ;;
 ;; ------------------------------------------------------ ;;
 (define (ls args)
-  (let* ((option-spec '((help (single-char #\h) (value #f))
-                        (all  (single-char #\a) (value #f))
-                        (long (single-char #\l) (value #f))))
+  (let* ((option-spec
+           '((help (single-char #\h))
+             (all  (single-char #\a))
+             (long (single-char #\l))))
          (options     (getopt-long args option-spec))
          (help-wanted (option-ref options 'help #f))
          (all-wanted  (option-ref options 'all  #f))
@@ -159,8 +163,9 @@ Try 'tvsm watch --help' for more information."))
 ;; #:param: args :: [string] - subcommand arguments       ;;
 ;; ------------------------------------------------------ ;;
 (define (rm args)
-  (let* ((option-spec '((help     (single-char #\h) (value #f))
-                        (finished (single-char #\f) (value #f))))
+  (let* ((option-spec
+           '((help     (single-char #\h))
+             (finished (single-char #\f))))
          (options         (getopt-long args option-spec))
          (help-wanted     (option-ref options 'help #f))
          (finished-wanted (option-ref options 'finished #f))
@@ -175,7 +180,7 @@ Try 'tvsm watch --help' for more information."))
        (throw 'insufficient-args-exception
               "insufficient arguments
 Try 'tvsm remove --help' for more information."))
-      (else 
+      (else
        (remove-shows-db show-names)))))
 
 ;; ------------------------------------------------------ ;;
@@ -184,12 +189,17 @@ Try 'tvsm remove --help' for more information."))
 ;; #:param: args :: [string] - subcommand arguments       ;;
 ;; ------------------------------------------------------ ;;
 (define (set args)
-  (let* ((option-spec '((help            (single-char #\h) (value #f))
-                        (name            (single-char #\n) (value #t))
-                        (path            (single-char #\p) (value #t))
-                        (airing          (single-char #\a) (value #f))
-                        (completed       (single-char #\c) (value #f))
-                        (current-episode (single-char #\e) (value #t))))
+  (let* ((option-spec
+           `((help            (single-char #\h))
+             (name            (single-char #\n)
+                              (value #t))
+             (path            (single-char #\p)
+                              (value #t))
+             (airing          (single-char #\a))
+             (completed       (single-char #\c))
+             (current-episode (single-char #\e)
+                              (value #t)
+                              (predicate ,string->number))))
          (options     (getopt-long args option-spec))
          (help-wanted (option-ref options 'help #f))
          (name        (option-ref options 'name #f))
@@ -212,7 +222,8 @@ Try 'tvsm set --help' for more information."))
         (completed?
          (set-show-airing-db (car show-name) #f))
         (ep/current
-         (set-show-current-episode-db (car show-name) (string->number ep/current)))
+          (set-show-current-episode-db (car show-name)
+                                       (string->number ep/current)))
         (path
          (set-show-path-db (car show-name) path))
         (name
@@ -242,15 +253,14 @@ Try 'tvsm set --help' for more information."))
 Usage: tvsm add <required-arguments> [<options>]
 
 required-arguments: 
-    -n, --name <name>:                 show name, a unique identifier.
-    -p, --path <path>:                 path to the directory that contains 
-                                       episodes of the show.
+    -n, --name <name>:                  show name, a unique identifier.
+    -p, --path <path>:                  path to the directory that contains
+                                        episodes of the show.
 options:
-    -a, --airing:                      mark show as airing.
-    -e, --current-episode <integer>:   number of the current episode
-    -o, --episode-offset  <integer>:   useful when episode numbering of a show
-                                       deviates from the usual sequential numbering
-                                       i.e. when first episode is not numbered 'E01'."))
+    -a, --airing:                       mark show as airing.
+    -e, --current-episode <integer>:    number of the current episode
+    -o, --episode-offset  <integer>:    useful for shows whose first episode is
+                                        numbered differently than 'E01'."))
     ((watch)
      (display "\
 Usage: tvsm watch [<options>] <show> 
@@ -266,8 +276,8 @@ options:
 Usage: tvsm ls [<options>]
 
 options:
-    -a, --all:      do not ignore finished shows.
-    -l, --long:     use a long listing format."))
+    -a, --all:     do not ignore finished shows.
+    -l, --long:    use a long listing format."))
     ((rm)
      (display "\
 Usage: tvsm rm [<options>] [<name>...]
