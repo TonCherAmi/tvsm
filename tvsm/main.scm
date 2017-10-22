@@ -146,16 +146,40 @@ Try 'tvsm watch --help' for more information."))
 ;; ------------------------------------------------------ ;;
 (define (ls args)
   (let* ((option-spec
-           '((help (single-char #\h))
-             (all  (single-char #\a))
-             (long (single-char #\l))))
-         (options     (getopt-long args option-spec))
-         (help-wanted (option-ref options 'help #f))
-         (all-wanted  (option-ref options 'all  #f))
-         (long-wanted (option-ref options 'long #f)))
+           '((help          (single-char #\h))
+             (long          (single-char #\l))
+             (all           (single-char #\A))
+             (watching      (single-char #\w))
+             (finished      (single-char #\f))
+             (airing        (single-char #\a))
+             (completed     (single-char #\c))
+             (watchable     (single-char #\W))
+             (non-watchable (single-char #\N))))
+         (options        (getopt-long args option-spec))
+         (help-wanted    (option-ref options 'help #f))
+         (long?          (option-ref options 'long #f))
+         (all?           (option-ref options 'all  #f))
+         (watching?      (option-ref options 'watching all?))
+         (finished?      (option-ref options 'finished all?))
+         (airing?        (option-ref options 'airing all?))
+         (completed?     (option-ref options 'completed all?))
+         (watchable?     (option-ref options 'watchable all?))
+         (non-watchable? (option-ref options 'non-watchable all?)))
     (if help-wanted 
       (display-help 'ls)
-      (list-shows-db #:all all-wanted #:long long-wanted))))
+      (list-shows-db #:long? long?
+                     ;; default constraint
+                     #:watching? (or watching?
+                                     (not (or finished?
+                                              airing?
+                                              completed?
+                                              watchable?
+                                              non-watchable?)))
+                     #:finished? finished?
+                     #:airing? airing?
+                     #:completed? completed?
+                     #:watchable? watchable?
+                     #:non-watchable? non-watchable?))))
 
 ;; ------------------------------------------------------ ;;
 ;; 'rm' subcommand.                                       ;;
@@ -276,8 +300,21 @@ options:
 Usage: tvsm ls [<options>]
 
 options:
-    -a, --all:     do not ignore finished shows.
-    -l, --long:    use a long listing format."))
+    -l, --long:    use a long listing format.
+
+constraints (combinable):
+    -A, --all:              all existing shows.
+
+    -w, --watching:         shows you are currently watching (default).
+    -f, --finished:         shows you had finished watching.
+
+    -a, --airing:           airing shows.
+    -c, --completed:        completed shows.
+
+    -W, --watchable:        shows that can be watched at the moment.
+    -N, --non-watchable:    shows that cannot be watched at the moment."))
+
+
     ((rm)
      (display "\
 Usage: tvsm rm [<options>] [<name>...]

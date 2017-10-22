@@ -22,27 +22,47 @@
   #:use-module (tvsm syntax call-if)
   #:use-module (tvsm base show)
   #:use-module (tvsm base config)
+  #:use-module (tvsm util func)
   #:use-module (tvsm util color))
 
 ;; ------------------------------------------------------ ;;
 ;; Print contents of the show database in a neat manner.  ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: all :: bool - do not ignore finished shows    ;;
-;;                                                        ;;
 ;; #:param: long :: bool - if #t makes output more        ;;
 ;;          detailed                                      ;;
+;;                                                        ;;
+;; TODO: proper comments                                  ;;
 ;; ------------------------------------------------------ ;;
-(define* (list-shows-db #:key all long)
-  (call-with-show-list
-    #:overwrite
-      #f
-    #:proc
-      (lambda (show-list)
-        (let ((show-list (if (not all)
-                           (filter (negate show:finished?) show-list)
-                           show-list)))
-          (call-if long
-            (list-shows-long | list-shows-short) show-list)))))
+(define* (list-shows-db #:key long?
+                              watching?  finished?
+                              airing?    completed?
+                              watchable? non-watchable?)
+         ;; group constraints by their compatability and
+         ;; pair them up with their corresponding predicates
+                        ;; watching / finished
+  (let* ((constraints `(((,watching?      . ,(negate show:finished?))
+                         (,finished?      . ,show:finished?))
+                        ;; airing / completed
+                        ((,airing?        . ,show:airing?)
+                         (,completed?     . ,(negate show:airing?)))
+                        ;; watchable / non-watchable
+                        ((,watchable?     . ,show:watchable?)
+                         (,non-watchable? . ,(negate show:watchable?)))))
+         (disjoint-preds (map (lambda (xs)
+                                (let ((sub-preds (map cdr (filter car xs))))
+                                  (apply disjoin (if (null? sub-preds)
+                                                   (list (const #t))
+                                                   sub-preds))))
+                              constraints))
+         (conjoint-pred (apply conjoin disjoint-preds)))
+    (call-with-show-list
+      #:overwrite
+        #f
+      #:proc
+        (lambda (show-list)
+          (call-if long?
+            (list-shows-long | list-shows-short)
+              (filter conjoint-pred show-list))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print show-list in long format.                        ;;
