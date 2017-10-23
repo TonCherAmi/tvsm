@@ -93,12 +93,13 @@
 ;; ------------------------------------------------------ ;;
 (define (list-shows-long show-list nocolor?)
   (format #t "total ~a~%" (length show-list))
-  (let ((c (if nocolor? (lambda xs (car xs)) colorize)))
+  (let* ((c   (if nocolor? (lambda xs (car xs)) colorize))
+         (fmt (++ "~a " (c #\[ 'BLUE) "~a~a" (c #\] 'BLUE) " ~5@a ~a~%")))
     (for-each
       (lambda (show)
         (let ((fin? (show:finished? show))
               (air? (show:airing? show)))
-          (format #t (++ "~a " (c "[" 'BLUE) "~a~a" (c "]" 'BLUE) " ~5@a ~a~%")
+          (format #t fmt
                   (strftime (config 'date-format) (localtime (show:date show)))
                   ;; 'f' stands for finished, 'w' for watching
                   (if fin? (c #\f 'RED) (c #\w 'GREEN))
