@@ -38,13 +38,13 @@
       #t
     #:proc
       (lambda (show-list)
-        (let* ((show-db 
+        (let* ((show*
                  (find-show old-show-name show-list))
                (show
-                 (if (not show-db)
+                 (if (not show*)
                    (throw 'show-not-found-exception
                           (format #f "cannot rename '~a': No such show" old-show-name))
-                   (remake-show show-db #:name new-show-name))))
+                   (remake-show show* #:name new-show-name))))
           (if (find-show new-show-name show-list)
             (if (ask-user-y/n (format #f "Show '~a' already exists. Overwrite? " new-show-name))
               (cons show (remove-show new-show-name (remove-show old-show-name show-list)))
@@ -67,13 +67,13 @@
       #t
     #:proc
       (lambda (show-list)
-        (let* ((show-db 
+        (let* ((show*
                  (find-show show-name show-list))
                (show 
-                 (if (not show-db)
+                 (if (not show*)
                    (throw 'show-not-found-exception
                           (format #f "cannot set path for '~a': No such show" show-name))
-                   (remake-show show-db #:path new-show-path))))
+                   (remake-show show* #:path new-show-path))))
           (if (show:ep/index-out-of-bounds? show)
             (throw 'episode-out-of-bounds-exception
                    (format #f "cannot set path for '~a': Episode out of bounds" show-name))
@@ -93,15 +93,15 @@
       #t
     #:proc
       (lambda (show-list)
-        (let* ((show-db 
+        (let* ((show*
                  (find-show show-name show-list))
                (show
-                 (if (not show-db)
+                 (if (not show*)
                    (throw 'show-not-found-exception
                           (format #f "cannot mark '~a' as ~a: No such show" 
                                   show-name
                                   (if airing? "airing" "completed")))
-                   (remake-show show-db #:airing? airing?))))
+                   (remake-show show* #:airing? airing?))))
           (cons show (remove-show show-name show-list))))))
 
 ;; ------------------------------------------------------ ;;
@@ -118,14 +118,14 @@
       #t
     #:proc
       (lambda (show-list)
-        (let* ((show-db 
+        (let* ((show*
                  (find-show show-name show-list))
                (show
-                 (if (not show-db)
+                 (if (not show*)
                    (throw 'show-not-found-exception
                           (format #f "cannot set current episode for '~a': No such show" 
                                   show-name))
-                   (remake-show show-db #:ep/current new-current-episode))))
+                   (remake-show show* #:ep/current new-current-episode))))
           (if (show:ep/index-out-of-bounds? show)
             (throw 'episode-out-of-bounds-exception
                    (format #f "cannot set current episode for '~a': Episode out of bounds" 
