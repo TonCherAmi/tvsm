@@ -300,19 +300,18 @@ options:
 Usage: tvsm ls [<options>]
 
 options:
-    -l, --long:    use a long listing format.
+    -l, --long:             use a long listing format.
 
-constraints (combinable):
-    -A, --all:              all existing shows.
+    -A, --all:              include all existing shows.
 
-    -w, --watching:         shows you are currently watching (default).
-    -f, --finished:         shows you had finished watching.
+    -w, --watching:         include shows you are currently watching (default).
+    -f, --finished:         include shows you had finished watching.
 
-    -a, --airing:           airing shows.
-    -c, --completed:        completed shows.
+    -a, --airing:           include airing shows.
+    -c, --completed:        include completed shows.
 
-    -W, --watchable:        shows that can be watched at the moment.
-    -N, --non-watchable:    shows that cannot be watched at the moment."))
+    -W, --watchable:        include shows that can be watched at the moment.
+    -N, --non-watchable:    include shows that cannot be watched at the moment."))
 
 
     ((rm)
