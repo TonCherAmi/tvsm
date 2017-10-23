@@ -30,6 +30,7 @@
 ;; ------------------------------------------------------ ;;
 ;; #:param: long? :: bool - if #t makes output more       ;;
 ;;          detailed                                      ;;
+;;                                                        ;;
 ;; #:param: nocolor? :: bool - if #t disable color output ;;
 ;;                                                        ;;
 ;; Constraints can be used to filter show db contents.    ;;
