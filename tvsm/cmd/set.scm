@@ -24,7 +24,6 @@
   #:use-module (tvsm base show)
   #:use-module (tvsm util ask-user))
 
-
 ;; ------------------------------------------------------ ;;
 ;; Rename a show in the database.                         ;;
 ;; ------------------------------------------------------ ;;
