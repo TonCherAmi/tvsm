@@ -105,7 +105,10 @@
                           (show:ep/watched show)
                           (+ (length (show:ep/list show))
                              (show:ep/offset show)))
-                  (c (show:name show) 'BOLD))))
+                  (c (show:name show)
+                     (if (show:watchable? show)
+                       'BOLD
+                       'CLEAR)))))
       show-list)))
 
 ;; ------------------------------------------------------ ;;
@@ -116,5 +119,9 @@
 (define (list-shows-short show-list)
   (for-each
     (lambda (show)
-      (display (show:name show)) (newline))
+      (format #t "~a~%"
+              (c (show:name show)
+                 (if (show:watchable? show)
+                   'BOLD
+                   'CLEAR))))
     show-list))
