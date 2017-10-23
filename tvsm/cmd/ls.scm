@@ -31,7 +31,26 @@
 ;; #:param: long :: bool - if #t makes output more        ;;
 ;;          detailed                                      ;;
 ;;                                                        ;;
-;; TODO: proper comments                                  ;;
+;; Constraints can be used to filter show db contents.    ;;
+;; Grouped constraints are combined using 'or', and those ;;
+;; groups are combined using 'and'. If no constraints in  ;;
+;; a group were specified all constraints in a group are  ;;
+;; set to true.                                           ;;
+;;                                                        ;;
+;; #:param: watching? :: bool - include shows the user is ;;
+;;          currently watching                            ;;
+;; #:param: finsihed? :: bool - include shows the user    ;;
+;;          had finished watching                         ;;
+;;                                                        ;;
+;; #:param: airing? :: bool - include shows that are      ;; 
+;;          marked as airing                              ;;
+;; #:param: completed? :: bool - include shows that are   ;;
+;;          not marked as airing                          ;;
+;;                                                        ;;
+;; #:param: watchable? :: bool - include shows that can   ;;
+;;          be watched at the moment                      ;;
+;; #:param: non-watchable? :: bool - include shows that   ;;
+;;          cannot be watched at the moment               ;;
 ;; ------------------------------------------------------ ;;
 (define* (list-shows-db #:key long?
                               watching?  finished?
