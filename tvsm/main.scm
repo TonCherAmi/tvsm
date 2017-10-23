@@ -148,6 +148,7 @@ Try 'tvsm watch --help' for more information."))
   (let* ((option-spec
            '((help          (single-char #\h))
              (long          (single-char #\l))
+             (nocolor       (single-char #\C))
              (all           (single-char #\A))
              (watching      (single-char #\w))
              (finished      (single-char #\f))
@@ -158,6 +159,7 @@ Try 'tvsm watch --help' for more information."))
          (options        (getopt-long args option-spec))
          (help-wanted    (option-ref options 'help #f))
          (long?          (option-ref options 'long #f))
+         (nocolor?       (option-ref options 'nocolor #f))
          (all?           (option-ref options 'all  #f))
          (watching?      (option-ref options 'watching all?))
          (finished?      (option-ref options 'finished all?))
@@ -168,6 +170,7 @@ Try 'tvsm watch --help' for more information."))
     (if help-wanted 
       (display-help 'ls)
       (list-shows-db #:long? long?
+                     #:nocolor? nocolor?
                      ;; default constraint
                      #:watching? (or watching?
                                      (not (or finished?
@@ -301,6 +304,7 @@ Usage: tvsm ls [<options>]
 
 options:
     -l, --long:             use a long listing format.
+    -C, --nocolor:          disable color output.
 
     -A, --all:              include all existing shows.
 

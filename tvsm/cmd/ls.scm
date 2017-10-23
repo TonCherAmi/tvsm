@@ -28,8 +28,9 @@
 ;; ------------------------------------------------------ ;;
 ;; Print contents of the show database in a neat manner.  ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: long :: bool - if #t makes output more        ;;
+;; #:param: long? :: bool - if #t makes output more       ;;
 ;;          detailed                                      ;;
+;; #:param: nocolor? :: bool - if #t disable color output ;;
 ;;                                                        ;;
 ;; Constraints can be used to filter show db contents.    ;;
 ;; Grouped constraints are combined using 'or', and those ;;
@@ -52,7 +53,7 @@
 ;; #:param: non-watchable? :: bool - include shows that   ;;
 ;;          cannot be watched at the moment               ;;
 ;; ------------------------------------------------------ ;;
-(define* (list-shows-db #:key long?
+(define* (list-shows-db #:key long?      nocolor?
                               watching?  finished?
                               airing?    completed?
                               watchable? non-watchable?)
@@ -81,16 +82,18 @@
         (lambda (show-list)
           (call-if long?
             (list-shows-long | list-shows-short)
-              (filter conjoint-pred show-list))))))
+              (filter conjoint-pred show-list) nocolor?)))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print show-list in long format.                        ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show-list :: [show] - show-list to print      ;;
+;;                                                        ;;
+;; #:param: nocolor? :: bool - if #t disable color output ;;
 ;; ------------------------------------------------------ ;;
-(define (list-shows-long show-list)
+(define (list-shows-long show-list nocolor?)
   (format #t "total ~a~%" (length show-list))
-  (let ((c colorize))
+  (let ((c (if nocolor? (lambda xs (car xs)) colorize)))
     (for-each
       (lambda (show)
         (let ((fin? (show:finished? show))
@@ -115,13 +118,16 @@
 ;; Print show-list in short format (names only).          ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show-list :: [show] - show-list to print      ;;
+;;                                                        ;;
+;; #:param: nocolor? :: bool - if #t disable color output ;;
 ;; ------------------------------------------------------ ;;
-(define (list-shows-short show-list)
-  (for-each
-    (lambda (show)
-      (format #t "~a~%"
-              (c (show:name show)
-                 (if (show:watchable? show)
-                   'BOLD
-                   'CLEAR))))
-    show-list))
+(define (list-shows-short show-list nocolor?)
+  (let ((c (if nocolor? (lambda xs (car xs)) colorize)))
+    (for-each
+      (lambda (show)
+        (format #t "~a~%"
+                (c (show:name show)
+                   (if (show:watchable? show)
+                     'BOLD
+                     'CLEAR))))
+    show-list)))
