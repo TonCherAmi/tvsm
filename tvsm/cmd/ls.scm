@@ -94,7 +94,10 @@
 ;; ------------------------------------------------------ ;;
 (define (list-shows-long show-list nocolor?)
   (format #t "total ~a~%" (length show-list))
-  (let* ((c   (if nocolor? (lambda xs (car xs)) colorize))
+  (let* ((c  (if nocolor?
+                (lambda xs
+                  (object->string (car xs) display))
+                colorize))
          (fmt (++ "~a " (c #\[ 'BLUE) "~a~a" (c #\] 'BLUE) " ~5@a ~a~%")))
     (for-each
       (lambda (show)
@@ -124,7 +127,10 @@
 ;; #:param: nocolor? :: bool - if #t disable color output ;;
 ;; ------------------------------------------------------ ;;
 (define (list-shows-short show-list nocolor?)
-  (let ((c (if nocolor? (lambda xs (car xs)) colorize)))
+  (let ((c (if nocolor?
+             (lambda xs
+               (object->string (car xs) display))
+             colorize)))
     (for-each
       (lambda (show)
         (format #t "~a~%"
