@@ -8,7 +8,7 @@
                           ".mov" ".m4v" ".svi" ".ogv" ".webm"
                           ".vob" ".flv" ".wmv" ".qt"))
  ;; date format (see 'man 3 strftime' for a list of available tokens)
- (date-format          .  "%a %b %e"
+ (date-format          .  "%a %b %e")
  ;; path to the show database
  (show-db-path         . "$HOME/.local/share/tvsm/shows"))
 
