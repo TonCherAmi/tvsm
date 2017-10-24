@@ -94,11 +94,18 @@
 ;; ------------------------------------------------------ ;;
 (define (list-shows-long show-list nocolor?)
   (format #t "total ~a~%" (length show-list))
-  (let* ((c  (if nocolor?
-                (lambda xs
-                  (object->string (car xs) display))
-                colorize))
-         (fmt (++ "~a " (c #\[ 'BLUE) "~a~a" (c #\] 'BLUE) " ~5@a ~a~%")))
+  (let* ((c (if nocolor?
+              (lambda xs
+                (object->string (car xs) display))
+              colorize))
+         (minw (number->string
+                 (apply max (map (lambda (show)
+                                   (string-length
+                                     (format #f "~a/~a"
+                                             (show:ep/watched show)
+                                             (length (show:ep/list show)))))
+                                 show-list))))
+         (fmt (++ "~a " (c #\[ 'BLUE) "~a~a" (c #\] 'BLUE) " ~" minw "@a ~a~%")))
     (for-each
       (lambda (show)
         (let ((fin? (show:finished? show))
