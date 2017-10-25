@@ -121,7 +121,7 @@
                              (show:ep/offset show)))
                   (c (show:name show)
                      (if (show:watchable? show)
-                       'BOLD
+                       'UNDERLINED
                        'CLEAR)))))
       show-list)))
 
@@ -138,6 +138,6 @@
       (format #t "~a~%"
               (c (show:name show)
                  (if (show:watchable? show)
-                   'BOLD
+                   'UNDERLINED
                    'CLEAR))))
     show-list))
