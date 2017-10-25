@@ -96,34 +96,35 @@
 ;; #:param: c :: a symbol ... -> string - colorizer       ;;
 ;; ------------------------------------------------------ ;;
 (define (list-shows-long show-list c)
-  (let* ((minw (number->string
-                 (apply max (map (lambda (show)
-                                   (string-length
-                                     (format #f "~a/~a"
-                                             (show:ep/watched show)
-                                             (length (show:ep/list show)))))
-                                 show-list))))
-         (fmt (++ "~a " (c #\[ 'BLUE) "~a~a" (c #\] 'BLUE) " ~" minw "@a ~a~%")))
-    (format #t "total ~a~%" (length show-list))
-    (for-each
-      (lambda (show)
-        (let ((fin? (show:finished? show))
-              (air? (show:airing? show)))
-          (format #t fmt
-                  (strftime (config 'date-format) (localtime (show:date show)))
-                  ;; 'f' stands for finished, 'w' for watching
-                  (if fin? (c #\f 'RED) (c #\w 'GREEN))
-                  ;; 'a' stands for airing, 'c' for completed
-                  (if air? (c #\a 'CYAN) (c #\c 'MAGENTA))
-                  (format #f "~a/~a"
-                          (show:ep/watched show)
-                          (+ (length (show:ep/list show))
-                             (show:ep/offset show)))
-                  (c (show:name show)
-                     (if (show:watchable? show)
-                       'UNDERLINED
-                       'CLEAR)))))
-      show-list)))
+  (format #t "total ~a~%" (length show-list))
+  (unless (null? show-list)
+    (let* ((minw (number->string
+                   (apply max (map (lambda (show)
+                                     (string-length
+                                       (format #f "~a/~a"
+                                               (show:ep/watched show)
+                                               (length (show:ep/list show)))))
+                                   show-list))))
+           (fmt (++ "~a " (c #\[ 'BLUE) "~a~a" (c #\] 'BLUE) " ~" minw "@a ~a~%")))
+      (for-each
+        (lambda (show)
+          (let ((fin? (show:finished? show))
+                (air? (show:airing? show)))
+            (format #t fmt
+                    (strftime (config 'date-format) (localtime (show:date show)))
+                    ;; 'f' stands for finished, 'w' for watching
+                    (if fin? (c #\f 'RED) (c #\w 'GREEN))
+                    ;; 'a' stands for airing, 'c' for completed
+                    (if air? (c #\a 'CYAN) (c #\c 'MAGENTA))
+                    (format #f "~a/~a"
+                            (show:ep/watched show)
+                            (+ (length (show:ep/list show))
+                               (show:ep/offset show)))
+                    (c (show:name show)
+                       (if (show:watchable? show)
+                         'UNDERLINED
+                         'CLEAR)))))
+        show-list))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print show-list in short format (names only).          ;;
