@@ -96,7 +96,6 @@
 ;; #:param: c :: a symbol ... -> string - colorizer       ;;
 ;; ------------------------------------------------------ ;;
 (define (list-shows-long show-list c)
-  (format #t "total ~a~%" (length show-list))
   (let* ((minw (number->string
                  (apply max (map (lambda (show)
                                    (string-length
@@ -105,6 +104,7 @@
                                              (length (show:ep/list show)))))
                                  show-list))))
          (fmt (++ "~a " (c #\[ 'BLUE) "~a~a" (c #\] 'BLUE) " ~" minw "@a ~a~%")))
+    (format #t "total ~a~%" (length show-list))
     (for-each
       (lambda (show)
         (let ((fin? (show:finished? show))
