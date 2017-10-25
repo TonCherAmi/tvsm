@@ -294,7 +294,7 @@ Usage: tvsm watch [<options>] <show>
 
 options:
     -e, --episode <integer>:    number of the episode to watch instead of 
-                                current episode.
+                                the current episode.
     -s, --set:                  if specified together with '--episode' show
                                 will continue to progress further from that
                                 specified episode."))
