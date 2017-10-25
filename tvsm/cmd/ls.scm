@@ -83,22 +83,21 @@
         (lambda (show-list)
           (call-if long?
             (list-shows-long | list-shows-short)
-              (filter conjoint-pred show-list) nocolor?)))))
+              (filter conjoint-pred show-list)
+              (if nocolor?
+                (lambda xs (object->string (car xs) display))
+                colorize))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Print show-list in long format.                        ;;
 ;; ------------------------------------------------------ ;;
 ;; #:param: show-list :: [show] - show-list to print      ;;
 ;;                                                        ;;
-;; #:param: nocolor? :: bool - if #t disable color output ;;
+;; #:param: c :: a symbol ... -> string - colorizer       ;;
 ;; ------------------------------------------------------ ;;
-(define (list-shows-long show-list nocolor?)
+(define (list-shows-long show-list c)
   (format #t "total ~a~%" (length show-list))
-  (let* ((c (if nocolor?
-              (lambda xs
-                (object->string (car xs) display))
-              colorize))
-         (minw (number->string
+  (let* ((minw (number->string
                  (apply max (map (lambda (show)
                                    (string-length
                                      (format #f "~a/~a"
@@ -131,18 +130,14 @@
 ;; ------------------------------------------------------ ;;
 ;; #:param: show-list :: [show] - show-list to print      ;;
 ;;                                                        ;;
-;; #:param: nocolor? :: bool - if #t disable color output ;;
+;; #:param: c :: a symbol ... -> string - colorizer       ;;
 ;; ------------------------------------------------------ ;;
-(define (list-shows-short show-list nocolor?)
-  (let ((c (if nocolor?
-             (lambda xs
-               (object->string (car xs) display))
-             colorize)))
-    (for-each
-      (lambda (show)
-        (format #t "~a~%"
-                (c (show:name show)
-                   (if (show:watchable? show)
-                     'BOLD
-                     'CLEAR))))
-    show-list)))
+(define (list-shows-short show-list c)
+  (for-each
+    (lambda (show)
+      (format #t "~a~%"
+              (c (show:name show)
+                 (if (show:watchable? show)
+                   'BOLD
+                   'CLEAR))))
+    show-list))
