@@ -1,3 +1,5 @@
+<img height="184" width="432" src="https://raw.githubusercontent.com/TonCherAmi/tvsm/assets/logo.png"/>
+
 ## Introduction
 
 `tvsm` is a lightweight TV show manager. It is written in GNU Guile.
