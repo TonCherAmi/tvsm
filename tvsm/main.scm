@@ -288,7 +288,7 @@ required-arguments:
                                    episodes of the show.
 options:
     -a, --airing:                  mark show as airing.
-    -e, --ep-current <integer>:    number of the current episode
+    -e, --ep-current <integer>:    current episode number.
     -o, --ep-offset  <integer>:    useful for shows whose first episode is
                                    numbered differently than 'E01'."))
     ((watch)
