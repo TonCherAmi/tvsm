@@ -135,7 +135,7 @@ Try 'tvsm add --help' for more information."))
        (throw 'insufficient-args-exception
               "insufficient arguments
 Try 'tvsm watch --help' for more information."))
-      (episode 
+      (ep 
        (watch-show-db (car show-name)
                       #:ep (string->number ep)
                       #:set? set-wanted))
