@@ -20,7 +20,7 @@
   #:export     (set-show-name-db
                 set-show-path-db
                 set-show-airing-db
-                set-show-current-episode-db)
+                set-show-ep/current-db)
   #:use-module (tvsm base show)
   #:use-module (tvsm util ask-user))
 
@@ -108,10 +108,9 @@
 ;; ------------------------------------------------------ ;;
 ;; #:param: show-name :: string - show name               ;;
 ;;                                                        ;;
-;; #:param: new-current-episode :: int - new current      ;;
-;;          episode                                       ;;
+;; #:param: new-ep/current :: int - new current episode   ;;
 ;; ------------------------------------------------------ ;;
-(define (set-show-current-episode-db show-name new-current-episode)
+(define (set-show-ep/current-db show-name new-ep/current)
   (call-with-show-list
     #:overwrite
       #t
@@ -124,7 +123,7 @@
                    (throw 'show-not-found-exception
                           (format #f "cannot set current episode for '~a': No such show" 
                                   show-name))
-                   (remake-show show* #:ep/current new-current-episode))))
+                   (remake-show show* #:ep/current new-ep/current))))
           (if (show:ep/index-out-of-bounds? show)
             (throw 'episode-out-of-bounds-exception
                    (format #f "cannot set current episode for '~a': Episode out of bounds" 

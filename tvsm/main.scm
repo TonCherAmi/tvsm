@@ -252,8 +252,8 @@ Try 'tvsm set --help' for more information."))
         (completed?
          (set-show-airing-db (car show-name) #f))
         (ep/current
-          (set-show-current-episode-db (car show-name)
-                                       (string->number ep/current)))
+          (set-show-ep/current-db (car show-name)
+                                  (string->number ep/current)))
         (path
          (set-show-path-db (car show-name) path))
         (name
