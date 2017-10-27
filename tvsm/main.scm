@@ -75,25 +75,25 @@
 ;; ------------------------------------------------------ ;;
 (define (add args)
   (let* ((option-spec
-           `((help            (single-char #\h))
-             (name            (single-char #\n)
-                              (value #t))
-             (path            (single-char #\p)
-                              (value #t))
-             (airing          (single-char #\a))
-             (current-episode (single-char #\e)
-                              (value #t)
-                              (predicate ,string->number))
-             (episode-offset  (single-char #\o)
-                              (value #t)
-                              (predicate ,string->number))))
+           `((help       (single-char #\h))
+             (name       (single-char #\n)
+                         (value #t))
+             (path       (single-char #\p)
+                         (value #t))
+             (airing     (single-char #\a))
+             (ep-current (single-char #\e)
+                         (value #t)
+                         (predicate ,string->number))
+             (ep-offset  (single-char #\o)
+                         (value #t)
+                         (predicate ,string->number))))
          (options     (getopt-long args option-spec))
          (help-wanted (option-ref options 'help #f))
          (name        (option-ref options 'name #f))
          (path        (option-ref options 'path #f))
          (airing?     (option-ref options 'airing #f))
-         (ep/current  (option-ref options 'current-episode "1"))
-         (ep/offset   (option-ref options 'episode-offset "0")))
+         (ep/current  (option-ref options 'ep-current "1"))
+         (ep/offset   (option-ref options 'ep-offset "0")))
     (cond
       (help-wanted
        (display-help 'add))
@@ -220,23 +220,23 @@ Try 'tvsm remove --help' for more information."))
 ;; ------------------------------------------------------ ;;
 (define (set args)
   (let* ((option-spec
-           `((help            (single-char #\h))
-             (name            (single-char #\n)
-                              (value #t))
-             (path            (single-char #\p)
-                              (value #t))
-             (airing          (single-char #\a))
-             (completed       (single-char #\c))
-             (current-episode (single-char #\e)
-                              (value #t)
-                              (predicate ,string->number))))
+           `((help       (single-char #\h))
+             (name       (single-char #\n)
+                         (value #t))
+             (path       (single-char #\p)
+                         (value #t))
+             (airing     (single-char #\a))
+             (completed  (single-char #\c))
+             (ep-current (single-char #\e)
+                         (value #t)
+                         (predicate ,string->number))))
          (options     (getopt-long args option-spec))
          (help-wanted (option-ref options 'help #f))
          (name        (option-ref options 'name #f))
          (path        (option-ref options 'path #f))
          (airing?     (option-ref options 'airing #f))
          (completed?  (option-ref options 'completed #f))
-         (ep/current  (option-ref options 'current-episode #f))
+         (ep/current  (option-ref options 'ep-current #f))
          ;; Here we get a list that should consist of one element
          ;; which is the show name passed as an argument.
          (show-name   (option-ref options '() '())))
@@ -283,24 +283,24 @@ Try 'tvsm set --help' for more information."))
 Usage: tvsm add <required-arguments> [<options>]
 
 required-arguments: 
-    -n, --name <name>:                  show name, a unique identifier.
-    -p, --path <path>:                  path to the directory that contains
-                                        episodes of the show.
+    -n, --name <name>:             show name, a unique identifier.
+    -p, --path <path>:             path to the directory that contains
+                                   episodes of the show.
 options:
-    -a, --airing:                       mark show as airing.
-    -e, --current-episode <integer>:    number of the current episode
-    -o, --episode-offset  <integer>:    useful for shows whose first episode is
-                                        numbered differently than 'E01'."))
+    -a, --airing:                  mark show as airing.
+    -e, --ep-current <integer>:    number of the current episode
+    -o, --ep-offset  <integer>:    useful for shows whose first episode is
+                                   numbered differently than 'E01'."))
     ((watch)
      (display "\
 Usage: tvsm watch [<options>] <show> 
 
 options:
-    -e, --episode <integer>:    number of the episode to watch instead of 
-                                the current episode.
-    -s, --set:                  if specified together with '--episode' show
-                                will continue to progress further from that
-                                specified episode."))
+    -e, --ep <integer>:    number of the episode to watch instead of 
+                           the current episode.
+    -s, --set:             if specified together with '--ep' show will
+                           continue to progress further from that
+                           specified episode."))
     ((ls)
      (display "\
 Usage: tvsm ls [<options>]
@@ -332,11 +332,11 @@ options:
 Usage: tvsm set [<options>] <name>
 
 options:
-    -n, --name <name>:                  set a new name.
-    -p, --path <path>:                  set a new path.
-    -a, --airing:                       mark show as airing.
-    -c, --completed:                    mark show as completed.
-    -e, --current-episode <integer>:    set current episode."))
+    -n, --name <name>:             set a new name.
+    -p, --path <path>:             set a new path.
+    -a, --airing:                  mark show as airing.
+    -c, --completed:               mark show as completed.
+    -e, --ep-current <integer>:    set current episode."))
     (else 
       (display "\
 Usage: tvsm [--version] [--help] <command> [<options>]
