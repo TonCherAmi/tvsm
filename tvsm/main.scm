@@ -77,11 +77,9 @@
   (let* ((option-spec
            `((help            (single-char #\h))
              (name            (single-char #\n)
-                              (value #t)
-                              (required? #t))
+                              (value #t))
              (path            (single-char #\p)
-                              (value #t)
-                              (required? #t))
+                              (value #t))
              (airing          (single-char #\a))
              (current-episode (single-char #\e)
                               (value #t)
@@ -96,15 +94,20 @@
          (airing?     (option-ref options 'airing #f))
          (ep/current  (option-ref options 'current-episode "1"))
          (ep/offset   (option-ref options 'episode-offset "0")))
-    (if help-wanted
-      (display-help 'add)
-      (let ((ep     (string->number ep/current))
-            (offset (string->number ep/offset)))
-        (add-show-db #:name name
-                     #:path path
-                     #:airing? airing?
-                     #:ep/current (if (>= offset ep) (1+ offset) ep)
-                     #:ep/offset offset)))))
+    (cond
+      (help-wanted
+       (display-help 'add))
+      ((not (and name path))
+       (throw "insufficient arguments
+Try 'tvsm add --help' for more information."))
+      (else 
+       (let ((ep     (string->number ep/current))
+             (offset (string->number ep/offset)))
+         (add-show-db #:name name
+                      #:path path
+                      #:airing? airing?
+                      #:ep/current (if (>= offset ep) (1+ offset) ep)
+                      #:ep/offset offset))))))
 
 ;; ------------------------------------------------------ ;;
 ;; 'watch' subcommand.                                    ;;
