@@ -116,15 +116,15 @@ Try 'tvsm add --help' for more information."))
 ;; ------------------------------------------------------ ;;
 (define (watch args)
   (let* ((option-spec
-           `((help    (single-char #\h))
-             (set     (single-char #\s))
-             (episode (single-char #\e)
-                      (value #t)
-                      (predicate ,string->number))))
+           `((help (single-char #\h))
+             (ep   (single-char #\e)
+                   (value #t)
+                   (predicate ,string->number))
+             (set  (single-char #\s))))
          (options     (getopt-long args option-spec))
          (help-wanted (option-ref options 'help #f))
+         (ep          (option-ref options 'ep #f))
          (set-wanted  (option-ref options 'set #f))
-         (episode     (option-ref options 'episode #f))
          ;; Here we get a list that should consist of one element
          ;; which is the show name.
          (show-name   (option-ref options '() '())))
@@ -137,8 +137,8 @@ Try 'tvsm add --help' for more information."))
 Try 'tvsm watch --help' for more information."))
       (episode 
        (watch-show-db (car show-name)
-                      #:set? set-wanted
-                      #:ep (string->number episode)))
+                      #:ep (string->number ep)
+                      #:set? set-wanted))
       (else 
        (watch-show-db (car show-name))))))
 
