@@ -16,31 +16,34 @@
 ;; You should have received a copy of the GNU Lesser General Public License
 ;; along with tvsm. If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tvsm base show)
-  #:export     (call-with-show-list
-                make-show
-                remake-show
-                show:name
-                show:path
-                show:date
-                show:airing?
-                show:ep/index
-                show:ep/offset
-                show:ep/current
-                show:ep/watched
-                show:ep/index-inc
-                show:ep/index-dec
-                show:ep/list
-                show:watchable?
-                show:finished?
-                show:ep/index-out-of-bounds?
-                remove-show
-                find-show)
-  #:use-module (ice-9 ftw)
-  #:use-module (tvsm syntax call-if)
-  #:use-module (tvsm base db)
-  #:use-module (tvsm base config)
-  #:use-module (tvsm util path))
+(define-module  (tvsm base show)
+  #:export      (call-with-show-list
+                 make-show
+                 remake-show
+                 show:name
+                 show:path
+                 show:date
+                 show:airing?
+                 show:ep/index
+                 show:ep/offset
+                 show:ep/current
+                 show:ep/watched
+                 show:ep/index-inc
+                 show:ep/index-dec
+                 show:ep/list
+                 show:ep/total
+                 show:watchable?
+                 show:finished?
+                 show:ep/index-out-of-bounds?
+                 remove-show
+                 find-show)
+  #:use-module  (ice-9 ftw)
+  #:use-module ((srfi srfi-1)
+  #:select      (any))
+  #:use-module  (tvsm syntax call-if)
+  #:use-module  (tvsm base db)
+  #:use-module  (tvsm base config)
+  #:use-module  (tvsm util path))
 
 ;; ------------------------------------------------------- ;;
 ;; Read the show database and call '(proc show-list)'      ;;
@@ -257,14 +260,31 @@
       (else
        (scandir path
                 (lambda (path)
-                  (let loop ((format-list (config 'media-format-list)))
-                    (cond
-                      ((null? format-list)
-                       #f)
-                      ((string-suffix-ci? (car format-list) path)
-                       #t)
-                      (else
-                       (loop (cdr format-list)))))))))))
+                  (any (lambda (fmt)
+                         (string-suffix-ci? fmt path))
+                       (config 'media-format-list))))))))
+
+;; ------------------------------------------------------ ;;
+;; Get episode filelist length of a show.                 ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show :: show - show                           ;;
+;;                                                        ;;
+;; #:return: x :: int - episode filelist length           ;;
+;; ------------------------------------------------------ ;;
+(define (show:ep/list-len show)
+  (length (show:ep/list show)))
+
+;; ------------------------------------------------------ ;;
+;; Get total number of episodes of a show.                ;;
+;; (ep/offset + ep/list-len)                              ;;
+;; ------------------------------------------------------ ;;
+;; #:param: show :: show - show                           ;;
+;;                                                        ;;
+;; #:return: x :: int - total number of episodes          ;;
+;; ------------------------------------------------------ ;;
+(define (show:ep/total show)
+  (+ (show:ep/offset show)
+     (show:ep/list-len show)))
 
 ;; ------------------------------------------------------ ;;
 ;; Check whether show is watchable.                       ;;
@@ -277,7 +297,7 @@
 (define (show:watchable? show)
   (and (<= 0 (show:ep/index show))
        (< (show:ep/index show) 
-          (length (show:ep/list show)))))
+          (show:ep/list-len show))))
 
 ;; ------------------------------------------------------ ;;
 ;; Check whether show is fisnished.                       ;;
@@ -300,7 +320,7 @@
 ;;           bounds, #f otherwise                         ;;
 ;; ------------------------------------------------------ ;;
 (define (show:ep/index-out-of-bounds? show)
-  (let ((ep/list-len (length (show:ep/list show)))
+  (let ((ep/list-len (show:ep/list-len show))
         (ep/index (show:ep/index show)))
         ;; Out of bounds if current episode < 0
     (or (> 0 ep/index)
