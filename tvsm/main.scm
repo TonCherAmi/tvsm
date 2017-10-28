@@ -355,4 +355,4 @@ See 'tvsm <command> --help' to learn more about a specific command.")))
 ;; Print current application version.                     ;;
 ;; ------------------------------------------------------ ;;
 (define (display-version)
-  (display "tvsm version 0.2") (newline))
+  (display "tvsm version 0.3.0") (newline))
