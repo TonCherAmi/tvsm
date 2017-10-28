@@ -59,7 +59,7 @@
           (format #t "Watching '~a', episode no. ~a/~a~%"
                   (colorize (show:name show) 'BOLD)
                   (colorize (show:ep/current show) 'BOLD)
-                  (colorize (length (show:ep/list show)) 'BOLD))
+                  (colorize (show:ep/total show) 'BOLD))
           (let ((episode-path (show:ep/current-path show)))
             (catch 'media-player-command-exception
               (lambda ()
