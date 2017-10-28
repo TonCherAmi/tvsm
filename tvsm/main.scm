@@ -98,7 +98,8 @@
       (help-wanted
        (display-help 'add))
       ((not (and name path))
-       (throw "insufficient arguments
+       (throw 'insufficient-args-exception
+              "insufficient arguments
 Try 'tvsm add --help' for more information."))
       (else 
        (let ((ep     (string->number ep/current))
