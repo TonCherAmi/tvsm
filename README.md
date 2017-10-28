@@ -1,12 +1,22 @@
-<img height="184" width="432" src="https://raw.githubusercontent.com/TonCherAmi/tvsm/assets/logo.png"/>
+# <img height="50%" width="50%" src="https://raw.githubusercontent.com/TonCherAmi/tvsm/assets/logo.png"/>
 
 ## Introduction
 
-`tvsm` is a lightweight TV show manager. It is written in GNU Guile.
+`tvsm` is a simple command-line TV show manager. It is written in GNU Guile.
+
+## Examples
+
+General overview of the functionality:
+
+<img height="65%" width="65%" src="https://raw.githubusercontent.com/TonCherAmi/tvsm/assets/demo.gif"/>
 
 ## Dependencies
 
 GNU Guile 2.x
+* **NOTE:** you must make sure that you have both `guile` and `guild` executables installed.\
+            Some distributions (e.g. *Debian*) provide `guild` separately from `guile`, so simply\
+            installing a package called `guile` may not be sufficient.\
+            (in *Debian*'s case the proper package should be called `guile-2.x-dev`)
 
 ## Installation
 
@@ -54,10 +64,6 @@ available commands:
     
 See 'tvsm <command> --help' to learn more about a specific command.
 ```
-
-## Examples 
-
-/TODO/
 
 ## License
 
