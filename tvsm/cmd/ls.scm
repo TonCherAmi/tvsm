@@ -103,7 +103,7 @@
                                      (string-length
                                        (format #f "~a/~a"
                                                (show:ep/watched show)
-                                               (length (show:ep/list show)))))
+                                               (show:ep/total show))))
                                    show-list))))
            (fmt (++ "~a " (c #\[ 'BLUE) "~a~a" (c #\] 'BLUE) " ~" minw "@a ~a~%")))
       (for-each
@@ -118,8 +118,7 @@
                     (if air? (c #\a 'CYAN) (c #\c 'MAGENTA))
                     (format #f "~a/~a"
                             (show:ep/watched show)
-                            (+ (length (show:ep/list show))
-                               (show:ep/offset show)))
+                            (show:ep/total show))
                     (c (show:name show)
                        (if (show:watchable? show)
                          'UNDERLINED
