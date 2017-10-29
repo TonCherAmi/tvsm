@@ -40,7 +40,7 @@ $ make install
 After installation you will need to set up the configuration file:
 
 ```shell
-# open the 'config' file with a text editor of your choice, e.g.,
+# open the 'config' file with a text editor of your choice, e.g:
 $ vi config
 
 # set 'media-player-command' to a shell command of your choice:
