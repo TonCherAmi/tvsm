@@ -13,10 +13,12 @@ General overview of the functionality:
 ## Dependencies
 
 GNU Guile 2.x
-* **NOTE:** you must make sure that you have both `guile` and `guild` executables installed.\
-            Some distributions (e.g. *Debian*) provide `guild` separately from `guile`, so simply\
-            installing a package called `guile` may not be sufficient.\
-            (*Debian* provides `guild` in a package called `guile-2.x-dev`)
+
+
+**NOTE:** you must make sure that you have both `guile` and `guild` executables installed.\
+Some distributions (e.g. *Debian*) provide `guild` separately from `guile`, so simply\
+installing a package called `guile` may not be sufficient.\
+(*Debian* provides `guild` in a package called `guile-2.x-dev`)
 
 ## Installation
 
