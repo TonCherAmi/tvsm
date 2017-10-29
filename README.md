@@ -16,7 +16,7 @@ GNU Guile 2.x
 * **NOTE:** you must make sure that you have both `guile` and `guild` executables installed.\
             Some distributions (e.g. *Debian*) provide `guild` separately from `guile`, so simply\
             installing a package called `guile` may not be sufficient.\
-            (in *Debian*'s case the proper package should be called `guile-2.x-dev`)
+            (*Debian* provides `guild` in a package called `guile-2.x-dev`)
 
 ## Installation
 
