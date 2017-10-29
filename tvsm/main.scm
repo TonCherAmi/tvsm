@@ -210,7 +210,7 @@ Try 'tvsm watch --help' for more information."))
       ((null? show-names)
        (throw 'insufficient-args-exception
               "insufficient arguments
-Try 'tvsm remove --help' for more information."))
+Try 'tvsm rm --help' for more information."))
       (else
        (remove-shows-db show-names)))))
 
