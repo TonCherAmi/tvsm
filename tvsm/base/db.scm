@@ -35,11 +35,11 @@
         (if (file-exists? db-path)
           (with-input-from-file db-path read)
           '()))
-      (lambda (key proc message args data)
+      (lambda args
         (throw 'cannot-read-show-db-exception
                (format #f "cannot read show db from '~a': ~a "
                        db-path
-                       (strerror (car data))))))))
+                       (strerror (system-error-errno args))))))))
 
 ;; ------------------------------------------------------ ;;
 ;; Write show database.                                   ;;
@@ -64,8 +64,8 @@
           db-path
           (lambda ()
             (write show-list))))
-      (lambda (key proc message args data)
+      (lambda args
         (throw 'cannot-write-show-db-exception
                (format #f "cannot write show db to '~a': ~a"
                        db-path
-                       (strerror (car data))))))))
+                       (strerror (system-error-errno args))))))))
