@@ -54,8 +54,8 @@
         (lambda ()
           (mkdirs db-directory))
         (lambda (key code path)
-          (throw 'cannot-create-directory-exception 
-                 (format #f "cannot create directory '~a': ~a" 
+          (throw 'cannot-create-directory-exception
+                 (format #f "cannot create directory '~a': ~a"
                          path
                          (strerror code))))))
     (catch 'system-error
