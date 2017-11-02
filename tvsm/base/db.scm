@@ -44,7 +44,7 @@
 ;; ------------------------------------------------------ ;;
 ;; Write show database.                                   ;;
 ;; ------------------------------------------------------ ;;
-;; #:param: show-list :: [show] - show-list               ;; 
+;; #:param: show-list :: [show] - show-list               ;;
 ;; ------------------------------------------------------ ;;
 (define (write-show-list-db show-list)
   (let* ((db-path      (config 'show-db-path))
@@ -60,7 +60,7 @@
                          (strerror code))))))
     (catch 'system-error
       (lambda ()
-        (with-output-to-file 
+        (with-output-to-file
           db-path
           (lambda ()
             (write show-list))))
