@@ -1,4 +1,4 @@
-# Copyright © 2017 Vasili Karaev
+# Copyright © 2017-2018 Vasili Karaev
 #
 # This file is part of tvsm.
 #
