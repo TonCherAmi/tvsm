@@ -54,7 +54,7 @@ _tvsm_watch() {
         return
     fi
 
-    COMPREPLY=($(compgen -W "$(tvsm ls -C)" -- "$cur"))
+    COMPREPLY=($(compgen -W "$(tvsm ls -CW)" -- "$cur"))
 }
 
 _tvsm_ls() {
@@ -87,7 +87,7 @@ _tvsm_rm() {
         return
     fi
 
-    COMPREPLY=($(compgen -W "$(tvsm ls -C)" -- "$cur"))
+    COMPREPLY=($(compgen -W "$(tvsm ls -CA)" -- "$cur"))
 }
 
 _tvsm_set() {
@@ -110,7 +110,7 @@ _tvsm_set() {
         return
     fi
 
-    COMPREPLY=($(compgen -W "$(tvsm ls -C)" -- "$cur"))
+    COMPREPLY=($(compgen -W "$(tvsm ls -CA)" -- "$cur"))
 }
 
 _tvsm() {
